@@ -1,0 +1,58 @@
+---
+// ============================================================
+// terminos.astro — Términos y Condiciones (Español)
+// ============================================================
+import { t } from '../i18n/utils.js';
+import Plantilla from '../layouts/Plantilla.astro';
+import Nav       from '../components/Nav.astro';
+import Footer    from '../components/Footer.astro';
+import Boton     from '../components/Boton.astro';
+
+const lang = 'es';
+const secciones = [1, 2, 3, 4, 5, 6, 7, 8];
+---
+
+<Plantilla
+  titulo={t(lang, 'pagina_terminos_titulo')}
+  descripcion={t(lang, 'pagina_terminos_desc')}
+  lang={lang}
+>
+  <Nav lang={lang}/>
+
+  <main>
+    <div class="fondo-puntos">
+      <section class="seccion legal-pagina">
+        <span class="etiqueta">{t(lang, 'terminos_titulo')}</span>
+        <h1 class="legal-titulo">{t(lang, 'terminos_titulo')}</h1>
+        <p class="legal-fecha">{t(lang, 'terminos_actualizado')}</p>
+        <p class="legal-intro">{t(lang, 'terminos_intro')}</p>
+
+        {secciones.map((n) => (
+          <div class="legal-seccion">
+            <h2>{t(lang, `terminos_s${n}_titulo`)}</h2>
+            <p>{t(lang, `terminos_s${n}_texto`)}</p>
+          </div>
+        ))}
+
+        <div class="legal-volver">
+          <Boton variante="fantasma" href="/">
+            {t(lang, 'volver_inicio')}
+          </Boton>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <Footer lang={lang}/>
+</Plantilla>
+
+<style>
+  .legal-pagina { padding-top: clamp(120px, 15vw, 180px); max-width: 720px; }
+  .legal-titulo { font-size: clamp(28px, 5vw, 40px); font-weight: 700; color: var(--texto); margin: 16px 0 8px; transition: color var(--transicion); }
+  .legal-fecha { font-size: 13px; color: var(--gris-sub); margin-bottom: 24px; transition: color var(--transicion); }
+  .legal-intro { font-size: 15px; color: var(--gris-sub); line-height: 1.8; margin-bottom: 32px; transition: color var(--transicion); }
+  .legal-seccion { margin-bottom: 28px; }
+  .legal-seccion h2 { font-size: 17px; font-weight: 600; color: var(--texto); margin-bottom: 8px; transition: color var(--transicion); }
+  .legal-seccion p { font-size: 14px; color: var(--gris-sub); line-height: 1.8; transition: color var(--transicion); }
+  .legal-volver { margin-top: 48px; }
+</style>

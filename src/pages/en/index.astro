@@ -1,22 +1,22 @@
 ---
 // ============================================================
-// index.astro — Página principal de stiancode.dev (Español)
+// en/index.astro — Homepage (English)
 // ============================================================
-import { t } from '../i18n/utils.js';
-import Plantilla          from '../layouts/Plantilla.astro';
-import Nav                from '../components/Nav.astro';
-import Hero               from '../components/Hero.astro';
-import SeccionServicios   from '../components/SeccionServicios.astro';
-import SeccionStack       from '../components/SeccionStack.astro';
-import SeccionProyectos   from '../components/SeccionProyectos.astro';
-import SeccionSobre        from '../components/SeccionSobre.astro';
-import SeccionLaboratorio  from '../components/SeccionLaboratorio.astro';
-import SeccionNoticias     from '../components/SeccionNoticias.astro';
-import Footer              from '../components/Footer.astro';
-import ModalContacto       from '../components/ModalContacto.astro';
-import Boton               from '../components/Boton.astro';
+import { t } from '../../i18n/utils.js';
+import Plantilla          from '../../layouts/Plantilla.astro';
+import Nav                from '../../components/Nav.astro';
+import Hero               from '../../components/Hero.astro';
+import SeccionServicios   from '../../components/SeccionServicios.astro';
+import SeccionStack       from '../../components/SeccionStack.astro';
+import SeccionProyectos   from '../../components/SeccionProyectos.astro';
+import SeccionSobre        from '../../components/SeccionSobre.astro';
+import SeccionLaboratorio  from '../../components/SeccionLaboratorio.astro';
+import SeccionNoticias     from '../../components/SeccionNoticias.astro';
+import Footer              from '../../components/Footer.astro';
+import ModalContacto       from '../../components/ModalContacto.astro';
+import Boton               from '../../components/Boton.astro';
 
-const lang = 'es';
+const lang = 'en';
 ---
 
 <Plantilla
@@ -33,10 +33,10 @@ const lang = 'es';
     <SeccionStack lang={lang}/>
     <SeccionSobre lang={lang}/>
 
-    <!-- CTA simple -->
-    <div class="cta-contacto-wrapper">
+    <!-- CTA -->
+    <div class="fondo-puntos cta-contacto-wrapper">
       <canvas id="canvas-particulas-contacto" class="canvas-contacto"></canvas>
-      <div class="seccion cta-contacto" id="contacto">
+      <div class="seccion cta-contacto" id="contact">
         <span class="etiqueta">{t(lang, 'nav_contacto')}</span>
         <h2 class="titulo-dos-tonos">
           <span class="negro">{t(lang, 'cta_titulo_negro')}</span><br>

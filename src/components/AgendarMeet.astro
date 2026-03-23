@@ -6,6 +6,28 @@
 // Se abre como modal desde un botón/tarjeta en la página.
 // ============================================================
 import IconoSVG from './ui/IconoSVG.astro';
+import { t } from '../i18n/utils.js';
+import { CONTACTO, WEB3FORMS_KEY } from '../config.js';
+
+interface Props {
+  lang?: 'es' | 'en';
+}
+
+const { lang = 'es' } = Astro.props;
+
+// Traducciones que necesita el script del lado cliente
+const i18nData = JSON.stringify({
+  email: CONTACTO.email,
+  web3formsKey: WEB3FORMS_KEY,
+  meses: t(lang, 'agendar_meses').split(','),
+  diasSemana: t(lang, 'agendar_dias_semana').split(','),
+  pasoIndicador: t(lang, 'agendar_paso_indicador'),
+  fechaConector: t(lang, 'agendar_fecha_conector'),
+  reunion: t(lang, 'agendar_reunion'),
+  hs: t(lang, 'agendar_hs'),
+  pendiente: t(lang, 'agendar_pendiente'),
+  agendadoDesde: t(lang, 'agendar_agendado_desde'),
+});
 ---
 
 <!-- Tarjeta trigger — se muestra en la página -->
@@ -15,15 +37,15 @@ import IconoSVG from './ui/IconoSVG.astro';
       <IconoSVG nombre="calendario" tamaño={20} grosor={1.5} />
     </div>
     <div>
-      <span class="agendar-trigger-titulo">Agendá una videollamada</span>
-      <span class="agendar-trigger-sub">Lunes y Miércoles, 12 a 20hs</span>
+      <span class="agendar-trigger-titulo">{t(lang, 'agendar_trigger_titulo')}</span>
+      <span class="agendar-trigger-sub">{t(lang, 'agendar_trigger_sub')}</span>
     </div>
   </div>
   <svg class="agendar-trigger-flecha" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
 </button>
 
 <!-- Modal -->
-<div class="agendar-overlay" id="agendarModal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Agendar reunión">
+<div class="agendar-overlay" id="agendarModal" aria-hidden="true" role="dialog" aria-modal="true" aria-label={t(lang, 'agendar_modal_titulo')} data-i18n={i18nData}>
   <div class="agendar-modal">
 
     <!-- Cabecera -->
@@ -32,9 +54,9 @@ import IconoSVG from './ui/IconoSVG.astro';
         <div class="icono-contenedor agendar-modal-icono">
           <IconoSVG nombre="calendario" tamaño={20} grosor={1.5} />
         </div>
-        <h3 class="agendar-modal-titulo">Agendá una reunión</h3>
+        <h3 class="agendar-modal-titulo">{t(lang, 'agendar_modal_titulo')}</h3>
       </div>
-      <button class="agendar-modal-cerrar" aria-label="Cerrar" type="button">
+      <button class="agendar-modal-cerrar" aria-label={t(lang, 'agendar_modal_cerrar')} type="button">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
@@ -43,23 +65,23 @@ import IconoSVG from './ui/IconoSVG.astro';
     <div class="agendar-progreso">
       <div class="agendar-progreso-barra" id="agendarProgreso" style="width: 25%"></div>
     </div>
-    <span class="agendar-paso-indicador" id="agendarPasoIndicador">Paso 1 de 4</span>
+    <span class="agendar-paso-indicador" id="agendarPasoIndicador">{t(lang, 'agendar_paso_indicador').replace('{n}', '1')}</span>
 
     <!-- Paso 1: Datos -->
     <div class="agendar-vista" id="agendarVistaDatos">
-      <p class="agendar-vista-titulo">Primero, tus datos de contacto</p>
+      <p class="agendar-vista-titulo">{t(lang, 'agendar_paso1_titulo')}</p>
       <div class="agendar-campo">
-        <label for="agendar-nombre">¿Cómo te llamás?</label>
-        <input type="text" id="agendar-nombre" placeholder="Tu nombre" required autocomplete="name" />
+        <label for="agendar-nombre">{t(lang, 'agendar_campo_nombre')}</label>
+        <input type="text" id="agendar-nombre" placeholder={t(lang, 'agendar_campo_nombre_ph')} required autocomplete="name" />
       </div>
       <div class="agendar-campo">
-        <label for="agendar-email">¿Tu email?</label>
-        <input type="email" id="agendar-email" placeholder="nombre@ejemplo.com" required autocomplete="email" />
+        <label for="agendar-email">{t(lang, 'agendar_campo_email')}</label>
+        <input type="email" id="agendar-email" placeholder={t(lang, 'agendar_campo_email_ph')} required autocomplete="email" />
       </div>
       <div class="agendar-nav-btns">
         <span></span>
         <button type="button" class="boton-oscuro agendar-btn-sm" id="agendarDatosSiguiente">
-          Siguiente
+          {t(lang, 'agendar_btn_siguiente')}
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
       </div>
@@ -67,31 +89,33 @@ import IconoSVG from './ui/IconoSVG.astro';
 
     <!-- Paso 2: Calendario -->
     <div class="agendar-vista" id="agendarVistaCalendario" style="display:none">
-      <p class="agendar-vista-titulo">Elegí una fecha</p>
+      <p class="agendar-vista-titulo">{t(lang, 'agendar_paso2_titulo')}</p>
       <div class="agendar-mes-nav">
-        <button type="button" class="agendar-nav-btn" id="agendarMesAnterior" aria-label="Mes anterior">
+        <button type="button" class="agendar-nav-btn" id="agendarMesAnterior" aria-label={t(lang, 'agendar_mes_anterior')}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
         </button>
         <span class="agendar-mes-titulo" id="agendarMesTitulo"></span>
-        <button type="button" class="agendar-nav-btn" id="agendarMesSiguiente" aria-label="Mes siguiente">
+        <button type="button" class="agendar-nav-btn" id="agendarMesSiguiente" aria-label={t(lang, 'agendar_mes_siguiente')}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
       </div>
 
       <div class="agendar-dias-semana">
-        <span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span class="agendar-finde">Sáb</span><span class="agendar-finde">Dom</span>
+        {t(lang, 'agendar_dias_abrev').split(',').map((dia, i) => (
+          <span class={i >= 5 ? 'agendar-finde' : ''}>{dia}</span>
+        ))}
       </div>
       <div class="agendar-grilla" id="agendarGrilla"></div>
 
       <div class="agendar-leyenda">
-        <span class="agendar-leyenda-item"><span class="agendar-leyenda-punto agendar-leyenda-disponible"></span> Disponible</span>
-        <span class="agendar-leyenda-item"><span class="agendar-leyenda-punto agendar-leyenda-no"></span> No disponible</span>
+        <span class="agendar-leyenda-item"><span class="agendar-leyenda-punto agendar-leyenda-disponible"></span> {t(lang, 'agendar_disponible')}</span>
+        <span class="agendar-leyenda-item"><span class="agendar-leyenda-punto agendar-leyenda-no"></span> {t(lang, 'agendar_no_disponible')}</span>
       </div>
 
       <div class="agendar-nav-btns">
         <button type="button" class="boton-fantasma agendar-btn-sm" id="agendarCalendarioAtras">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
-          Atrás
+          {t(lang, 'agendar_btn_atras')}
         </button>
         <span></span>
       </div>
@@ -101,15 +125,15 @@ import IconoSVG from './ui/IconoSVG.astro';
     <div class="agendar-vista" id="agendarVistaHorarios" style="display:none">
       <div class="agendar-fecha-elegida">
         <span id="agendarFechaTexto"></span>
-        <button type="button" class="agendar-link-btn" id="agendarCambiarFecha">Cambiar fecha</button>
+        <button type="button" class="agendar-link-btn" id="agendarCambiarFecha">{t(lang, 'agendar_cambiar_fecha')}</button>
       </div>
-      <p class="agendar-horarios-label">Elegí un horario</p>
+      <p class="agendar-horarios-label">{t(lang, 'agendar_elegir_horario')}</p>
       <div class="agendar-slots" id="agendarSlots"></div>
 
       <div class="agendar-nav-btns">
         <button type="button" class="boton-fantasma agendar-btn-sm" id="agendarHorariosAtras">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
-          Atrás
+          {t(lang, 'agendar_btn_atras')}
         </button>
         <span></span>
       </div>
@@ -124,15 +148,15 @@ import IconoSVG from './ui/IconoSVG.astro';
           </div>
         </div>
         <p class="agendar-confirmar-fecha" id="agendarResumenTexto"></p>
-        <p class="agendar-confirmar-nota">Te enviaremos un email de confirmación para dejar reservado el día y horario.</p>
+        <p class="agendar-confirmar-nota">{t(lang, 'agendar_confirmar_nota')}</p>
       </div>
       <div class="agendar-confirmar-btns">
         <button type="button" class="boton-fantasma agendar-btn-sm" id="agendarVolver">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
-          Volver
+          {t(lang, 'agendar_btn_volver')}
         </button>
         <button type="button" class="boton-oscuro agendar-btn-sm" id="agendarEnviar">
-          Agendar reunión
+          {t(lang, 'agendar_btn_enviar')}
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
       </div>
@@ -146,11 +170,11 @@ import IconoSVG from './ui/IconoSVG.astro';
             <IconoSVG nombre="correo" tamaño={28} grosor={2} />
           </div>
         </div>
-        <p class="agendar-confirmar-fecha">¡Solicitud enviada!</p>
-        <p class="agendar-confirmar-nota">Revisá tu casilla de email. Te llegará una confirmación con los datos de la reunión y el link para la videollamada.</p>
+        <p class="agendar-confirmar-fecha">{t(lang, 'agendar_exito_titulo')}</p>
+        <p class="agendar-confirmar-nota">{t(lang, 'agendar_exito_nota')}</p>
       </div>
       <div class="agendar-confirmar-btns" style="justify-content:center">
-        <button type="button" class="boton-oscuro agendar-btn-sm" id="agendarCerrarExito">Cerrar</button>
+        <button type="button" class="boton-oscuro agendar-btn-sm" id="agendarCerrarExito">{t(lang, 'agendar_btn_cerrar')}</button>
       </div>
     </div>
 
@@ -546,6 +570,17 @@ import IconoSVG from './ui/IconoSVG.astro';
 
     if (!modal || !grilla) return;
 
+    // Leer traducciones del data attribute
+    const i18n = JSON.parse(modal.dataset.i18n || '{}');
+    const MESES = i18n.meses || ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    const DIAS_SEMANA = i18n.diasSemana || ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    const pasoTemplate = i18n.pasoIndicador || 'Paso {n} de 4';
+    const fechaConector = i18n.fechaConector || 'de';
+    const txtReunion = i18n.reunion || 'Reunión';
+    const txtHs = i18n.hs || 'hs';
+    const txtPendiente = i18n.pendiente || 'Pendiente de confirmación';
+    const txtAgendadoDesde = i18n.agendadoDesde || 'Agendado desde';
+
     const todas = [vistaDatos, vistaCalendario, vistaHorarios, vistaConfirmar, vistaExito];
     const hoy = new Date();
     let mesActual = hoy.getMonth();
@@ -560,14 +595,11 @@ import IconoSVG from './ui/IconoSVG.astro';
       HORARIOS.push(`${h.toString().padStart(2, '0')}:00`);
     }
 
-    const MESES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-    const DIAS_SEMANA = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-
     function actualizarProgreso(paso) {
       pasoActual = paso;
       const porcentaje = (paso / 4) * 100;
       barraProgreso.style.width = `${porcentaje}%`;
-      pasoIndicador.textContent = paso <= 4 ? `Paso ${paso} de 4` : '';
+      pasoIndicador.textContent = paso <= 4 ? pasoTemplate.replace('{n}', paso) : '';
       if (paso > 4) pasoIndicador.style.display = 'none';
       else pasoIndicador.style.display = '';
     }
@@ -712,7 +744,7 @@ import IconoSVG from './ui/IconoSVG.astro';
       const diaNombre = DIAS_SEMANA[fecha.getDay()];
       const diaNum = fecha.getDate();
       const mesNombre = MESES[fecha.getMonth()];
-      fechaTexto.textContent = `${diaNombre} ${diaNum} de ${mesNombre}`;
+      fechaTexto.textContent = fechaConector ? `${diaNombre} ${diaNum} ${fechaConector} ${mesNombre}` : `${diaNombre} ${mesNombre} ${diaNum}`;
 
       slotsContainer.innerHTML = '';
       HORARIOS.forEach(hora => {
@@ -736,7 +768,9 @@ import IconoSVG from './ui/IconoSVG.astro';
       const diaNum = fechaSeleccionada.getDate();
       const mesNombre = MESES[fechaSeleccionada.getMonth()];
       const horaFin = `${(parseInt(hora) + 1).toString().padStart(2, '0')}:00`;
-      resumenTexto.innerHTML = `${diaNombre} ${diaNum} de ${mesNombre}<br>${hora} — ${horaFin} hs`;
+      resumenTexto.innerHTML = fechaConector
+        ? `${diaNombre} ${diaNum} ${fechaConector} ${mesNombre}<br>${hora} — ${horaFin}${txtHs ? ' ' + txtHs : ''}`
+        : `${diaNombre} ${mesNombre} ${diaNum}<br>${hora} — ${horaFin}${txtHs ? ' ' + txtHs : ''}`;
 
       mostrarVista(vistaConfirmar, 4);
 
@@ -748,7 +782,7 @@ import IconoSVG from './ui/IconoSVG.astro';
     }
 
     // Confirmar → enviar email y mostrar éxito
-    document.getElementById('agendarEnviar').addEventListener('click', () => {
+    document.getElementById('agendarEnviar').addEventListener('click', async () => {
       if (!fechaSeleccionada || !horaSeleccionada) return;
 
       const nombre = inputNombre.value.trim();
@@ -759,19 +793,37 @@ import IconoSVG from './ui/IconoSVG.astro';
       const anio = fechaSeleccionada.getFullYear();
       const horaFin = `${(parseInt(horaSeleccionada) + 1).toString().padStart(2, '0')}:00`;
 
-      const asunto = `Reunión — ${diaNombre} ${diaNum} de ${mesNombre}, ${horaSeleccionada}hs — ${nombre}`;
-      const cuerpo = `Nueva solicitud de reunión:\n\nNOMBRE: ${nombre}\nEMAIL: ${email}\n\nFECHA: ${diaNombre} ${diaNum} de ${mesNombre} de ${anio}\nHORARIO: ${horaSeleccionada} — ${horaFin} hs\n\nPendiente de confirmación.\n\n---\nAgendado desde stiancode.dev/contacto`;
+      const fechaFormateada = fechaConector
+        ? `${diaNombre} ${diaNum} ${fechaConector} ${mesNombre}`
+        : `${diaNombre} ${mesNombre} ${diaNum}`;
+      const asunto = `${txtReunion} — ${fechaFormateada}, ${horaSeleccionada}${txtHs ? txtHs : ''} — ${nombre}`;
+      const cuerpo = `${txtReunion}:\n\nNOMBRE: ${nombre}\nEMAIL: ${email}\n\nFECHA: ${fechaFormateada} ${fechaConector ? fechaConector + ' ' : ''}${anio}\nHORARIO: ${horaSeleccionada} — ${horaFin}${txtHs ? ' ' + txtHs : ''}\n\n${txtPendiente}.\n\n---\n${txtAgendadoDesde} stiancode.dev/contacto`;
 
-      window.open(`mailto:anterior.sembrar-0o@icloud.com?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`, '_blank');
+      // Enviar via Web3Forms
+      const formData = new FormData();
+      formData.append('access_key', i18n.web3formsKey);
+      formData.append('subject', asunto);
+      formData.append('from_name', nombre);
+      formData.append('email', email);
+      formData.append('message', cuerpo);
 
-      // Mostrar éxito + confetti
-      mostrarVista(vistaExito, 5);
-      lanzarConfetti();
+      try {
+        const res = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData });
+        const data = await res.json();
 
-      const animable = vistaExito.querySelector('.agendar-animable');
-      if (animable) {
-        animable.classList.remove('dibujado');
-        setTimeout(() => animable.classList.add('dibujado'), 150);
+        if (data.success) {
+          mostrarVista(vistaExito, 5);
+          lanzarConfetti();
+          const animable = vistaExito.querySelector('.agendar-animable');
+          if (animable) {
+            animable.classList.remove('dibujado');
+            setTimeout(() => animable.classList.add('dibujado'), 150);
+          }
+        } else {
+          window.open(`mailto:${i18n.email || ''}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`, '_blank');
+        }
+      } catch {
+        window.open(`mailto:${i18n.email || ''}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`, '_blank');
       }
     });
 

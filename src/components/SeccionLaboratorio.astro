@@ -1,22 +1,26 @@
 ---
 import IconoSVG from './ui/IconoSVG.astro';
 import Boton from './Boton.astro';
+import { t } from '../i18n/utils.js';
+
+interface Props { lang?: 'es' | 'en'; }
+const { lang = 'es' } = Astro.props;
 
 const HERRAMIENTAS = [
-  { titulo: 'Contraseñas',  desc: 'Segura, Pro y Ultra',   icono: 'candado' },
-  { titulo: 'Códigos QR',   desc: 'Con logo y colores',    icono: 'qr' },
-  { titulo: 'QR Wi-Fi',     desc: 'Compartí tu red',       icono: 'wifi' },
-  { titulo: 'Imágenes',     desc: 'Convertí y comprimí',   icono: 'imagen' },
-  { titulo: 'Audio',        desc: 'MP3, WAV, AAC, OGG',    icono: 'audio' },
-  { titulo: 'Paletas',      desc: 'Colores armónicos',     icono: 'paleta' },
-  { titulo: 'Redes',        desc: 'Redimensioná fotos',    icono: 'recortar' },
+  { titulo: t(lang, 'lab_h01_titulo'),  desc: t(lang, 'lab_h01_desc'),   icono: 'candado' },
+  { titulo: t(lang, 'lab_h02_titulo'),  desc: t(lang, 'lab_h02_desc'),   icono: 'qr' },
+  { titulo: t(lang, 'lab_h03_titulo'),  desc: t(lang, 'lab_h03_desc'),   icono: 'wifi' },
+  { titulo: t(lang, 'lab_h04_titulo'),  desc: t(lang, 'lab_h04_desc'),   icono: 'imagen' },
+  { titulo: t(lang, 'lab_h05_titulo'),  desc: t(lang, 'lab_h05_desc'),   icono: 'audio' },
+  { titulo: t(lang, 'lab_h06_titulo'),  desc: t(lang, 'lab_h06_desc'),   icono: 'paleta' },
+  { titulo: t(lang, 'lab_h07_titulo'),  desc: t(lang, 'lab_h07_desc'),   icono: 'recortar' },
 ];
 
 const TEXTO = {
-  etiqueta:  'Laboratorio',
-  tituloN:   'Laboratorio Digital.',
-  tituloG:   'Herramientas y experimentos.',
-  subtitulo: 'Herramientas prácticas y gratuitas para resolver problemas cotidianos con tecnología.',
+  etiqueta:  t(lang, 'lab_etiqueta'),
+  tituloN:   t(lang, 'lab_titulo_negro'),
+  tituloG:   t(lang, 'lab_titulo_gris'),
+  subtitulo: t(lang, 'lab_subtitulo'),
 };
 ---
 
@@ -33,7 +37,7 @@ const TEXTO = {
 
       <div class="lab-preview-grilla">
         {HERRAMIENTAS.map((h) => (
-          <a class="lab-preview-card" href="/laboratorio">
+          <a class="lab-preview-card" href={lang === 'en' ? '/en/lab' : '/laboratorio'}>
             <div class="icono-contenedor lab-preview-icono">
               <IconoSVG nombre={h.icono} tamaño={20} grosor={1.5} />
             </div>
@@ -46,8 +50,8 @@ const TEXTO = {
       </div>
 
       <div class="lab-ver-todas">
-        <Boton variante="fantasma" href="/laboratorio">
-          Explorar Laboratorio →
+        <Boton variante="fantasma" href={lang === 'en' ? '/en/lab' : '/laboratorio'}>
+          {t(lang, 'lab_boton')}
         </Boton>
       </div>
 

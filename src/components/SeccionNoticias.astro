@@ -1,11 +1,15 @@
 ---
 import Boton from './Boton.astro';
+import { t } from '../i18n/utils.js';
+
+interface Props { lang?: 'es' | 'en'; }
+const { lang = 'es' } = Astro.props;
 
 const TEXTO = {
-  etiqueta:  'Pulso Tech',
-  tituloN:   'Pulso Tech.',
-  tituloG:   'El resumen semanal.',
-  subtitulo: 'Noticias curadas en español sobre tecnología, desarrollo, Apple, Android y más.',
+  etiqueta:  t(lang, 'noticias_etiqueta'),
+  tituloN:   t(lang, 'noticias_titulo_negro'),
+  tituloG:   t(lang, 'noticias_titulo_gris'),
+  subtitulo: t(lang, 'noticias_subtitulo'),
 };
 
 // Preview de categorías que se encuentran en Pulso Tech
@@ -17,16 +21,18 @@ const CATEGORIAS = [
   { nombre: 'Mobile',  color: '#3b82f6' },
 ];
 
+// Enlace según idioma
+const enlaceNoticias = lang === 'en' ? '/en/news' : '/novedades';
+
 // Titulares de ejemplo (se ven en el home como preview)
 const TITULARES = [
-  { titulo: 'Las últimas novedades de la semana en tecnología', tag: 'Tech' },
-  { titulo: 'Lo nuevo en el ecosistema Apple y desarrollo iOS', tag: 'Apple' },
-  { titulo: 'Actualizaciones en Android y desarrollo móvil', tag: 'Android' },
+  { titulo: t(lang, 'noticias_titular_01'), tag: 'Tech' },
+  { titulo: t(lang, 'noticias_titular_02'), tag: 'Apple' },
+  { titulo: t(lang, 'noticias_titular_03'), tag: 'Android' },
 ];
 ---
 
-<div class="fondo-puntos">
-  <div class="panel-interior">
+<div class="fondo-puntos fondo-puntos-visible">
     <section class="seccion" id="noticias">
 
       <span class="etiqueta">{TEXTO.etiqueta}</span>
@@ -39,7 +45,7 @@ const TITULARES = [
       <!-- Categorías como pills -->
       <div class="pt-categorias">
         {CATEGORIAS.map((c) => (
-          <a class="pt-cat" href="/novedades" style={`--cat-color: ${c.color}`}>
+          <a class="pt-cat" href={enlaceNoticias} style={`--cat-color: ${c.color}`}>
             <span class="pt-cat-dot"></span>
             {c.nombre}
           </a>
@@ -48,23 +54,22 @@ const TITULARES = [
 
       <!-- Preview de titulares -->
       <div class="pt-titulares">
-        {TITULARES.map((t) => (
-          <a class="pt-titular" href="/novedades">
-            <span class="pt-titular-tag">{t.tag}</span>
-            <span class="pt-titular-texto">{t.titulo}</span>
+        {TITULARES.map((item) => (
+          <a class="pt-titular" href={enlaceNoticias}>
+            <span class="pt-titular-tag">{item.tag}</span>
+            <span class="pt-titular-texto">{item.titulo}</span>
             <span class="pt-titular-flecha">→</span>
           </a>
         ))}
       </div>
 
       <div class="pt-ver">
-        <Boton variante="fantasma" href="/novedades">
-          Ver Pulso Tech →
+        <Boton variante="fantasma" href={enlaceNoticias}>
+          {t(lang, 'noticias_boton')}
         </Boton>
       </div>
 
     </section>
-  </div>
 </div>
 
 <style>

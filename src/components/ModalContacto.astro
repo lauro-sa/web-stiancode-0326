@@ -8,10 +8,42 @@
 // ============================================================
 import IconoSVG from './ui/IconoSVG.astro';
 import Boton from './Boton.astro';
+import { t } from '../i18n/utils.js';
+import { CONTACTO, WEB3FORMS_KEY } from '../config.js';
+
+interface Props { lang?: 'es' | 'en'; }
+const { lang = 'es' } = Astro.props;
+
+// Traducciones que necesita el script del lado del cliente
+const i18nData = JSON.stringify({
+  email: CONTACTO.email,
+  web3formsKey: WEB3FORMS_KEY,
+  contacto_paso_indicador: t(lang, 'contacto_paso_indicador'),
+  contacto_btn_siguiente: t(lang, 'contacto_btn_siguiente'),
+  contacto_btn_enviar: t(lang, 'contacto_btn_enviar'),
+  contacto_campo_ref_url: t(lang, 'contacto_campo_ref_url'),
+  contacto_campo_ref_url_ph: t(lang, 'contacto_campo_ref_url_ph'),
+  contacto_campo_ref_nota: t(lang, 'contacto_campo_ref_nota'),
+  contacto_campo_ref_nota_ph: t(lang, 'contacto_campo_ref_nota_ph'),
+  modal_ref_nota_opc: t(lang, 'modal_ref_nota_opc'),
+  modal_email_saludo: t(lang, 'modal_email_saludo'),
+  modal_email_tipo: t(lang, 'modal_email_tipo'),
+  modal_email_descripcion: t(lang, 'modal_email_descripcion'),
+  modal_email_plazo: t(lang, 'modal_email_plazo'),
+  modal_email_referencias: t(lang, 'modal_email_referencias'),
+  modal_email_presupuesto: t(lang, 'modal_email_presupuesto'),
+  modal_email_contactar_via: t(lang, 'modal_email_contactar_via'),
+  modal_email_telefono: t(lang, 'modal_email_telefono'),
+  modal_email_subject: t(lang, 'modal_email_subject'),
+  modal_email_footer: t(lang, 'modal_email_footer'),
+  modal_no_especificado: t(lang, 'modal_no_especificado'),
+  modal_ninguna: t(lang, 'modal_ninguna'),
+  modal_servicio_prefix: t(lang, 'modal_servicio_prefix'),
+});
 ---
 
 <!-- Overlay + Modal -->
-<div class="modal-overlay" id="modalContacto" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Formulario de contacto">
+<div class="modal-overlay" id="modalContacto" aria-hidden="true" role="dialog" aria-modal="true" aria-label={t(lang, 'modal_cerrar_formulario_aria')} data-i18n={i18nData}>
   <div class="modal-contenido">
 
     <!-- Cabecera: barra de progreso + cerrar en la misma línea -->
@@ -19,11 +51,11 @@ import Boton from './Boton.astro';
       <div class="modal-progreso">
         <div class="modal-progreso-barra" id="progresoFormulario" style="width: 20%"></div>
       </div>
-      <button class="modal-cerrar" aria-label="Cerrar formulario" type="button">
+      <button class="modal-cerrar" aria-label={t(lang, 'modal_cerrar_formulario_aria')} type="button">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
-    <span class="modal-paso-indicador" id="pasoIndicador">Paso 1 de 5</span>
+    <span class="modal-paso-indicador" id="pasoIndicador">{t(lang, 'contacto_paso_indicador').replace('{n}', '1')}</span>
 
     <!-- Formulario -->
     <form id="formularioContacto" novalidate>
@@ -33,22 +65,29 @@ import Boton from './Boton.astro';
 
         <!-- ===== PASO 1: Datos básicos ===== -->
         <div class="modal-paso activo" data-paso="1">
+          <!-- Banner de servicio pre-seleccionado (oculto por defecto) -->
+          <div class="modal-servicio-banner" id="servicioBanner" style="display:none">
+            <span class="modal-servicio-etiqueta">{t(lang, 'modal_servicio_seleccionado')}</span>
+            <h4 class="modal-servicio-titulo" id="servicioTituloModal"></h4>
+            <p class="modal-servicio-desc" id="servicioDescModal"></p>
+          </div>
+
           <div class="modal-titulo-con-icono">
             <div class="icono-contenedor modal-icono-titulo modal-animable">
               <IconoSVG nombre="mano" tamaño={22} grosor={1.5} />
             </div>
-            <h3 class="modal-titulo">Empecemos</h3>
+            <h3 class="modal-titulo">{t(lang, 'contacto_paso1_titulo')}</h3>
           </div>
-          <p class="modal-subtitulo">Contanos un poco sobre vos para poder contactarte.</p>
+          <p class="modal-subtitulo">{t(lang, 'contacto_paso1_sub')}</p>
 
           <div class="modal-campo">
-            <label for="campo-nombre">¿Cómo te llamás?</label>
-            <input type="text" id="campo-nombre" name="nombre" placeholder="Tu nombre" required autocomplete="name" />
+            <label for="campo-nombre">{t(lang, 'contacto_campo_nombre')}</label>
+            <input type="text" id="campo-nombre" name="nombre" placeholder={t(lang, 'contacto_campo_nombre_ph')} required autocomplete="name" />
           </div>
 
           <div class="modal-campo">
-            <label for="campo-email">¿Tu email?</label>
-            <input type="email" id="campo-email" name="email" placeholder="nombre@ejemplo.com" required autocomplete="email" />
+            <label for="campo-email">{t(lang, 'contacto_campo_email')}</label>
+            <input type="email" id="campo-email" name="email" placeholder={t(lang, 'contacto_campo_email_ph')} required autocomplete="email" />
           </div>
         </div>
 
@@ -58,51 +97,51 @@ import Boton from './Boton.astro';
             <div class="icono-contenedor modal-icono-titulo modal-animable">
               <IconoSVG nombre="cubo" tamaño={22} grosor={1.5} />
             </div>
-            <h3 class="modal-titulo">¿Qué necesitás?</h3>
+            <h3 class="modal-titulo">{t(lang, 'contacto_paso2_titulo')}</h3>
           </div>
-          <p class="modal-subtitulo">Elegí el tipo de proyecto que tenés en mente.</p>
+          <p class="modal-subtitulo">{t(lang, 'contacto_paso2_sub')}</p>
 
-          <div class="modal-opciones" role="radiogroup" aria-label="Tipo de proyecto">
+          <div class="modal-opciones" role="radiogroup" aria-label={t(lang, 'modal_tipo_proyecto_aria')}>
             <label class="modal-opcion">
               <input type="radio" name="tipo" value="sitio-web" />
               <span class="modal-opcion-card">
                 <span class="modal-opcion-icono modal-animable"><IconoSVG nombre="ventana" tamaño={24} grosor={1.5} /></span>
-                <span class="modal-opcion-texto">Sitio Web</span>
+                <span class="modal-opcion-texto">{t(lang, 'contacto_opcion_sitio')}</span>
               </span>
             </label>
             <label class="modal-opcion">
               <input type="radio" name="tipo" value="pwa" />
               <span class="modal-opcion-card">
                 <span class="modal-opcion-icono modal-animable"><IconoSVG nombre="pwa" tamaño={24} grosor={1.5} /></span>
-                <span class="modal-opcion-texto">PWA</span>
+                <span class="modal-opcion-texto">{t(lang, 'contacto_opcion_pwa')}</span>
               </span>
             </label>
             <label class="modal-opcion">
               <input type="radio" name="tipo" value="ecommerce" />
               <span class="modal-opcion-card">
                 <span class="modal-opcion-icono modal-animable"><IconoSVG nombre="carrito" tamaño={24} grosor={1.5} /></span>
-                <span class="modal-opcion-texto">E-commerce</span>
+                <span class="modal-opcion-texto">{t(lang, 'contacto_opcion_ecommerce')}</span>
               </span>
             </label>
             <label class="modal-opcion">
               <input type="radio" name="tipo" value="landing" />
               <span class="modal-opcion-card">
                 <span class="modal-opcion-icono modal-animable"><IconoSVG nombre="rayo" tamaño={24} grosor={1.5} /></span>
-                <span class="modal-opcion-texto">Landing Page</span>
+                <span class="modal-opcion-texto">{t(lang, 'contacto_opcion_landing')}</span>
               </span>
             </label>
             <label class="modal-opcion">
               <input type="radio" name="tipo" value="rediseno" />
               <span class="modal-opcion-card">
                 <span class="modal-opcion-icono modal-animable"><IconoSVG nombre="diamante" tamaño={24} grosor={1.5} /></span>
-                <span class="modal-opcion-texto">Rediseño</span>
+                <span class="modal-opcion-texto">{t(lang, 'contacto_opcion_rediseno')}</span>
               </span>
             </label>
             <label class="modal-opcion">
               <input type="radio" name="tipo" value="otro" />
               <span class="modal-opcion-card">
                 <span class="modal-opcion-icono modal-animable"><IconoSVG nombre="bombilla" tamaño={24} grosor={1.5} /></span>
-                <span class="modal-opcion-texto">Otro</span>
+                <span class="modal-opcion-texto">{t(lang, 'contacto_opcion_otro')}</span>
               </span>
             </label>
           </div>
@@ -114,18 +153,18 @@ import Boton from './Boton.astro';
             <div class="icono-contenedor modal-icono-titulo modal-animable">
               <IconoSVG nombre="mensaje" tamaño={22} grosor={1.5} />
             </div>
-            <h3 class="modal-titulo">Contanos más</h3>
+            <h3 class="modal-titulo">{t(lang, 'contacto_paso3_titulo')}</h3>
           </div>
-          <p class="modal-subtitulo">Una breve idea de lo que tenés en mente.</p>
+          <p class="modal-subtitulo">{t(lang, 'contacto_paso3_sub')}</p>
 
           <div class="modal-campo">
-            <label for="campo-descripcion">Describí tu proyecto</label>
-            <textarea id="campo-descripcion" name="descripcion" placeholder="Ej: Necesito una web para mi estudio de arquitectura con portfolio y formulario de contacto..." rows="4" required></textarea>
+            <label for="campo-descripcion">{t(lang, 'contacto_campo_desc')}</label>
+            <textarea id="campo-descripcion" name="descripcion" placeholder={t(lang, 'contacto_campo_desc_ph')} rows="4" required></textarea>
           </div>
 
           <div class="modal-campo">
-            <label for="campo-plazo">¿Tenés una fecha estimada? <span class="modal-opcional">(opcional)</span></label>
-            <input type="text" id="campo-plazo" name="plazo" placeholder="Ej: Para mayo, Sin apuro, Lo antes posible..." />
+            <label for="campo-plazo">{t(lang, 'contacto_campo_plazo')} <span class="modal-opcional">{t(lang, 'contacto_campo_plazo_opc')}</span></label>
+            <input type="text" id="campo-plazo" name="plazo" placeholder={t(lang, 'contacto_campo_plazo_ph')} />
           </div>
         </div>
 
@@ -135,29 +174,29 @@ import Boton from './Boton.astro';
             <div class="icono-contenedor modal-icono-titulo modal-animable">
               <IconoSVG nombre="link" tamaño={22} grosor={1.5} />
             </div>
-            <h3 class="modal-titulo">¿Tenés referencias?</h3>
+            <h3 class="modal-titulo">{t(lang, 'contacto_paso4_titulo')}</h3>
           </div>
-          <p class="modal-subtitulo">Compartí links de sitios o diseños que te gusten. Esto nos ayuda mucho.</p>
+          <p class="modal-subtitulo">{t(lang, 'contacto_paso4_sub')}</p>
 
           <div class="modal-referencias" id="contenedorReferencias">
             <div class="modal-referencia-item">
               <div class="modal-campo">
-                <label>Link de referencia</label>
-                <input type="url" name="referencia_url[]" placeholder="https://ejemplo.com" />
+                <label>{t(lang, 'contacto_campo_ref_url')}</label>
+                <input type="url" name="referencia_url[]" placeholder={t(lang, 'contacto_campo_ref_url_ph')} />
               </div>
               <div class="modal-campo">
-                <label>¿Qué te gusta de este sitio? <span class="modal-opcional">(opcional)</span></label>
-                <input type="text" name="referencia_nota[]" placeholder="Ej: El diseño minimalista, los colores..." />
+                <label>{t(lang, 'contacto_campo_ref_nota')} <span class="modal-opcional">{t(lang, 'modal_ref_nota_opc')}</span></label>
+                <input type="text" name="referencia_nota[]" placeholder={t(lang, 'contacto_campo_ref_nota_ph')} />
               </div>
             </div>
           </div>
 
           <button type="button" class="modal-agregar-ref" id="btnAgregarRef">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Agregar otra referencia
+            {t(lang, 'contacto_btn_agregar_ref')}
           </button>
 
-          <p class="modal-nota-skip">Este paso es opcional, podés saltearlo.</p>
+          <p class="modal-nota-skip">{t(lang, 'contacto_paso4_skip')}</p>
         </div>
 
         <!-- ===== PASO 5: Presupuesto y contacto ===== -->
@@ -166,66 +205,66 @@ import Boton from './Boton.astro';
             <div class="icono-contenedor modal-icono-titulo modal-animable">
               <IconoSVG nombre="moneda" tamaño={22} grosor={1.5} />
             </div>
-            <h3 class="modal-titulo">Últimos detalles</h3>
+            <h3 class="modal-titulo">{t(lang, 'contacto_paso5_titulo')}</h3>
           </div>
-          <p class="modal-subtitulo">Esto nos ayuda a preparar una propuesta adecuada.</p>
+          <p class="modal-subtitulo">{t(lang, 'contacto_paso5_sub')}</p>
 
           <div class="modal-campo">
-            <label>Rango de presupuesto estimado</label>
-            <div class="modal-opciones-lista" role="radiogroup" aria-label="Presupuesto">
+            <label>{t(lang, 'contacto_presupuesto_label')}</label>
+            <div class="modal-opciones-lista" role="radiogroup" aria-label={t(lang, 'modal_presupuesto_aria')}>
               <label class="modal-opcion-lista">
                 <input type="radio" name="presupuesto" value="basico" />
-                <span>Básico — Menos de USD 500</span>
+                <span>{t(lang, 'contacto_presupuesto_basico')}</span>
               </label>
               <label class="modal-opcion-lista">
                 <input type="radio" name="presupuesto" value="medio" />
-                <span>Medio — USD 500 – 2.000</span>
+                <span>{t(lang, 'contacto_presupuesto_medio')}</span>
               </label>
               <label class="modal-opcion-lista">
                 <input type="radio" name="presupuesto" value="premium" />
-                <span>Premium — USD 2.000 – 5.000</span>
+                <span>{t(lang, 'contacto_presupuesto_premium')}</span>
               </label>
               <label class="modal-opcion-lista">
                 <input type="radio" name="presupuesto" value="enterprise" />
-                <span>Enterprise — Más de USD 5.000</span>
+                <span>{t(lang, 'contacto_presupuesto_enterprise')}</span>
               </label>
               <label class="modal-opcion-lista">
                 <input type="radio" name="presupuesto" value="no-se" />
-                <span>Todavía no lo tengo definido</span>
+                <span>{t(lang, 'contacto_presupuesto_nodefinido')}</span>
               </label>
             </div>
           </div>
 
           <div class="modal-campo">
-            <label>¿Cómo preferís que te contactemos?</label>
+            <label>{t(lang, 'contacto_como_contactar')}</label>
             <div class="modal-opciones-contacto">
               <label class="modal-check">
                 <input type="checkbox" name="contacto_via" value="email" checked />
                 <span class="modal-check-contenido">
                   <IconoSVG nombre="correo" tamaño={16} grosor={1.5} clase="modal-check-icono" />
-                  Email
+                  {t(lang, 'contacto_via_email')}
                 </span>
               </label>
               <label class="modal-check">
                 <input type="checkbox" name="contacto_via" value="whatsapp" />
                 <span class="modal-check-contenido">
                   <IconoSVG nombre="mensaje" tamaño={16} grosor={1.5} clase="modal-check-icono" />
-                  WhatsApp
+                  {t(lang, 'contacto_via_whatsapp')}
                 </span>
               </label>
               <label class="modal-check">
                 <input type="checkbox" name="contacto_via" value="llamada" />
                 <span class="modal-check-contenido">
                   <IconoSVG nombre="telefono" tamaño={16} grosor={1.5} clase="modal-check-icono" />
-                  Llamada
+                  {t(lang, 'contacto_via_llamada')}
                 </span>
               </label>
             </div>
           </div>
 
           <div class="modal-campo" id="campoWhatsapp" style="display:none">
-            <label for="campo-telefono">Tu número de WhatsApp</label>
-            <input type="tel" id="campo-telefono" name="telefono" placeholder="+54 9 11 1234-5678" autocomplete="tel" />
+            <label for="campo-telefono">{t(lang, 'contacto_campo_telefono')}</label>
+            <input type="tel" id="campo-telefono" name="telefono" placeholder={t(lang, 'contacto_campo_telefono_ph')} autocomplete="tel" />
           </div>
         </div>
 
@@ -235,10 +274,10 @@ import Boton from './Boton.astro';
       <div class="modal-nav">
         <Boton variante="fantasma" class="modal-btn-atras" id="btnAtras" style="visibility:hidden">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
-          Atrás
+          {t(lang, 'contacto_btn_atras')}
         </Boton>
         <Boton class="modal-btn-siguiente" id="btnSiguiente">
-          Siguiente
+          {t(lang, 'contacto_btn_siguiente')}
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
         </Boton>
       </div>
@@ -251,9 +290,9 @@ import Boton from './Boton.astro';
           <IconoSVG nombre="check" tamaño={32} grosor={2} />
         </div>
       </div>
-      <h3 class="modal-titulo">¡Mensaje enviado!</h3>
-      <p class="modal-subtitulo">Gracias por tu interés. Te respondo a la brevedad.</p>
-      <Boton id="btnCerrarExito">Cerrar</Boton>
+      <h3 class="modal-titulo">{t(lang, 'contacto_exito_titulo')}</h3>
+      <p class="modal-subtitulo">{t(lang, 'contacto_exito_sub')}</p>
+      <Boton id="btnCerrarExito">{t(lang, 'contacto_btn_cerrar')}</Boton>
     </div>
   </div>
 </div>
@@ -403,6 +442,36 @@ import Boton from './Boton.astro';
     color: var(--gris-sub);
     margin-bottom: 24px;
     line-height: 1.5;
+    transition: color var(--transicion);
+  }
+
+  /* ===== Banner servicio ===== */
+  .modal-servicio-banner {
+    background: color-mix(in srgb, var(--acento) 8%, transparent);
+    border: 1px solid color-mix(in srgb, var(--acento) 25%, transparent);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+  }
+  .modal-servicio-etiqueta {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--acento);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .modal-servicio-titulo {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--texto);
+    margin-top: 6px;
+    transition: color var(--transicion);
+  }
+  .modal-servicio-desc {
+    font-size: 13px;
+    color: var(--gris-sub);
+    line-height: 1.5;
+    margin-top: 4px;
     transition: color var(--transicion);
   }
 
@@ -663,19 +732,24 @@ import Boton from './Boton.astro';
   }
 
   /* ===== Responsive ===== */
+  @media (max-width: 768px) {
+    .modal-overlay { padding: 16px; }
+    .modal-contenido { max-width: 100%; }
+  }
+  @media (max-width: 600px) {
+    .modal-contenido { padding: 28px 24px; }
+    .modal-cuerpo { min-height: 300px; }
+    .modal-opciones { grid-template-columns: repeat(2, 1fr); }
+    .modal-titulo { font-size: 18px; }
+    .modal-subtitulo { font-size: 13px; }
+  }
   @media (max-width: 480px) {
-    .modal-contenido {
-      padding: 24px 20px;
-    }
-    .modal-cuerpo {
-      min-height: 280px;
-    }
-    .modal-opciones {
-      grid-template-columns: repeat(2, 1fr);
-    }
-    .modal-opciones-contacto {
-      flex-direction: column;
-    }
+    .modal-contenido { padding: 24px 18px; }
+    .modal-cuerpo { min-height: 280px; }
+    .modal-opciones-contacto { flex-direction: column; }
+    .modal-servicio-banner { padding: 12px 16px; }
+    .modal-servicio-titulo { font-size: 14px; }
+    .modal-servicio-desc { font-size: 12px; }
   }
 </style>
 
@@ -693,17 +767,45 @@ import Boton from './Boton.astro';
     const btnCerrarExito = document.getElementById('btnCerrarExito');
     const campoWhatsapp = document.getElementById('campoWhatsapp');
 
+    // Leer traducciones inyectadas desde el servidor via data-i18n
+    const i18n = JSON.parse(modal.dataset.i18n || '{}');
+
     const totalPasos = 5;
     let pasoActual = 1;
+    let desdeServicio = false;
+
+    const servicioBanner = document.getElementById('servicioBanner');
+    const servicioTituloModal = document.getElementById('servicioTituloModal');
+    const servicioDescModal = document.getElementById('servicioDescModal');
 
     // Abrir modal
     document.querySelectorAll('[data-abrir-modal="contacto"]').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
+
+        const el = btn as HTMLElement;
+        const servicioTitulo = el.dataset.servicioTitulo;
+        const servicioDesc = el.dataset.servicioDesc;
+
+        if (servicioTitulo) {
+          // Viene de un servicio: mostrar banner y pre-cargar
+          desdeServicio = true;
+          if (servicioBanner) servicioBanner.style.display = '';
+          if (servicioTituloModal) servicioTituloModal.textContent = servicioTitulo;
+          if (servicioDescModal) servicioDescModal.textContent = servicioDesc || '';
+          // Pre-cargar descripción y tipo
+          const desc = document.getElementById('campo-descripcion') as HTMLTextAreaElement;
+          if (desc) desc.value = `${i18n.modal_servicio_prefix}: ${servicioTitulo}`;
+          const radioOtro = form.querySelector('input[name="tipo"][value="otro"]') as HTMLInputElement;
+          if (radioOtro) radioOtro.checked = true;
+        } else {
+          desdeServicio = false;
+          if (servicioBanner) servicioBanner.style.display = 'none';
+        }
+
         modal.classList.add('abierto');
         modal.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
-        // Animar íconos SVG del paso activo
         animarIconosPaso();
       });
     });
@@ -713,6 +815,8 @@ import Boton from './Boton.astro';
       modal.classList.remove('abierto');
       modal.setAttribute('aria-hidden', 'true');
       document.body.style.overflow = '';
+      desdeServicio = false;
+      if (servicioBanner) servicioBanner.style.display = 'none';
     }
 
     modal.querySelector('.modal-cerrar').addEventListener('click', cerrarModal);
@@ -760,14 +864,14 @@ import Boton from './Boton.astro';
 
       const porcentaje = (pasoActual / totalPasos) * 100;
       barra.style.width = `${porcentaje}%`;
-      indicador.textContent = `Paso ${pasoActual} de ${totalPasos}`;
+      indicador.textContent = i18n.contacto_paso_indicador.replace('{n}', pasoActual);
 
       btnAtras.style.visibility = pasoActual === 1 ? 'hidden' : 'visible';
 
       if (pasoActual === totalPasos) {
-        btnSiguiente.innerHTML = `Enviar <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="22 2 15 22 11 13 2 9 22 2"/></svg>`;
+        btnSiguiente.innerHTML = `${i18n.contacto_btn_enviar} <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="22 2 15 22 11 13 2 9 22 2"/></svg>`;
       } else {
-        btnSiguiente.innerHTML = `Siguiente <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>`;
+        btnSiguiente.innerHTML = `${i18n.contacto_btn_siguiente} <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>`;
       }
 
       // Animar íconos del nuevo paso
@@ -833,12 +937,16 @@ import Boton from './Boton.astro';
       }
 
       pasoActual++;
+      // Saltar paso 2 (tipo de proyecto) si viene de un servicio
+      if (desdeServicio && pasoActual === 2) pasoActual++;
       actualizarPaso();
     });
 
     btnAtras.addEventListener('click', () => {
       if (pasoActual > 1) {
         pasoActual--;
+        // Saltar paso 2 hacia atrás si viene de un servicio
+        if (desdeServicio && pasoActual === 2) pasoActual--;
         actualizarPaso();
       }
     });
@@ -849,12 +957,12 @@ import Boton from './Boton.astro';
       nuevoRef.className = 'modal-referencia-item';
       nuevoRef.innerHTML = `
         <div class="modal-campo">
-          <label>Link de referencia</label>
-          <input type="url" name="referencia_url[]" placeholder="https://ejemplo.com" />
+          <label>${i18n.contacto_campo_ref_url}</label>
+          <input type="url" name="referencia_url[]" placeholder="${i18n.contacto_campo_ref_url_ph}" />
         </div>
         <div class="modal-campo" style="margin-bottom:0">
-          <label>¿Qué te gusta de este sitio? <span class="modal-opcional">(opcional)</span></label>
-          <input type="text" name="referencia_nota[]" placeholder="Ej: La tipografía, las animaciones..." />
+          <label>${i18n.contacto_campo_ref_nota} <span class="modal-opcional">${i18n.modal_ref_nota_opc}</span></label>
+          <input type="text" name="referencia_nota[]" placeholder="${i18n.contacto_campo_ref_nota_ph}" />
         </div>
       `;
       contenedorRefs.appendChild(nuevoRef);
@@ -869,14 +977,14 @@ import Boton from './Boton.astro';
     });
 
     // Enviar formulario
-    function enviarFormulario() {
+    async function enviarFormulario() {
       const datos = new FormData(form);
       const nombre = datos.get('nombre');
       const email = datos.get('email');
-      const tipo = datos.get('tipo') || 'No especificado';
+      const tipo = datos.get('tipo') || i18n.modal_no_especificado;
       const descripcion = datos.get('descripcion');
-      const plazo = datos.get('plazo') || 'No especificado';
-      const presupuesto = datos.get('presupuesto') || 'No especificado';
+      const plazo = datos.get('plazo') || i18n.modal_no_especificado;
+      const presupuesto = datos.get('presupuesto') || i18n.modal_no_especificado;
 
       const urls = datos.getAll('referencia_url[]').filter(u => u.trim());
       const notas = datos.getAll('referencia_nota[]');
@@ -889,34 +997,55 @@ import Boton from './Boton.astro';
       const vias = datos.getAll('contacto_via').join(', ') || 'Email';
       const telefono = datos.get('telefono');
 
-      const cuerpo = `Hola! Soy ${nombre}.
+      const cuerpo = `${i18n.modal_email_saludo.replace('{nombre}', nombre)}
 
-TIPO DE PROYECTO: ${tipo}
+${i18n.modal_email_tipo}: ${tipo}
 
-DESCRIPCIÓN:
+${i18n.modal_email_descripcion}:
 ${descripcion}
 
-PLAZO ESTIMADO: ${plazo}
+${i18n.modal_email_plazo}: ${plazo}
 
-REFERENCIAS:${refsTexto || '\n  Ninguna'}
+${i18n.modal_email_referencias}:${refsTexto || `\n  ${i18n.modal_ninguna}`}
 
-PRESUPUESTO: ${presupuesto}
+${i18n.modal_email_presupuesto}: ${presupuesto}
 
-CONTACTAR VÍA: ${vias}${telefono ? `\nTELÉFONO: ${telefono}` : ''}
+${i18n.modal_email_contactar_via}: ${vias}${telefono ? `\n${i18n.modal_email_telefono}: ${telefono}` : ''}
 
 ---
-Enviado desde stiancode.dev`;
+${i18n.modal_email_footer}`;
 
-      const mailto = `mailto:anterior.sembrar-0o@icloud.com?subject=${encodeURIComponent(`Nuevo proyecto: ${tipo} — ${nombre}`)}&body=${encodeURIComponent(cuerpo)}`;
-      window.open(mailto, '_blank');
+      const asunto = i18n.modal_email_subject.replace('{tipo}', tipo).replace('{nombre}', nombre);
 
-      form.style.display = 'none';
-      pantallaExito.style.display = 'block';
-      // Animar ícono de éxito
-      const exitoAnimable = pantallaExito.querySelector('.modal-animable');
-      if (exitoAnimable) {
-        exitoAnimable.classList.remove('dibujado');
-        setTimeout(() => exitoAnimable.classList.add('dibujado'), 100);
+      // Enviar via Web3Forms
+      const formData = new FormData();
+      formData.append('access_key', i18n.web3formsKey);
+      formData.append('subject', asunto);
+      formData.append('from_name', nombre);
+      formData.append('email', email);
+      formData.append('message', cuerpo);
+
+      try {
+        const res = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData });
+        const data = await res.json();
+
+        if (data.success) {
+          form.style.display = 'none';
+          pantallaExito.style.display = 'block';
+          const exitoAnimable = pantallaExito.querySelector('.modal-animable');
+          if (exitoAnimable) {
+            exitoAnimable.classList.remove('dibujado');
+            setTimeout(() => exitoAnimable.classList.add('dibujado'), 100);
+          }
+        } else {
+          // Fallback a mailto si Web3Forms falla
+          const mailto = `mailto:${i18n.email || ''}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`;
+          window.open(mailto, '_blank');
+        }
+      } catch {
+        // Fallback a mailto si no hay conexión
+        const mailto = `mailto:${i18n.email || ''}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`;
+        window.open(mailto, '_blank');
       }
     }
   });

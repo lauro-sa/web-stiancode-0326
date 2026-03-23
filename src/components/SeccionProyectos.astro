@@ -1,9 +1,9 @@
 ---
 // ============================================================
 // SeccionProyectos.astro — Proyectos destacados con modal
-// EDITAR: array PROYECTOS abajo
 // ============================================================
 import IconoSVG from './ui/IconoSVG.astro';
+import { t } from '../i18n/utils.js';
 
 interface Proyecto {
   numero:      string;
@@ -17,13 +17,16 @@ interface Proyecto {
   url:         string;
 }
 
+interface Props { lang?: 'es' | 'en'; }
+const { lang = 'es' } = Astro.props;
+
 // ---- Proyectos destacados ----
 const PROYECTOS: Proyecto[] = [
   {
     numero:      '01',
     nombre:      'HERREELEC',
-    descripcion: 'Sitio web para taller de portones con sistema de turnos integrado.',
-    detalle:     'Sitio web desarrollado para un taller especializado en portones y persianas. Incluye un sistema de reservas integrado que permite a los clientes programar visitas directamente desde la página. La gestión de datos se realiza a través de Firebase, garantizando seguridad y eficiencia en el manejo de la información.',
+    descripcion: t(lang, 'proyecto_01_desc'),
+    detalle:     t(lang, 'proyecto_01_detalle'),
     icono:       'edificio',
     tag:         'Web',
     tecnologias: 'React JS, SCSS, Firebase',
@@ -33,8 +36,8 @@ const PROYECTOS: Proyecto[] = [
   {
     numero:      '02',
     nombre:      'EsAr Digital',
-    descripcion: 'Plataforma de servicios digitales para mercados de habla hispana.',
-    detalle:     'Plataforma web diseñada para un equipo de profesionales que ofrecen servicios de marketing digital, diseño gráfico y desarrollo web. El sitio facilita la conexión entre clientes y el equipo, proporcionando una experiencia moderna y orientada a la conversión.',
+    descripcion: t(lang, 'proyecto_02_desc'),
+    detalle:     t(lang, 'proyecto_02_detalle'),
     icono:       'ventana',
     tag:         'Web',
     tecnologias: 'Vite, React JS, Tailwind, Firebase',
@@ -44,8 +47,8 @@ const PROYECTOS: Proyecto[] = [
   {
     numero:      '03',
     nombre:      'PWA Gestión HE',
-    descripcion: 'Aplicación progresiva para gestión integral de empresa de servicios.',
-    detalle:     'Progressive Web App desarrollada para la gestión interna de una empresa de servicios. Permite administrar clientes, estados de proyectos, visitas programadas, creación de presupuestos y notas internas. Soporta múltiples usuarios y funciona offline gracias a las capacidades de PWA.',
+    descripcion: t(lang, 'proyecto_03_desc'),
+    detalle:     t(lang, 'proyecto_03_detalle'),
     icono:       'celular',
     tag:         'PWA',
     tecnologias: 'React JS, SCSS, Firebase',
@@ -55,8 +58,8 @@ const PROYECTOS: Proyecto[] = [
   {
     numero:      '04',
     nombre:      'Lactancia 24/7',
-    descripcion: 'Web para consultora de lactancia con sistema de turnos y artículos.',
-    detalle:     'Sitio web para una puericultora especializada en consultas de lactancia materna. La plataforma ofrece videollamadas, programación de turnos, artículos informativos y recomendaciones de productos. Diseñada para ser accesible y clara, priorizando la experiencia de las madres que buscan asesoramiento profesional.',
+    descripcion: t(lang, 'proyecto_04_desc'),
+    detalle:     t(lang, 'proyecto_04_detalle'),
     icono:       'estrella',
     tag:         'Web',
     tecnologias: 'HTML5, CSS, Photoshop',
@@ -66,8 +69,8 @@ const PROYECTOS: Proyecto[] = [
   {
     numero:      '05',
     nombre:      'Ventas Online',
-    descripcion: 'Plataforma e-commerce con carrito, pagos y gestión de inventario.',
-    detalle:     'Plataforma de ventas en línea enfocada en ofrecer una experiencia de compra rápida y segura. Incluye carrito de compras, integración con pasarelas de pago y sistema de gestión de inventario. Optimizada para dispositivos móviles y desktop.',
+    descripcion: t(lang, 'proyecto_05_desc'),
+    detalle:     t(lang, 'proyecto_05_detalle'),
     icono:       'cubo',
     tag:         'E-commerce',
     tecnologias: 'React JS, SCSS, Firebase',
@@ -77,15 +80,14 @@ const PROYECTOS: Proyecto[] = [
 ];
 
 const TEXTO = {
-  etiqueta:  'Proyectos',
-  tituloN:   'Proyectos destacados.',
-  tituloG:   'Resultados reales.',
-  subtitulo: 'Una selección de trabajos que representan mi enfoque profesional. Cada proyecto resuelve una necesidad concreta con tecnología adecuada.',
+  etiqueta:  t(lang, 'proyectos_etiqueta'),
+  tituloN:   t(lang, 'proyectos_titulo_negro'),
+  tituloG:   t(lang, 'proyectos_titulo_gris'),
+  subtitulo: t(lang, 'proyectos_subtitulo'),
 };
 ---
 
-<div class="fondo-puntos">
-  <div class="panel-interior">
+<div class="fondo-puntos fondo-puntos-visible">
     <section class="seccion" id="proyectos">
 
       <span class="etiqueta">{TEXTO.etiqueta}</span>
@@ -127,7 +129,6 @@ const TEXTO = {
       </div>
 
     </section>
-  </div>
 </div>
 
 <!-- Modal de proyecto -->
@@ -145,7 +146,7 @@ const TEXTO = {
       </div>
       <p class="proy-modal-detalle" id="proy-modal-detalle"></p>
       <div class="proy-modal-techs">
-        <span class="proy-modal-tech-label">Tecnologías:</span>
+        <span class="proy-modal-tech-label">{t(lang, 'proyectos_modal_tech')}</span>
         <span class="proy-modal-tech-list" id="proy-modal-techs"></span>
       </div>
       <div class="proy-modal-acciones" id="proy-modal-acciones"></div>

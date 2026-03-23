@@ -6,46 +6,46 @@
 
 /* Tema Claro */
 [data-tema="claro"] {
-  --fondo:          #ffffff;
-  --fondo-alt:      #f8f7fc;
-  --texto:          #10151d;
-  --gris-titulo:    #a0a0b8;
-  --gris-sub:       #5a5a72;
-  --borde:          #e2e0ef;
-  --card:           #f3f1fa;
-  --btn-fondo:      #7c5ce8;
+  --fondo:          #faf9fe;
+  --fondo-alt:      #f4f2fb;
+  --texto:          #1a1a2e;
+  --gris-titulo:    #9895b0;
+  --gris-sub:       #5e5a76;
+  --borde:          #ddd8f0;
+  --card:           #f0edf8;
+  --btn-fondo:      #6d4ed6;
   --btn-texto:      #ffffff;
-  --ghost-fondo:    #eeeaf6;
-  --ghost-texto:    #6b6b8a;
-  --ico-color:      #7c5ce8;
-  --punto-grid:     rgba(124, 92, 232, 0.08);
-  --ruido-opacidad: 0.015;
+  --ghost-fondo:    #ece8f5;
+  --ghost-texto:    #6a6588;
+  --ico-color:      #6d4ed6;
+  --punto-grid:     rgba(109, 78, 214, 0.20);
+  --ruido-opacidad: 0.012;
 
-  --acento:         #7c5ce8;
-  --acento-alt:     #4c9cd0;
-  --gradiente:      linear-gradient(135deg, #7c5ce8 0%, #8964e8 50%, #4c9cd0 100%);
+  --acento:         #6d4ed6;
+  --acento-alt:     #4890c4;
+  --gradiente:      linear-gradient(135deg, #6d4ed6 0%, #7b5ce0 50%, #4890c4 100%);
 }
 
 /* Tema Oscuro */
 [data-tema="oscuro"] {
-  --fondo:          #10151d;
-  --fondo-alt:      #161c28;
-  --texto:          #e2e4ea;
-  --gris-titulo:    #3a3f52;
-  --gris-sub:       #8b8fa8;
-  --borde:          #1e2436;
-  --card:           #181e2a;
+  --fondo:          #0c1018;
+  --fondo-alt:      #131926;
+  --texto:          #e8eaf0;
+  --gris-titulo:    #3d4460;
+  --gris-sub:       #929ab8;
+  --borde:          #1c2340;
+  --card:           #151b2c;
   --btn-fondo:      #7c5ce8;
   --btn-texto:      #ffffff;
-  --ghost-fondo:    rgba(155, 122, 250, 0.1);
-  --ghost-texto:    #8b8fa8;
-  --ico-color:      #9b7afa;
-  --punto-grid:     rgba(124, 92, 232, 0.06);
-  --ruido-opacidad: 0.028;
+  --ghost-fondo:    rgba(155, 122, 250, 0.12);
+  --ghost-texto:    #929ab8;
+  --ico-color:      #a68efa;
+  --punto-grid:     rgba(124, 92, 232, 0.14);
+  --ruido-opacidad: 0.025;
 
-  --acento:         #a78bfa;
-  --acento-alt:     #60b0e0;
-  --gradiente:      linear-gradient(135deg, #9b7afa 0%, #a78bfa 50%, #60b0e0 100%);
+  --acento:         #a68efa;
+  --acento-alt:     #5cb0e4;
+  --gradiente:      linear-gradient(135deg, #9b7afa 0%, #a68efa 50%, #5cb0e4 100%);
 }
 
 :root {

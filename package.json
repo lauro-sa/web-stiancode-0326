@@ -8,6 +8,7 @@
     "preview": "astro preview"
   },
   "dependencies": {
+    "@astrojs/sitemap": "^3.2.1",
     "astro": "^4.11.0",
     "lucide-astro": "^0.447.0",
     "qrcode": "^1.5.4"

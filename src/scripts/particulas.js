@@ -10,11 +10,11 @@
  * Paleta de colores — violeta y azul de la marca S7ian Code
  */
 const PALETA_CLARO = [
-  { r: 137, g: 100, b: 232, op: 0.25 },  // Violeta marca
-  { r: 76,  g: 156, b: 208, op: 0.22 },  // Azul marca
-  { r: 167, g: 139, b: 250, op: 0.20 },  // Violeta claro
-  { r: 96,  g: 176, b: 224, op: 0.18 },  // Azul claro
-  { r: 120, g: 120, b: 160, op: 0.12 },  // Gris azulado
+  { r: 107, g: 70,  b: 202, op: 0.7  },  // Violeta marca (más oscuro)
+  { r: 56,  g: 126, b: 178, op: 0.6  },  // Azul marca (más oscuro)
+  { r: 127, g: 99,  b: 220, op: 0.55 },  // Violeta medio
+  { r: 66,  g: 136, b: 194, op: 0.5  },  // Azul medio
+  { r: 90,  g: 90,  b: 140, op: 0.45 },  // Gris azulado
 ];
 
 const PALETA_OSCURO = [
@@ -32,14 +32,14 @@ const FRICCION = 0.95;
 const FUERZA_RETORNO = 0.008;
 const VELOCIDAD_MAXIMA = 4;
 const DISTANCIA_CONEXION = 140;   // px — distancia máxima para dibujar líneas
-const OPACIDAD_LINEA_MAX = 0.12;  // opacidad máxima de las líneas
+const OPACIDAD_LINEA_MAX = 0.25;  // opacidad máxima de las líneas
 
 function obtenerPaleta() {
   const tema = document.documentElement.getAttribute('data-tema');
   return tema === 'oscuro' ? PALETA_OSCURO : PALETA_CLARO;
 }
 
-function crearParticula(ancho, alto, paleta) {
+function crearParticula(ancho, alto, paleta, escalaRadio = 1) {
   const color = paleta[Math.floor(Math.random() * paleta.length)];
   return {
     x:    Math.random() * ancho,
@@ -48,7 +48,7 @@ function crearParticula(ancho, alto, paleta) {
     posicionHomeY: Math.random() * alto,
     velocidadX: (Math.random() - 0.5) * 0.3,
     velocidadY: (Math.random() - 0.5) * 0.3,
-    radio:     Math.random() * 2.0 + 0.8,
+    radio:     (Math.random() * 2.0 + 0.8) * escalaRadio,
     opacidad:  color.op,
     fase:      Math.random() * Math.PI * 2,
     colorR:    color.r,
@@ -60,12 +60,25 @@ function crearParticula(ancho, alto, paleta) {
 /**
  * Inicializa partículas dentro del contenedor padre del canvas
  * @param {string} idCanvas — id del elemento <canvas>
+ * @param {object} [opciones] — configuración opcional
+ * @param {number} [opciones.densidad=5500] — px² por partícula (menor = más partículas)
+ * @param {number} [opciones.maximo=140] — cantidad máxima de partículas
+ * @param {number} [opciones.escalaRadio=1] — multiplicador del tamaño de partículas
+ * @param {number} [opciones.opacidadLinea=0.25] — opacidad máxima de líneas
+ * @param {number} [opciones.distanciaConexion=140] — distancia para conectar líneas
  */
-export function iniciarParticulas(idCanvas) {
+export function iniciarParticulas(idCanvas, opciones = {}) {
   const canvas = document.getElementById(idCanvas);
   if (!canvas) return;
 
+  const densidad = opciones.densidad ?? 5500;
+  const maximo = opciones.maximo ?? 140;
+  const escalaRadio = opciones.escalaRadio ?? 1;
+  const opLinea = opciones.opacidadLinea ?? OPACIDAD_LINEA_MAX;
+  const distConexion = opciones.distanciaConexion ?? DISTANCIA_CONEXION;
+
   const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
   let ancho = 0, alto = 0;
   let particulas = [];
   let mouseX = -9999, mouseY = -9999;
@@ -73,15 +86,17 @@ export function iniciarParticulas(idCanvas) {
 
   function ajustarTamaño() {
     rectCanvas = canvas.getBoundingClientRect();
-    ancho = canvas.width  = rectCanvas.width;
-    alto  = canvas.height = rectCanvas.height;
+    ancho = rectCanvas.width;
+    alto  = rectCanvas.height;
+    canvas.width  = ancho * dpr;
+    canvas.height = alto * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
   function inicializarParticulas() {
     const paleta = obtenerPaleta();
-    // Densidad más baja para un look más limpio
-    const cantidad = Math.min(Math.floor((ancho * alto) / 10000), 80);
-    particulas = Array.from({ length: cantidad }, () => crearParticula(ancho, alto, paleta));
+    const cantidad = Math.min(Math.floor((ancho * alto) / densidad), maximo);
+    particulas = Array.from({ length: cantidad }, () => crearParticula(ancho, alto, paleta, escalaRadio));
   }
 
   ajustarTamaño();
@@ -164,8 +179,8 @@ export function iniciarParticulas(idCanvas) {
         const dy = a.y - b.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
-        if (dist < DISTANCIA_CONEXION) {
-          const opacidad = OPACIDAD_LINEA_MAX * (1 - dist / DISTANCIA_CONEXION);
+        if (dist < distConexion) {
+          const opacidad = opLinea * (1 - dist / distConexion);
           // Color promedio entre las dos partículas
           const r = Math.round((a.colorR + b.colorR) / 2);
           const g = Math.round((a.colorG + b.colorG) / 2);

@@ -2,18 +2,27 @@
 // ============================================================
 // Plantilla.astro — Layout base de stiancode.dev
 // ============================================================
+import { getLangFromUrl, getLocalizedUrl } from '../i18n/utils.js';
+
 interface Props {
   titulo:      string;
   descripcion: string;
   imagen?:     string;
+  lang?:       'es' | 'en';
 }
 
-const { titulo, descripcion, imagen = '/og-image.png' } = Astro.props;
+const langDetectado = getLangFromUrl(Astro.url);
+const { titulo, descripcion, imagen = '/og-image.png', lang = langDetectado } = Astro.props;
 const urlCanonica = Astro.url.href;
+const ogLocale = lang === 'en' ? 'en' : 'es';
+const otroLang = lang === 'en' ? 'es' : 'en';
+const urlAlterna = new URL(getLocalizedUrl(Astro.url, otroLang), 'https://stiancode.dev').href;
+const urlEs = lang === 'es' ? urlCanonica : urlAlterna;
+const urlEn = lang === 'en' ? urlCanonica : urlAlterna;
 ---
 
 <!DOCTYPE html>
-<html lang="es" data-tema="oscuro">
+<html lang={lang} data-tema="oscuro">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -28,6 +37,10 @@ const urlCanonica = Astro.url.href;
   <meta name="author"       content="S7ian Code"/>
   <meta name="robots"       content="index, follow"/>
   <link rel="canonical"     href={urlCanonica}/>
+  <!-- Hreflang — SEO multilingüe -->
+  <link rel="alternate" hreflang="es" href={urlEs}/>
+  <link rel="alternate" hreflang="en" href={urlEn}/>
+  <link rel="alternate" hreflang="x-default" href={urlEs}/>
   <!-- Open Graph — WhatsApp, Facebook, LinkedIn -->
   <meta property="og:type"        content="website"/>
   <meta property="og:url"         content={urlCanonica}/>
@@ -36,7 +49,7 @@ const urlCanonica = Astro.url.href;
   <meta property="og:image"       content={new URL(imagen, 'https://stiancode.dev').href}/>
   <meta property="og:image:width"  content="1200"/>
   <meta property="og:image:height" content="630"/>
-  <meta property="og:locale"      content="es"/>
+  <meta property="og:locale"      content={ogLocale}/>
   <meta property="og:site_name"   content="S7ian Code"/>
   <!-- Twitter / X -->
   <meta name="twitter:card"        content="summary_large_image"/>
@@ -46,23 +59,76 @@ const urlCanonica = Astro.url.href;
 
   <script type="application/ld+json">
     {JSON.stringify({
-      "@context":    "https://schema.org",
-      "@type":       "Person",
-      "name":        "S7ian Code",
-      "url":         "https://stiancode.dev",
-      "jobTitle":    "Desarrollador Full-Stack",
-      "sameAs":      ["https://github.com/lauro-sa", "https://www.linkedin.com/in/laurosa/"]
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "ProfessionalService",
+          "name": "S7ian Code",
+          "url": "https://stiancode.dev",
+          "logo": "https://stiancode.dev/logo-claro.png",
+          "description": lang === 'en'
+            ? "Professional web development: custom sites, PWA apps and digital solutions."
+            : "Desarrollo web profesional: sitios a medida, aplicaciones PWA y soluciones digitales.",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Buenos Aires",
+            "addressCountry": "AR"
+          },
+          "sameAs": [
+            "https://github.com/lauro-sa",
+            "https://www.linkedin.com/in/laurosa/",
+            "https://www.instagram.com/stianlauro/"
+          ],
+          "serviceType": [
+            "Web Development",
+            "Progressive Web Apps",
+            "SEO Optimization",
+            "Web Design"
+          ],
+          "areaServed": {
+            "@type": "GeoCircle",
+            "geoMidpoint": { "@type": "GeoCoordinates", "latitude": -34.6, "longitude": -58.38 },
+            "geoRadius": "50000"
+          },
+          "priceRange": "$$"
+        },
+        {
+          "@type": "Person",
+          "name": "S7ian Code",
+          "url": "https://stiancode.dev",
+          "jobTitle": "Full-Stack Developer",
+          "sameAs": [
+            "https://github.com/lauro-sa",
+            "https://www.linkedin.com/in/laurosa/"
+          ]
+        }
+      ]
     })}
   </script>
 
-  <!-- Google Analytics — REEMPLAZAR G-XXXXXXXXXX -->
-  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script> -->
-  <!-- Meta Pixel — REEMPLAZAR PIXEL_ID -->
-  <!-- <script>fbq('init','PIXEL_ID');</script> -->
+  <!-- ============================================================
+       Google Analytics (GA4) — REEMPLAZAR G-XXXXXXXXXX con tu ID
+       Instrucciones: descomentar las 2 líneas y poner tu ID de GA4
+       ============================================================ -->
+  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script> -->
+
+  <!-- ============================================================
+       Google Ads Conversion Tracking — REEMPLAZAR AW-XXXXXXXXXX
+       Instrucciones: descomentar y poner tu Conversion ID de Google Ads
+       ============================================================ -->
+  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=AW-XXXXXXXXXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-XXXXXXXXXX');</script> -->
+
+  <!-- ============================================================
+       Meta Pixel (Facebook/Instagram Ads) — REEMPLAZAR PIXEL_ID
+       ============================================================ -->
+  <!-- <script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','PIXEL_ID');fbq('track','PageView');</script> -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" onload="this.onload=null;this.rel='stylesheet'"/>
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/></noscript>
 </head>
 
 <body>
@@ -77,11 +143,29 @@ const urlCanonica = Astro.url.href;
 </style>
 
 <script>
+  // Detección automática de idioma del navegador
+  (function() {
+    const yaEligio = localStorage.getItem('sc-idioma');
+    if (yaEligio) return;
+
+    const enPaginaEs = !window.location.pathname.startsWith('/en');
+    const navegadorEn = navigator.language.startsWith('en');
+
+    if (enPaginaEs && navegadorEn) {
+      localStorage.setItem('sc-idioma', 'en');
+      window.location.replace('/en/');
+      return;
+    }
+    localStorage.setItem('sc-idioma', document.documentElement.lang || 'es');
+  })();
+</script>
+
+<script>
   import { iniciarToggleTema, iniciarMenuMobile, iniciarBarraProgreso, iniciarNavScroll, iniciarSmoothScroll, iniciarAnimacionIconos, iniciarTypewriter } from '../scripts/utilidades.js';
   import { iniciarParticulas } from '../scripts/particulas.js';
 
   document.addEventListener('DOMContentLoaded', () => {
-    iniciarToggleTema('boton-tema', 'sc-tema', ['boton-tema-mobile']);
+    iniciarToggleTema('boton-tema-footer', 'sc-tema', ['boton-tema-mobile']);
     iniciarMenuMobile('boton-hamburguesa', 'menu-mobile');
     iniciarBarraProgreso('barra-progreso');
     iniciarNavScroll('nav-principal');
@@ -89,6 +173,13 @@ const urlCanonica = Astro.url.href;
     iniciarAnimacionIconos('.tarjeta-servicio, .fila-proyecto');
     iniciarTypewriter();
     iniciarParticulas('canvas-particulas-hero');
+    iniciarParticulas('canvas-particulas-contacto', {
+      densidad: 8000,
+      maximo: 60,
+      escalaRadio: 0.6,
+      opacidadLinea: 0.15,
+      distanciaConexion: 120,
+    });
   });
 
   // Animación del hero
@@ -96,6 +187,13 @@ const urlCanonica = Astro.url.href;
     const kf = document.createElement('style');
     kf.textContent = `
       @keyframes subirLinea { from { opacity:0; transform:translateY(100%); } to { opacity:1; transform:none; } }
+      @keyframes slam {
+        0%   { opacity:0; transform:scale(1.4) translateY(-18px); }
+        50%  { opacity:1; transform:scale(.97) translateY(3px); }
+        70%  { transform:scale(1.02) translateY(-1px); }
+        85%  { transform:scale(.995) translateY(0); }
+        100% { opacity:1; transform:scale(1) translateY(0); }
+      }
       .linea-titulo { opacity: 0; }
     `;
     document.head.appendChild(kf);
@@ -104,7 +202,12 @@ const urlCanonica = Astro.url.href;
     if (badge) { badge.style.transition = 'opacity .6s ease'; badge.style.opacity = '1'; }
 
     document.querySelectorAll('.linea-titulo').forEach((el, i) => {
-      el.style.animation = `subirLinea .85s ${0.2 + i * 0.13}s cubic-bezier(0.16,1,0.3,1) forwards`;
+      if (el.classList.contains('impacto')) {
+        // Animación especial de impacto para "con impacto real"
+        el.style.animation = `slam .65s ${0.2 + i * 0.13 + 0.15}s cubic-bezier(.22,.68,.36,1.2) forwards`;
+      } else {
+        el.style.animation = `subirLinea .85s ${0.2 + i * 0.13}s cubic-bezier(0.16,1,0.3,1) forwards`;
+      }
     });
 
     setTimeout(() => {

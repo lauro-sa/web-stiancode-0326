@@ -4,16 +4,16 @@
 //
 // Formulario wizard multi-paso embebido + info de contacto.
 // ============================================================
-import { t } from '../i18n/utils.js';
-import { CONTACTO, WEB3FORMS_KEY } from '../config.js';
-import Plantilla     from '../layouts/Plantilla.astro';
-import Nav           from '../components/Nav.astro';
-import Footer        from '../components/Footer.astro';
-import IconoSVG      from '../components/ui/IconoSVG.astro';
-import AgendarMeet   from '../components/AgendarMeet.astro';
-import Boton         from '../components/Boton.astro';
+import { t } from '../../i18n/utils.js';
+import { CONTACTO, WEB3FORMS_KEY } from '../../config.js';
+import Plantilla     from '../../layouts/Plantilla.astro';
+import Nav           from '../../components/Nav.astro';
+import Footer        from '../../components/Footer.astro';
+import IconoSVG      from '../../components/ui/IconoSVG.astro';
+import AgendarMeet   from '../../components/AgendarMeet.astro';
+import Boton         from '../../components/Boton.astro';
 
-const lang = 'es';
+const lang = 'en';
 const DATOS = CONTACTO;
 ---
 
@@ -329,7 +329,7 @@ const DATOS = CONTACTO;
 
         <!-- Volver -->
         <div class="contacto-volver">
-          <Boton variante="fantasma" href="/">{t(lang, 'volver_inicio')}</Boton>
+          <Boton variante="fantasma" href="/">← Volver al inicio</Boton>
         </div>
 
       </section>
@@ -896,9 +896,8 @@ Enviado desde stiancode.dev/contacto`;
       const wrapper = /** @type {HTMLElement|null} */ (document.querySelector('.contacto-form-wrapper'));
       const emailDestino = wrapper?.dataset?.email || '';
       const w3key = wrapper?.dataset?.w3key || '';
-      const asunto = `Nuevo proyecto: ${tipo} — ${nombre}`;
+      const asunto = `New project: ${tipo} — ${nombre}`;
 
-      // Enviar via Web3Forms
       const formData = new FormData();
       formData.append('access_key', w3key);
       formData.append('subject', asunto);

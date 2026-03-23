@@ -106,9 +106,20 @@ body::after {
 
 /* Fondo con grilla de puntos */
 .fondo-puntos {
-  background-image: radial-gradient(circle, var(--punto-grid) 1.2px, transparent 1.2px);
-  background-size: 22px 22px;
+  background-image: radial-gradient(circle, var(--punto-grid) 1.8px, transparent 1.8px);
+  background-size: 82px 82px;
   transition: background-image var(--transicion);
+  animation: subir-puntos 70s linear infinite;
+}
+
+@keyframes subir-puntos {
+  from { background-position: 0 0; }
+  to   { background-position: 0 -820px; }
+}
+
+/* Fondo de puntos sin panel-interior (visible directamente) */
+.fondo-puntos-visible {
+  background-color: var(--fondo);
 }
 
 /* Panel interior sobre el fondo de puntos */
