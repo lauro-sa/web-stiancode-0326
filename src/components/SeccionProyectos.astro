@@ -1,0 +1,453 @@
+---
+// ============================================================
+// SeccionProyectos.astro — Proyectos destacados con modal
+// EDITAR: array PROYECTOS abajo
+// ============================================================
+import IconoSVG from './ui/IconoSVG.astro';
+
+interface Proyecto {
+  numero:      string;
+  nombre:      string;
+  descripcion: string;
+  detalle:     string;
+  icono:       string;
+  tag:         string;
+  tecnologias: string;
+  imagenes:    string[];
+  url:         string;
+}
+
+// ---- Proyectos destacados ----
+const PROYECTOS: Proyecto[] = [
+  {
+    numero:      '01',
+    nombre:      'HERREELEC',
+    descripcion: 'Sitio web para taller de portones con sistema de turnos integrado.',
+    detalle:     'Sitio web desarrollado para un taller especializado en portones y persianas. Incluye un sistema de reservas integrado que permite a los clientes programar visitas directamente desde la página. La gestión de datos se realiza a través de Firebase, garantizando seguridad y eficiencia en el manejo de la información.',
+    icono:       'edificio',
+    tag:         'Web',
+    tecnologias: 'React JS, SCSS, Firebase',
+    imagenes:    ['/proyectos/he-01.png', '/proyectos/he-02.png', '/proyectos/he-04.png'],
+    url:         'https://www.herreelec.com/',
+  },
+  {
+    numero:      '02',
+    nombre:      'EsAr Digital',
+    descripcion: 'Plataforma de servicios digitales para mercados de habla hispana.',
+    detalle:     'Plataforma web diseñada para un equipo de profesionales que ofrecen servicios de marketing digital, diseño gráfico y desarrollo web. El sitio facilita la conexión entre clientes y el equipo, proporcionando una experiencia moderna y orientada a la conversión.',
+    icono:       'ventana',
+    tag:         'Web',
+    tecnologias: 'Vite, React JS, Tailwind, Firebase',
+    imagenes:    ['/proyectos/ESAR-01.png', '/proyectos/ESAR-02.png', '/proyectos/ESAR-03.png'],
+    url:         'https://esar-c221b.web.app/',
+  },
+  {
+    numero:      '03',
+    nombre:      'PWA Gestión HE',
+    descripcion: 'Aplicación progresiva para gestión integral de empresa de servicios.',
+    detalle:     'Progressive Web App desarrollada para la gestión interna de una empresa de servicios. Permite administrar clientes, estados de proyectos, visitas programadas, creación de presupuestos y notas internas. Soporta múltiples usuarios y funciona offline gracias a las capacidades de PWA.',
+    icono:       'celular',
+    tag:         'PWA',
+    tecnologias: 'React JS, SCSS, Firebase',
+    imagenes:    ['/proyectos/PWA-HE-01.png', '/proyectos/PWA-HE-02.png', '/proyectos/PWA-HE-03.png'],
+    url:         '',
+  },
+  {
+    numero:      '04',
+    nombre:      'Lactancia 24/7',
+    descripcion: 'Web para consultora de lactancia con sistema de turnos y artículos.',
+    detalle:     'Sitio web para una puericultora especializada en consultas de lactancia materna. La plataforma ofrece videollamadas, programación de turnos, artículos informativos y recomendaciones de productos. Diseñada para ser accesible y clara, priorizando la experiencia de las madres que buscan asesoramiento profesional.',
+    icono:       'estrella',
+    tag:         'Web',
+    tecnologias: 'HTML5, CSS, Photoshop',
+    imagenes:    ['/proyectos/L247-01.png', '/proyectos/L247-02.png', '/proyectos/L247-03.png'],
+    url:         'https://lactancia247.com',
+  },
+  {
+    numero:      '05',
+    nombre:      'Ventas Online',
+    descripcion: 'Plataforma e-commerce con carrito, pagos y gestión de inventario.',
+    detalle:     'Plataforma de ventas en línea enfocada en ofrecer una experiencia de compra rápida y segura. Incluye carrito de compras, integración con pasarelas de pago y sistema de gestión de inventario. Optimizada para dispositivos móviles y desktop.',
+    icono:       'cubo',
+    tag:         'E-commerce',
+    tecnologias: 'React JS, SCSS, Firebase',
+    imagenes:    ['/proyectos/WVENTA-01.png'],
+    url:         '',
+  },
+];
+
+const TEXTO = {
+  etiqueta:  'Proyectos',
+  tituloN:   'Proyectos destacados.',
+  tituloG:   'Resultados reales.',
+  subtitulo: 'Una selección de trabajos que representan mi enfoque profesional. Cada proyecto resuelve una necesidad concreta con tecnología adecuada.',
+};
+---
+
+<div class="fondo-puntos">
+  <div class="panel-interior">
+    <section class="seccion" id="proyectos">
+
+      <span class="etiqueta">{TEXTO.etiqueta}</span>
+      <h2 class="titulo-dos-tonos">
+        <span class="negro">{TEXTO.tituloN}</span><br>
+        <span class="gris">{TEXTO.tituloG}</span>
+      </h2>
+      <p class="typewriter" data-texto={TEXTO.subtitulo} aria-label={TEXTO.subtitulo}></p>
+
+      <div class="lista-proyectos" role="list">
+        {PROYECTOS.map((proy, i) => (
+          <button
+            class="fila-proyecto"
+            role="listitem"
+            data-index={i}
+            data-nombre={proy.nombre}
+            data-detalle={proy.detalle}
+            data-tecnologias={proy.tecnologias}
+            data-imagenes={JSON.stringify(proy.imagenes)}
+            data-url={proy.url}
+            data-tag={proy.tag}
+          >
+            <div class="proy-izquierda">
+              <span class="proy-numero">{proy.numero}</span>
+              <div class="icono-contenedor">
+                <IconoSVG nombre={proy.icono} tamaño={20} />
+              </div>
+              <div class="proy-info">
+                <h3 class="proy-nombre">{proy.nombre}</h3>
+                <span class="proy-desc">{proy.descripcion}</span>
+              </div>
+            </div>
+            <div class="proy-derecha">
+              <span class="proy-tag">{proy.tag}</span>
+              <svg class="proy-flecha" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+          </button>
+        ))}
+      </div>
+
+    </section>
+  </div>
+</div>
+
+<!-- Modal de proyecto -->
+<div class="proy-modal-overlay" id="proy-modal" aria-hidden="true">
+  <div class="proy-modal">
+    <!-- Galería -->
+    <div class="proy-modal-galeria" id="proy-modal-galeria"></div>
+
+    <!-- Info -->
+    <div class="proy-modal-info">
+      <button class="proy-modal-cerrar" id="proy-modal-cerrar" aria-label="Cerrar">×</button>
+      <div class="proy-modal-cabecera">
+        <h3 class="proy-modal-titulo" id="proy-modal-titulo"></h3>
+        <span class="proy-modal-tag" id="proy-modal-tag"></span>
+      </div>
+      <p class="proy-modal-detalle" id="proy-modal-detalle"></p>
+      <div class="proy-modal-techs">
+        <span class="proy-modal-tech-label">Tecnologías:</span>
+        <span class="proy-modal-tech-list" id="proy-modal-techs"></span>
+      </div>
+      <div class="proy-modal-acciones" id="proy-modal-acciones"></div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .lista-proyectos { margin-top:52px;border-radius:18px;overflow:hidden;border:1px solid var(--borde);display:flex;flex-direction:column;transition:border-color .5s; }
+
+  .fila-proyecto { display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 28px;background:transparent;border:none;border-bottom:1px solid var(--borde);text-decoration:none;color:inherit;cursor:pointer;text-align:left;width:100%;transition:background .2s,border-color .5s,opacity .6s cubic-bezier(.22,1,.36,1),transform .6s cubic-bezier(.22,1,.36,1);opacity:0;transform:translateY(24px); }
+  .fila-proyecto.visible { opacity:1;transform:translateY(0); }
+  .fila-proyecto:last-child { border-bottom:none; }
+  .fila-proyecto:hover { background:var(--card); }
+  .fila-proyecto:hover .icono-contenedor { transform:scale(1.08) rotate(-4deg); }
+  .icono-contenedor { transition:background .5s,transform .35s cubic-bezier(.34,1.56,.64,1); }
+
+  .proy-izquierda { display:flex;align-items:center;gap:18px; }
+  .proy-numero    { font-size:12px;color:var(--gris-titulo);font-weight:600;min-width:20px;transition:color .5s; }
+  .proy-info      { display:flex;flex-direction:column;gap:2px; }
+  .proy-nombre    { font-size:17px;font-weight:700;color:var(--texto);letter-spacing:-.2px;transition:color .5s; }
+  .proy-desc      { font-size:13.5px;color:var(--gris-sub);line-height:1.5;transition:color .5s; }
+
+  .proy-derecha { display:flex;align-items:center;gap:12px;flex-shrink:0; }
+  .proy-tag     { font-size:12px;font-weight:500;color:var(--gris-sub);background:var(--ghost-fondo);padding:4px 12px;border-radius:100px;white-space:nowrap;border:1px solid var(--borde);transition:background .5s,color .5s; }
+  .proy-flecha  { color:var(--gris-titulo);transition:color .2s,transform .2s; }
+  .fila-proyecto:hover .proy-flecha { color:var(--texto);transform:translateX(3px); }
+
+  /* ---- Modal ---- */
+  .proy-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    padding: 24px;
+  }
+
+  .proy-modal-overlay.activo {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .proy-modal {
+    background: var(--fondo);
+    border: 1px solid var(--borde);
+    border-radius: 20px;
+    width: 720px;
+    max-width: 100%;
+    height: 580px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    transform: scale(0.94) translateY(16px);
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), background var(--transicion), border-color var(--transicion);
+  }
+
+  .proy-modal-overlay.activo .proy-modal {
+    transform: scale(1) translateY(0);
+  }
+
+  .proy-modal-cerrar {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: var(--ghost-fondo);
+    border: 1px solid var(--borde);
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+    color: var(--gris-sub);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    transition: color 0.3s, background 0.3s, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.3s;
+  }
+
+  .proy-modal-cerrar:hover {
+    color: var(--texto);
+    background: var(--borde);
+    transform: rotate(90deg) scale(1.1);
+  }
+
+  /* Galería */
+  .proy-modal-galeria {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 20px 20px 0 0;
+    background: var(--card);
+    height: 280px;
+    min-height: 280px;
+    flex-shrink: 0;
+  }
+
+  .proy-modal-galeria :global(img) {
+    width: 100%;
+    min-width: 100%;
+    height: 280px;
+    object-fit: cover;
+    object-position: top center;
+    scroll-snap-align: start;
+    flex-shrink: 0;
+  }
+
+  /* Info */
+  .proy-modal-info {
+    padding: 24px 32px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    flex: 1;
+    overflow-y: auto;
+    position: relative;
+  }
+
+  .proy-modal-cabecera {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .proy-modal-titulo {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--texto);
+    transition: color var(--transicion);
+  }
+
+  .proy-modal-tag {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--acento);
+    background: color-mix(in srgb, var(--acento) 12%, transparent);
+    padding: 4px 12px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .proy-modal-detalle {
+    font-size: 15px;
+    color: var(--gris-sub);
+    line-height: 1.75;
+    transition: color var(--transicion);
+  }
+
+  .proy-modal-techs {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .proy-modal-tech-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--texto);
+    transition: color var(--transicion);
+  }
+
+  .proy-modal-tech-list {
+    font-size: 13px;
+    color: var(--gris-sub);
+    transition: color var(--transicion);
+  }
+
+  .proy-modal-acciones {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+  }
+
+  .proy-modal-acciones :global(a) {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 12px 24px;
+    border-radius: var(--radio-pill);
+    text-decoration: none;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+
+  .proy-modal-acciones :global(a:hover) {
+    opacity: 0.85;
+    transform: translateY(-1px);
+  }
+
+  .proy-modal-acciones :global(.btn-visitar) {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--fuente-principal);
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    padding: 12px 24px;
+    border-radius: var(--radio-pill);
+    background: var(--btn-fondo);
+    color: var(--btn-texto);
+    transition:
+      transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .proy-modal-acciones :global(.btn-visitar:hover) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(137, 100, 232, 0.2);
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .fila-proyecto { flex-direction:column;align-items:flex-start;gap:14px; }
+    .proy-modal { height: auto; max-height: 85vh; }
+    .proy-modal-info { padding: 20px 20px 24px; }
+    .proy-modal-galeria, .proy-modal-galeria :global(img) { height: 200px; min-height: 200px; }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const overlay = document.getElementById('proy-modal')!;
+    const galeria = document.getElementById('proy-modal-galeria')!;
+    const titulo = document.getElementById('proy-modal-titulo')!;
+    const tag = document.getElementById('proy-modal-tag')!;
+    const detalle = document.getElementById('proy-modal-detalle')!;
+    const techs = document.getElementById('proy-modal-techs')!;
+    const acciones = document.getElementById('proy-modal-acciones')!;
+    const btnCerrar = document.getElementById('proy-modal-cerrar')!;
+
+    // Abrir modal
+    document.querySelectorAll('.fila-proyecto').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const el = btn as HTMLElement;
+        const imagenes: string[] = JSON.parse(el.dataset.imagenes || '[]');
+        const url = el.dataset.url || '';
+
+        // Galería
+        galeria.innerHTML = imagenes.map((src) =>
+          `<img src="${src}" alt="${el.dataset.nombre}" loading="lazy" />`
+        ).join('');
+
+        // Info
+        titulo.textContent = el.dataset.nombre || '';
+        tag.textContent = el.dataset.tag || '';
+        detalle.textContent = el.dataset.detalle || '';
+        techs.textContent = el.dataset.tecnologias || '';
+
+        // Botón visitar
+        if (url) {
+          acciones.innerHTML = `<a href="${url}" class="btn-visitar" target="_blank" rel="noopener noreferrer">
+            Visitar sitio
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>`;
+        } else {
+          acciones.innerHTML = `<span style="font-size:13px;color:var(--gris-sub);font-style:italic;">Proyecto privado — acceso restringido.</span>`;
+        }
+
+        overlay.classList.add('activo');
+        galeria.scrollTo({ left: 0 });
+      });
+    });
+
+    // Cerrar
+    const cerrar = () => overlay.classList.remove('activo');
+    btnCerrar.addEventListener('click', cerrar);
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) cerrar();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') cerrar();
+    });
+
+    // Animación escalonada al hacer scroll
+    const filas = document.querySelectorAll('.fila-proyecto');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const el = entry.target as HTMLElement;
+        const delay = Number(el.dataset.index) * 120;
+        setTimeout(() => el.classList.add('visible'), delay);
+        observer.unobserve(el);
+      });
+    }, { threshold: 0.15 });
+
+    filas.forEach((fila) => observer.observe(fila));
+  });
+</script>

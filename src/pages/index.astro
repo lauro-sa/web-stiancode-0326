@@ -1,0 +1,68 @@
+---
+// ============================================================
+// index.astro — Página principal de stiancode.dev
+//
+// Acá se ensamblan todos los componentes.
+// Para reordenar secciones, mover los componentes acá.
+// ============================================================
+import Plantilla          from '../layouts/Plantilla.astro';
+import Nav                from '../components/Nav.astro';
+import Hero               from '../components/Hero.astro';
+import SeccionServicios   from '../components/SeccionServicios.astro';
+import SeccionStack       from '../components/SeccionStack.astro';
+import SeccionProyectos   from '../components/SeccionProyectos.astro';
+import SeccionSobre        from '../components/SeccionSobre.astro';
+import SeccionLaboratorio  from '../components/SeccionLaboratorio.astro';
+import SeccionNoticias     from '../components/SeccionNoticias.astro';
+import Footer              from '../components/Footer.astro';
+import ModalContacto       from '../components/ModalContacto.astro';
+import Boton               from '../components/Boton.astro';
+---
+
+<Plantilla
+  titulo="S7ian Code | Desarrollador Full-Stack"
+  descripcion="Desarrollo web profesional: sitios a medida, aplicaciones PWA y soluciones digitales con React, Firebase y las mejores tecnologías."
+>
+  <Nav/>
+
+  <main>
+    <Hero/>
+    <SeccionServicios/>
+    <SeccionProyectos/>
+    <SeccionStack/>
+    <SeccionSobre/>
+
+    <!-- CTA simple -->
+    <div class="fondo-puntos">
+      <div class="seccion cta-contacto" id="contacto">
+        <span class="etiqueta">Contacto</span>
+        <h2 class="titulo-dos-tonos">
+          <span class="negro">¿Tenés un proyecto?</span><br>
+          <span class="gris">Conversemos.</span>
+        </h2>
+        <p class="typewriter" data-texto="Ya sea para un proyecto nuevo, una consulta técnica o una propuesta de colaboración. Estoy disponible." style="max-width:420px"></p>
+        <div class="cta-botones">
+          <!-- EDITAR email y whatsapp -->
+          <Boton data-abrir-modal="contacto">
+            Escribime
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </Boton>
+          <Boton variante="fantasma" href="https://www.linkedin.com/in/laurosa/" target="_blank" rel="noopener noreferrer">
+            LinkedIn
+          </Boton>
+        </div>
+      </div>
+    </div>
+
+    <SeccionLaboratorio/>
+    <SeccionNoticias/>
+  </main>
+
+  <ModalContacto/>
+  <Footer/>
+</Plantilla>
+
+<style>
+  .cta-contacto { display:flex;flex-direction:column;gap:20px; }
+  .cta-botones  { display:flex;gap:10px;flex-wrap:wrap;margin-top:4px; }
+</style>

@@ -1,0 +1,154 @@
+---
+// ============================================================
+// Boton.astro — Componente reutilizable de botón
+// Variantes: primario | fantasma | texto
+// Tamaños:   sm | md | lg
+// Acepta <a> o <button> según las props recibidas
+// ============================================================
+
+interface Props {
+  variante?: 'primario' | 'fantasma' | 'texto';
+  tamano?: 'sm' | 'md' | 'lg';
+  href?: string;
+  target?: string;
+  rel?: string;
+  type?: 'button' | 'submit' | 'reset';
+  id?: string;
+  class?: string;
+  'data-abrir-modal'?: string;
+  style?: string;
+  'aria-label'?: string;
+}
+
+const {
+  variante = 'primario',
+  tamano = 'md',
+  href,
+  target,
+  rel,
+  type = 'button',
+  id,
+  class: extraClass,
+  style,
+  ...rest
+} = Astro.props;
+
+const Tag = href ? 'a' : 'button';
+const clases = `btn btn--${variante} btn--${tamano}${extraClass ? ` ${extraClass}` : ''}`;
+---
+
+<Tag
+  class={clases}
+  {...(href ? { href, target, rel } : { type })}
+  {...(id ? { id } : {})}
+  {...(style ? { style } : {})}
+  {...rest}
+>
+  <slot />
+</Tag>
+
+<style is:global>
+  /* ============================================================
+     Boton — Sistema de botones reutilizable
+     ============================================================ */
+
+  /* --- Base --- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--fuente-principal);
+    font-weight: 600;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    border-radius: var(--radio-pill);
+    transition:
+      transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+      background 0.3s ease,
+      color 0.3s ease,
+      border-color 0.3s ease;
+  }
+
+  .btn:active {
+    transform: scale(0.97);
+  }
+
+  .btn svg {
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .btn:hover svg {
+    transform: translateX(2px);
+  }
+
+  /* --- Tamaños --- */
+  .btn--sm { font-size: 13px; padding: 8px 16px; }
+  .btn--md { font-size: 14px; padding: 11px 22px; }
+  .btn--lg { font-size: 15px; padding: 14px 28px; }
+
+  /* --- Primario --- */
+  .btn--primario {
+    background: var(--gradiente);
+    color: var(--btn-texto);
+  }
+
+  .btn--primario:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(124, 92, 232, 0.25);
+  }
+
+  /* --- Fantasma --- */
+  .btn--fantasma {
+    background: var(--ghost-fondo);
+    color: var(--ghost-texto);
+    font-weight: 500;
+    border: 1px solid var(--borde);
+  }
+
+  .btn--fantasma:hover {
+    background: var(--borde);
+    color: var(--texto);
+    border-color: var(--borde);
+    transform: translateY(-2px);
+  }
+
+  /* --- Texto --- */
+  .btn--texto {
+    background: transparent;
+    color: var(--acento);
+    font-weight: 500;
+    padding-left: 4px;
+    padding-right: 4px;
+    position: relative;
+  }
+
+  .btn--texto::after {
+    content: '';
+    position: absolute;
+    bottom: 6px;
+    left: 4px;
+    right: 4px;
+    height: 1.5px;
+    background: currentColor;
+    opacity: 0;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition:
+      opacity 0.25s ease,
+      transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .btn--texto:hover {
+    transform: translateY(-1px);
+  }
+
+  .btn--texto:hover::after {
+    opacity: 0.5;
+    transform: scaleX(1);
+  }
+</style>

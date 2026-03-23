@@ -1,0 +1,923 @@
+---
+// ============================================================
+// ModalContacto.astro — Formulario wizard multi-paso
+//
+// Se abre al hacer clic en "Escribime". Pide info de a poco
+// para no abrumar al usuario. Incluye barra de progreso.
+// Usa IconoSVG con animación stroke-dashoffset.
+// ============================================================
+import IconoSVG from './ui/IconoSVG.astro';
+import Boton from './Boton.astro';
+---
+
+<!-- Overlay + Modal -->
+<div class="modal-overlay" id="modalContacto" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Formulario de contacto">
+  <div class="modal-contenido">
+
+    <!-- Cabecera: barra de progreso + cerrar en la misma línea -->
+    <div class="modal-cabecera">
+      <div class="modal-progreso">
+        <div class="modal-progreso-barra" id="progresoFormulario" style="width: 20%"></div>
+      </div>
+      <button class="modal-cerrar" aria-label="Cerrar formulario" type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <span class="modal-paso-indicador" id="pasoIndicador">Paso 1 de 5</span>
+
+    <!-- Formulario -->
+    <form id="formularioContacto" novalidate>
+
+      <!-- Zona de contenido con altura mínima fija -->
+      <div class="modal-cuerpo">
+
+        <!-- ===== PASO 1: Datos básicos ===== -->
+        <div class="modal-paso activo" data-paso="1">
+          <div class="modal-titulo-con-icono">
+            <div class="icono-contenedor modal-icono-titulo modal-animable">
+              <IconoSVG nombre="mano" tamaño={22} grosor={1.5} />
+            </div>
+            <h3 class="modal-titulo">Empecemos</h3>
+          </div>
+          <p class="modal-subtitulo">Contanos un poco sobre vos para poder contactarte.</p>
+
+          <div class="modal-campo">
+            <label for="campo-nombre">¿Cómo te llamás?</label>
+            <input type="text" id="campo-nombre" name="nombre" placeholder="Tu nombre" required autocomplete="name" />
+          </div>
+
+          <div class="modal-campo">
+            <label for="campo-email">¿Tu email?</label>
+            <input type="email" id="campo-email" name="email" placeholder="nombre@ejemplo.com" required autocomplete="email" />
+          </div>
+        </div>
+
+        <!-- ===== PASO 2: Tipo de proyecto ===== -->
+        <div class="modal-paso" data-paso="2">
+          <div class="modal-titulo-con-icono">
+            <div class="icono-contenedor modal-icono-titulo modal-animable">
+              <IconoSVG nombre="cubo" tamaño={22} grosor={1.5} />
+            </div>
+            <h3 class="modal-titulo">¿Qué necesitás?</h3>
+          </div>
+          <p class="modal-subtitulo">Elegí el tipo de proyecto que tenés en mente.</p>
+
+          <div class="modal-opciones" role="radiogroup" aria-label="Tipo de proyecto">
+            <label class="modal-opcion">
+              <input type="radio" name="tipo" value="sitio-web" />
+              <span class="modal-opcion-card">
+                <span class="modal-opcion-icono modal-animable"><IconoSVG nombre="ventana" tamaño={24} grosor={1.5} /></span>
+                <span class="modal-opcion-texto">Sitio Web</span>
+              </span>
+            </label>
+            <label class="modal-opcion">
+              <input type="radio" name="tipo" value="pwa" />
+              <span class="modal-opcion-card">
+                <span class="modal-opcion-icono modal-animable"><IconoSVG nombre="pwa" tamaño={24} grosor={1.5} /></span>
+                <span class="modal-opcion-texto">PWA</span>
+              </span>
+            </label>
+            <label class="modal-opcion">
+              <input type="radio" name="tipo" value="ecommerce" />
+              <span class="modal-opcion-card">
+                <span class="modal-opcion-icono modal-animable"><IconoSVG nombre="carrito" tamaño={24} grosor={1.5} /></span>
+                <span class="modal-opcion-texto">E-commerce</span>
+              </span>
+            </label>
+            <label class="modal-opcion">
+              <input type="radio" name="tipo" value="landing" />
+              <span class="modal-opcion-card">
+                <span class="modal-opcion-icono modal-animable"><IconoSVG nombre="rayo" tamaño={24} grosor={1.5} /></span>
+                <span class="modal-opcion-texto">Landing Page</span>
+              </span>
+            </label>
+            <label class="modal-opcion">
+              <input type="radio" name="tipo" value="rediseno" />
+              <span class="modal-opcion-card">
+                <span class="modal-opcion-icono modal-animable"><IconoSVG nombre="diamante" tamaño={24} grosor={1.5} /></span>
+                <span class="modal-opcion-texto">Rediseño</span>
+              </span>
+            </label>
+            <label class="modal-opcion">
+              <input type="radio" name="tipo" value="otro" />
+              <span class="modal-opcion-card">
+                <span class="modal-opcion-icono modal-animable"><IconoSVG nombre="bombilla" tamaño={24} grosor={1.5} /></span>
+                <span class="modal-opcion-texto">Otro</span>
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <!-- ===== PASO 3: Descripción ===== -->
+        <div class="modal-paso" data-paso="3">
+          <div class="modal-titulo-con-icono">
+            <div class="icono-contenedor modal-icono-titulo modal-animable">
+              <IconoSVG nombre="mensaje" tamaño={22} grosor={1.5} />
+            </div>
+            <h3 class="modal-titulo">Contanos más</h3>
+          </div>
+          <p class="modal-subtitulo">Una breve idea de lo que tenés en mente.</p>
+
+          <div class="modal-campo">
+            <label for="campo-descripcion">Describí tu proyecto</label>
+            <textarea id="campo-descripcion" name="descripcion" placeholder="Ej: Necesito una web para mi estudio de arquitectura con portfolio y formulario de contacto..." rows="4" required></textarea>
+          </div>
+
+          <div class="modal-campo">
+            <label for="campo-plazo">¿Tenés una fecha estimada? <span class="modal-opcional">(opcional)</span></label>
+            <input type="text" id="campo-plazo" name="plazo" placeholder="Ej: Para mayo, Sin apuro, Lo antes posible..." />
+          </div>
+        </div>
+
+        <!-- ===== PASO 4: Referencias ===== -->
+        <div class="modal-paso" data-paso="4">
+          <div class="modal-titulo-con-icono">
+            <div class="icono-contenedor modal-icono-titulo modal-animable">
+              <IconoSVG nombre="link" tamaño={22} grosor={1.5} />
+            </div>
+            <h3 class="modal-titulo">¿Tenés referencias?</h3>
+          </div>
+          <p class="modal-subtitulo">Compartí links de sitios o diseños que te gusten. Esto nos ayuda mucho.</p>
+
+          <div class="modal-referencias" id="contenedorReferencias">
+            <div class="modal-referencia-item">
+              <div class="modal-campo">
+                <label>Link de referencia</label>
+                <input type="url" name="referencia_url[]" placeholder="https://ejemplo.com" />
+              </div>
+              <div class="modal-campo">
+                <label>¿Qué te gusta de este sitio? <span class="modal-opcional">(opcional)</span></label>
+                <input type="text" name="referencia_nota[]" placeholder="Ej: El diseño minimalista, los colores..." />
+              </div>
+            </div>
+          </div>
+
+          <button type="button" class="modal-agregar-ref" id="btnAgregarRef">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar otra referencia
+          </button>
+
+          <p class="modal-nota-skip">Este paso es opcional, podés saltearlo.</p>
+        </div>
+
+        <!-- ===== PASO 5: Presupuesto y contacto ===== -->
+        <div class="modal-paso" data-paso="5">
+          <div class="modal-titulo-con-icono">
+            <div class="icono-contenedor modal-icono-titulo modal-animable">
+              <IconoSVG nombre="moneda" tamaño={22} grosor={1.5} />
+            </div>
+            <h3 class="modal-titulo">Últimos detalles</h3>
+          </div>
+          <p class="modal-subtitulo">Esto nos ayuda a preparar una propuesta adecuada.</p>
+
+          <div class="modal-campo">
+            <label>Rango de presupuesto estimado</label>
+            <div class="modal-opciones-lista" role="radiogroup" aria-label="Presupuesto">
+              <label class="modal-opcion-lista">
+                <input type="radio" name="presupuesto" value="basico" />
+                <span>Básico — Menos de USD 500</span>
+              </label>
+              <label class="modal-opcion-lista">
+                <input type="radio" name="presupuesto" value="medio" />
+                <span>Medio — USD 500 – 2.000</span>
+              </label>
+              <label class="modal-opcion-lista">
+                <input type="radio" name="presupuesto" value="premium" />
+                <span>Premium — USD 2.000 – 5.000</span>
+              </label>
+              <label class="modal-opcion-lista">
+                <input type="radio" name="presupuesto" value="enterprise" />
+                <span>Enterprise — Más de USD 5.000</span>
+              </label>
+              <label class="modal-opcion-lista">
+                <input type="radio" name="presupuesto" value="no-se" />
+                <span>Todavía no lo tengo definido</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="modal-campo">
+            <label>¿Cómo preferís que te contactemos?</label>
+            <div class="modal-opciones-contacto">
+              <label class="modal-check">
+                <input type="checkbox" name="contacto_via" value="email" checked />
+                <span class="modal-check-contenido">
+                  <IconoSVG nombre="correo" tamaño={16} grosor={1.5} clase="modal-check-icono" />
+                  Email
+                </span>
+              </label>
+              <label class="modal-check">
+                <input type="checkbox" name="contacto_via" value="whatsapp" />
+                <span class="modal-check-contenido">
+                  <IconoSVG nombre="mensaje" tamaño={16} grosor={1.5} clase="modal-check-icono" />
+                  WhatsApp
+                </span>
+              </label>
+              <label class="modal-check">
+                <input type="checkbox" name="contacto_via" value="llamada" />
+                <span class="modal-check-contenido">
+                  <IconoSVG nombre="telefono" tamaño={16} grosor={1.5} clase="modal-check-icono" />
+                  Llamada
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <div class="modal-campo" id="campoWhatsapp" style="display:none">
+            <label for="campo-telefono">Tu número de WhatsApp</label>
+            <input type="tel" id="campo-telefono" name="telefono" placeholder="+54 9 11 1234-5678" autocomplete="tel" />
+          </div>
+        </div>
+
+      </div><!-- .modal-cuerpo -->
+
+      <!-- Navegación — siempre en la misma posición -->
+      <div class="modal-nav">
+        <Boton variante="fantasma" class="modal-btn-atras" id="btnAtras" style="visibility:hidden">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+          Atrás
+        </Boton>
+        <Boton class="modal-btn-siguiente" id="btnSiguiente">
+          Siguiente
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </Boton>
+      </div>
+    </form>
+
+    <!-- Pantalla de éxito -->
+    <div class="modal-exito" id="pantallaExito" style="display:none">
+      <div class="modal-exito-icono modal-animable">
+        <div class="icono-contenedor modal-icono-exito">
+          <IconoSVG nombre="check" tamaño={32} grosor={2} />
+        </div>
+      </div>
+      <h3 class="modal-titulo">¡Mensaje enviado!</h3>
+      <p class="modal-subtitulo">Gracias por tu interés. Te respondo a la brevedad.</p>
+      <Boton id="btnCerrarExito">Cerrar</Boton>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* ===== Overlay ===== */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 990;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+
+  .modal-overlay.abierto {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* ===== Contenido ===== */
+  .modal-contenido {
+    background: var(--fondo);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-card);
+    width: 100%;
+    max-width: 520px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 32px;
+    position: relative;
+    transform: translateY(20px) scale(0.97);
+    transition: transform 0.3s ease, background var(--transicion), border-color var(--transicion);
+  }
+
+  .modal-overlay.abierto .modal-contenido {
+    transform: translateY(0) scale(1);
+  }
+
+  /* ===== Cabecera: progreso + cerrar en línea ===== */
+  .modal-cabecera {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .modal-progreso {
+    flex: 1;
+    height: 4px;
+    background: var(--ghost-fondo);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .modal-progreso-barra {
+    height: 100%;
+    background: var(--gradiente);
+    border-radius: 4px;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .modal-cerrar {
+    background: none;
+    border: none;
+    color: var(--gris-sub);
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    transition: color 0.2s, background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-cerrar:hover {
+    color: var(--texto);
+    background: var(--ghost-fondo);
+  }
+
+  .modal-paso-indicador {
+    font-size: 12px;
+    color: var(--gris-sub);
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  /* Dibujo de íconos más lento dentro del modal */
+  .modal-contenido .dibujado .icono-svg path,
+  .modal-contenido .dibujado .icono-svg circle,
+  .modal-contenido .dibujado .icono-svg rect,
+  .modal-contenido .dibujado .icono-svg line,
+  .modal-contenido .dibujado .icono-svg polyline {
+    transition: stroke-dashoffset 1.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* ===== Cuerpo con altura mínima fija ===== */
+  .modal-cuerpo {
+    min-height: 320px;
+  }
+
+  /* ===== Pasos ===== */
+  .modal-paso {
+    display: none;
+  }
+  .modal-paso.activo {
+    display: block;
+    animation: fadeSlideIn 0.3s ease;
+  }
+
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateX(16px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25%      { transform: translateX(-6px); }
+    75%      { transform: translateX(6px); }
+  }
+
+  /* ===== Título con ícono ===== */
+  .modal-titulo-con-icono {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 6px;
+  }
+  .modal-icono-titulo {
+    width: 36px;
+    height: 36px;
+  }
+
+  .modal-titulo {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--texto);
+    transition: color var(--transicion);
+  }
+  .modal-subtitulo {
+    font-size: 14px;
+    color: var(--gris-sub);
+    margin-bottom: 24px;
+    line-height: 1.5;
+    transition: color var(--transicion);
+  }
+
+  /* ===== Campos ===== */
+  .modal-campo {
+    margin-bottom: 18px;
+  }
+  .modal-campo label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--texto);
+    margin-bottom: 6px;
+    transition: color var(--transicion);
+  }
+  .modal-opcional {
+    color: var(--gris-sub);
+    font-weight: 400;
+  }
+  .modal-campo input[type="text"],
+  .modal-campo input[type="email"],
+  .modal-campo input[type="url"],
+  .modal-campo input[type="tel"],
+  .modal-campo textarea {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 15px;
+    font-family: var(--fuente-principal);
+    color: var(--texto);
+    background: var(--fondo-alt);
+    border: 1px solid var(--borde);
+    border-radius: 10px;
+    outline: none;
+    transition: border-color 0.2s, background var(--transicion), color var(--transicion);
+  }
+  .modal-campo input:focus,
+  .modal-campo textarea:focus {
+    border-color: var(--acento);
+  }
+  .modal-campo textarea {
+    resize: vertical;
+    min-height: 90px;
+  }
+  .modal-campo input::placeholder,
+  .modal-campo textarea::placeholder {
+    color: var(--gris-titulo);
+  }
+
+  /* Error */
+  .modal-campo.error input,
+  .modal-campo.error textarea {
+    border-color: #e74c3c;
+  }
+  .modal-campo .modal-error-msg {
+    font-size: 12px;
+    color: #e74c3c;
+    margin-top: 4px;
+    display: none;
+  }
+  .modal-campo.error .modal-error-msg {
+    display: block;
+  }
+
+  /* ===== Opciones tipo card (paso 2) ===== */
+  .modal-opciones {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .modal-opcion input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .modal-opcion-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 10px;
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, transform 0.15s;
+    background: var(--fondo-alt);
+  }
+  .modal-opcion-card:hover {
+    border-color: var(--acento);
+    transform: translateY(-2px);
+  }
+  .modal-opcion input:checked + .modal-opcion-card {
+    border-color: var(--acento);
+    background: var(--ghost-fondo);
+  }
+  .modal-opcion-icono {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+  }
+  .modal-opcion-texto {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--texto);
+    text-align: center;
+    transition: color var(--transicion);
+  }
+
+  /* ===== Opciones lista (paso 5 presupuesto) ===== */
+  .modal-opciones-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .modal-opcion-lista {
+    display: block;
+    cursor: pointer;
+  }
+  .modal-opcion-lista input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .modal-opcion-lista span {
+    display: block;
+    padding: 12px 16px;
+    font-size: 14px;
+    color: var(--texto);
+    background: var(--fondo-alt);
+    border: 1px solid var(--borde);
+    border-radius: 10px;
+    transition: border-color 0.2s, background 0.2s, color var(--transicion);
+  }
+  .modal-opcion-lista:hover span {
+    border-color: var(--acento);
+  }
+  .modal-opcion-lista input:checked + span {
+    border-color: var(--acento);
+    background: var(--ghost-fondo);
+  }
+
+  /* ===== Checkboxes contacto ===== */
+  .modal-opciones-contacto {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .modal-check {
+    cursor: pointer;
+  }
+  .modal-check input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .modal-check-contenido {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    font-size: 14px;
+    color: var(--texto);
+    background: var(--fondo-alt);
+    border: 1px solid var(--borde);
+    border-radius: 10px;
+    transition: border-color 0.2s, background 0.2s, color var(--transicion);
+  }
+  .modal-check:hover .modal-check-contenido {
+    border-color: var(--acento);
+  }
+  .modal-check input:checked + .modal-check-contenido {
+    border-color: var(--acento);
+    background: var(--ghost-fondo);
+  }
+  /* Los íconos inline de checks siempre visibles */
+  .modal-check-icono path,
+  .modal-check-icono circle,
+  .modal-check-icono rect,
+  .modal-check-icono line,
+  .modal-check-icono polyline {
+    stroke-dasharray: 0 !important;
+    stroke-dashoffset: 0 !important;
+  }
+
+  /* ===== Referencias ===== */
+  .modal-referencia-item {
+    padding: 14px;
+    background: var(--fondo-alt);
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    margin-bottom: 10px;
+    transition: background var(--transicion), border-color var(--transicion);
+  }
+  .modal-referencia-item .modal-campo:last-child {
+    margin-bottom: 0;
+  }
+  .modal-referencia-item input {
+    background: var(--fondo) !important;
+  }
+
+  .modal-agregar-ref {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    color: var(--acento);
+    font-size: 13px;
+    font-weight: 500;
+    font-family: var(--fuente-principal);
+    cursor: pointer;
+    padding: 6px 0;
+    transition: opacity 0.2s;
+  }
+  .modal-agregar-ref:hover { opacity: 0.7; }
+
+  .modal-nota-skip {
+    font-size: 12px;
+    color: var(--gris-sub);
+    margin-top: 12px;
+  }
+
+  /* ===== Navegación — posición estable ===== */
+  .modal-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid var(--borde);
+  }
+  .modal-btn-atras {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+  .modal-btn-siguiente {
+    padding: 12px 28px;
+    font-size: 14px;
+    margin-left: auto;
+  }
+
+  /* ===== Éxito ===== */
+  .modal-exito {
+    text-align: center;
+    padding: 40px 20px;
+  }
+  .modal-icono-exito {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 16px;
+  }
+  .modal-exito .modal-titulo {
+    margin-bottom: 10px;
+  }
+  .modal-exito .modal-subtitulo {
+    margin-bottom: 24px;
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 480px) {
+    .modal-contenido {
+      padding: 24px 20px;
+    }
+    .modal-cuerpo {
+      min-height: 280px;
+    }
+    .modal-opciones {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .modal-opciones-contacto {
+      flex-direction: column;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('modalContacto');
+    const form = document.getElementById('formularioContacto');
+    const barra = document.getElementById('progresoFormulario');
+    const indicador = document.getElementById('pasoIndicador');
+    const btnAtras = document.getElementById('btnAtras');
+    const btnSiguiente = document.getElementById('btnSiguiente');
+    const btnAgregarRef = document.getElementById('btnAgregarRef');
+    const contenedorRefs = document.getElementById('contenedorReferencias');
+    const pantallaExito = document.getElementById('pantallaExito');
+    const btnCerrarExito = document.getElementById('btnCerrarExito');
+    const campoWhatsapp = document.getElementById('campoWhatsapp');
+
+    const totalPasos = 5;
+    let pasoActual = 1;
+
+    // Abrir modal
+    document.querySelectorAll('[data-abrir-modal="contacto"]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        modal.classList.add('abierto');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        // Animar íconos SVG del paso activo
+        animarIconosPaso();
+      });
+    });
+
+    // Cerrar modal
+    function cerrarModal() {
+      modal.classList.remove('abierto');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
+    modal.querySelector('.modal-cerrar').addEventListener('click', cerrarModal);
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) cerrarModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal.classList.contains('abierto')) cerrarModal();
+    });
+
+    btnCerrarExito.addEventListener('click', () => {
+      cerrarModal();
+      setTimeout(() => {
+        form.reset();
+        irAPaso(1);
+        form.style.display = '';
+        pantallaExito.style.display = 'none';
+        const refs = contenedorRefs.querySelectorAll('.modal-referencia-item');
+        refs.forEach((ref, i) => { if (i > 0) ref.remove(); });
+      }, 300);
+    });
+
+    // Animar los íconos SVG del paso actual con efecto escalonado
+    function animarIconosPaso() {
+      // Quitar .dibujado de todos los pasos primero
+      form.querySelectorAll('.modal-animable.dibujado').forEach(el => {
+        el.classList.remove('dibujado');
+      });
+
+      const pasoEl = form.querySelector(`[data-paso="${pasoActual}"]`);
+      if (!pasoEl) return;
+
+      const animables = pasoEl.querySelectorAll('.modal-animable');
+      animables.forEach((el, i) => {
+        // Escalonar: cada ícono arranca 100ms después del anterior
+        setTimeout(() => el.classList.add('dibujado'), 250 + i * 250);
+      });
+    }
+
+    // Actualizar UI del paso
+    function actualizarPaso() {
+      const pasos = form.querySelectorAll('.modal-paso');
+      pasos.forEach(p => p.classList.remove('activo'));
+      form.querySelector(`[data-paso="${pasoActual}"]`).classList.add('activo');
+
+      const porcentaje = (pasoActual / totalPasos) * 100;
+      barra.style.width = `${porcentaje}%`;
+      indicador.textContent = `Paso ${pasoActual} de ${totalPasos}`;
+
+      btnAtras.style.visibility = pasoActual === 1 ? 'hidden' : 'visible';
+
+      if (pasoActual === totalPasos) {
+        btnSiguiente.innerHTML = `Enviar <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="22 2 15 22 11 13 2 9 22 2"/></svg>`;
+      } else {
+        btnSiguiente.innerHTML = `Siguiente <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>`;
+      }
+
+      // Animar íconos del nuevo paso
+      animarIconosPaso();
+    }
+
+    function irAPaso(n) {
+      pasoActual = n;
+      actualizarPaso();
+    }
+
+    // Validación por paso
+    function validarPaso() {
+      form.querySelectorAll('.modal-campo.error').forEach(c => c.classList.remove('error'));
+
+      if (pasoActual === 1) {
+        let valido = true;
+        const nombre = document.getElementById('campo-nombre');
+        const email = document.getElementById('campo-email');
+
+        if (!nombre.value.trim()) {
+          nombre.closest('.modal-campo').classList.add('error');
+          valido = false;
+        }
+        if (!email.value.trim() || !email.validity.valid) {
+          email.closest('.modal-campo').classList.add('error');
+          valido = false;
+        }
+        return valido;
+      }
+
+      if (pasoActual === 2) {
+        const seleccionado = form.querySelector('input[name="tipo"]:checked');
+        if (!seleccionado) {
+          const opciones = form.querySelector('.modal-opciones');
+          opciones.style.animation = 'none';
+          opciones.offsetHeight;
+          opciones.style.animation = 'shake 0.4s ease';
+          return false;
+        }
+        return true;
+      }
+
+      if (pasoActual === 3) {
+        const desc = document.getElementById('campo-descripcion');
+        if (!desc.value.trim()) {
+          desc.closest('.modal-campo').classList.add('error');
+          return false;
+        }
+        return true;
+      }
+
+      return true;
+    }
+
+    // Navegación
+    btnSiguiente.addEventListener('click', () => {
+      if (!validarPaso()) return;
+
+      if (pasoActual === totalPasos) {
+        enviarFormulario();
+        return;
+      }
+
+      pasoActual++;
+      actualizarPaso();
+    });
+
+    btnAtras.addEventListener('click', () => {
+      if (pasoActual > 1) {
+        pasoActual--;
+        actualizarPaso();
+      }
+    });
+
+    // Agregar referencia
+    btnAgregarRef.addEventListener('click', () => {
+      const nuevoRef = document.createElement('div');
+      nuevoRef.className = 'modal-referencia-item';
+      nuevoRef.innerHTML = `
+        <div class="modal-campo">
+          <label>Link de referencia</label>
+          <input type="url" name="referencia_url[]" placeholder="https://ejemplo.com" />
+        </div>
+        <div class="modal-campo" style="margin-bottom:0">
+          <label>¿Qué te gusta de este sitio? <span class="modal-opcional">(opcional)</span></label>
+          <input type="text" name="referencia_nota[]" placeholder="Ej: La tipografía, las animaciones..." />
+        </div>
+      `;
+      contenedorRefs.appendChild(nuevoRef);
+    });
+
+    // Mostrar/ocultar campo WhatsApp
+    document.querySelectorAll('input[name="contacto_via"]').forEach(cb => {
+      cb.addEventListener('change', () => {
+        const whatsappChecked = document.querySelector('input[name="contacto_via"][value="whatsapp"]').checked;
+        campoWhatsapp.style.display = whatsappChecked ? 'block' : 'none';
+      });
+    });
+
+    // Enviar formulario
+    function enviarFormulario() {
+      const datos = new FormData(form);
+      const nombre = datos.get('nombre');
+      const email = datos.get('email');
+      const tipo = datos.get('tipo') || 'No especificado';
+      const descripcion = datos.get('descripcion');
+      const plazo = datos.get('plazo') || 'No especificado';
+      const presupuesto = datos.get('presupuesto') || 'No especificado';
+
+      const urls = datos.getAll('referencia_url[]').filter(u => u.trim());
+      const notas = datos.getAll('referencia_nota[]');
+      let refsTexto = '';
+      urls.forEach((url, i) => {
+        refsTexto += `\n  - ${url}`;
+        if (notas[i]?.trim()) refsTexto += ` (${notas[i].trim()})`;
+      });
+
+      const vias = datos.getAll('contacto_via').join(', ') || 'Email';
+      const telefono = datos.get('telefono');
+
+      const cuerpo = `Hola! Soy ${nombre}.
+
+TIPO DE PROYECTO: ${tipo}
+
+DESCRIPCIÓN:
+${descripcion}
+
+PLAZO ESTIMADO: ${plazo}
+
+REFERENCIAS:${refsTexto || '\n  Ninguna'}
+
+PRESUPUESTO: ${presupuesto}
+
+CONTACTAR VÍA: ${vias}${telefono ? `\nTELÉFONO: ${telefono}` : ''}
+
+---
+Enviado desde stiancode.dev`;
+
+      const mailto = `mailto:anterior.sembrar-0o@icloud.com?subject=${encodeURIComponent(`Nuevo proyecto: ${tipo} — ${nombre}`)}&body=${encodeURIComponent(cuerpo)}`;
+      window.open(mailto, '_blank');
+
+      form.style.display = 'none';
+      pantallaExito.style.display = 'block';
+      // Animar ícono de éxito
+      const exitoAnimable = pantallaExito.querySelector('.modal-animable');
+      if (exitoAnimable) {
+        exitoAnimable.classList.remove('dibujado');
+        setTimeout(() => exitoAnimable.classList.add('dibujado'), 100);
+      }
+    }
+  });
+</script>

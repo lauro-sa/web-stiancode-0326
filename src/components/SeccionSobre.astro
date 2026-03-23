@@ -1,0 +1,81 @@
+---
+// ============================================================
+// SeccionSobre.astro — "Sobre mí" de stiancode.dev
+// EDITAR: constante CONTENIDO abajo con tu información real
+// ============================================================
+import Boton from './Boton.astro';
+
+// ---- Contenido ----
+const CONTENIDO = {
+  parrafo1: 'Desarrollador full-stack con más de 7 años de experiencia construyendo aplicaciones web completas. Desde la interfaz hasta el backend, cada proyecto está pensado para ofrecer rendimiento, escalabilidad y una experiencia de usuario sólida.',
+
+  parrafo2: 'Comprometido con la formación continua y la adopción de las mejores prácticas de la industria. Cada solución que desarrollo está respaldada por un enfoque metódico y orientado a resultados concretos.',
+
+  parrafo3: 'Si estás buscando un profesional para llevar tu próximo proyecto al siguiente nivel, estoy disponible para colaborar.',
+
+  stats: [
+    { numero: '+20',  etiqueta: 'Proyectos entregados'       },
+    { numero: '7+',   etiqueta: 'Años de experiencia'       },
+    { numero: '+10',  etiqueta: 'Certificaciones y formaciones' },
+    { numero: '100%', etiqueta: 'Compromiso con cada proyecto'  },
+  ],
+};
+---
+
+<div class="fondo-puntos">
+  <div class="panel-interior">
+    <section class="seccion" id="sobre-mi">
+
+      <span class="etiqueta">Sobre mí</span>
+      <h2 class="titulo-dos-tonos">
+        <span class="negro">Quién está detrás.</span><br>
+        <span class="gris">Más que código.</span>
+      </h2>
+
+      <div class="sobre-grilla">
+
+        <!-- Bio — EDITAR los párrafos arriba en CONTENIDO -->
+        <div class="sobre-bio">
+          <p>{CONTENIDO.parrafo1}</p>
+          <p>{CONTENIDO.parrafo2}</p>
+          <p>{CONTENIDO.parrafo3}</p>
+
+          <div class="sobre-botones">
+            <Boton href="/sobre-mi">
+              Mi recorrido
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </Boton>
+            <Boton variante="fantasma" href="https://github.com/lauro-sa" target="_blank" rel="noopener noreferrer">
+              GitHub →
+            </Boton>
+          </div>
+        </div>
+
+        <!-- Stats — EDITAR en CONTENIDO.stats arriba -->
+        <div class="sobre-stats">
+          {CONTENIDO.stats.map((stat) => (
+            <div class="stat-item">
+              <span class="stat-numero">{stat.numero}</span>
+              <span class="stat-etiqueta">{stat.etiqueta}</span>
+            </div>
+          ))}
+        </div>
+
+      </div>
+    </section>
+  </div>
+</div>
+
+<style>
+  .sobre-grilla  { display:grid;grid-template-columns:1fr 1fr;gap:48px;margin-top:40px;align-items:start; }
+  .sobre-bio     { font-size:15px;color:var(--gris-sub);line-height:1.8;display:flex;flex-direction:column;gap:16px;transition:color .5s; }
+  .sobre-botones { display:flex;gap:10px;flex-wrap:wrap;margin-top:12px; }
+
+  .sobre-stats { display:flex;flex-direction:column;gap:1px;background:var(--borde);border-radius:16px;overflow:hidden;transition:background .5s; }
+  .stat-item   { background:var(--fondo);padding:20px 24px;display:flex;flex-direction:column;gap:4px;transition:background .2s; }
+  .stat-item:hover { background:var(--card); }
+  .stat-numero  { font-size:28px;font-weight:700;color:var(--texto);letter-spacing:-1px;transition:color .5s; }
+  .stat-etiqueta { font-size:13px;color:var(--gris-sub);transition:color .5s; }
+
+  @media (max-width:768px) { .sobre-grilla { grid-template-columns:1fr; } }
+</style>

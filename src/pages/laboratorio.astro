@@ -1,0 +1,3543 @@
+---
+// ============================================================
+// laboratorio.astro — Herramientas digitales interactivas
+//
+// Grilla de herramientas → clic abre modal con la herramienta
+// funcionando. Solo 1 modal abierto a la vez.
+// ============================================================
+import Plantilla from '../layouts/Plantilla.astro';
+import Nav       from '../components/Nav.astro';
+import Footer    from '../components/Footer.astro';
+import IconoSVG  from '../components/ui/IconoSVG.astro';
+import Boton     from '../components/Boton.astro';
+
+interface Herramienta {
+  id:          string;
+  numero:      string;
+  titulo:      string;
+  descripcion: string;
+  icono:       string;
+  disponible:  boolean;
+}
+
+const HERRAMIENTAS: Herramienta[] = [
+  {
+    id: 'contrasenas',
+    numero: '01',
+    titulo: 'Generador de Contraseñas',
+    descripcion: 'Contraseñas seguras y personalizables. Elegí largo, tipos de caracteres y nivel de seguridad.',
+    icono: 'candado',
+    disponible: true,
+  },
+  {
+    id: 'qr',
+    numero: '02',
+    titulo: 'Generador de Códigos QR',
+    descripcion: 'Creá códigos QR desde cualquier enlace. Colores, fondo transparente, logo y descarga en PNG.',
+    icono: 'qr',
+    disponible: true,
+  },
+  {
+    id: 'audio',
+    numero: '03',
+    titulo: 'Conversor de Audio',
+    descripcion: 'Convertí archivos de audio a MP3, WAV, AAC u OGG con seguimiento en tiempo real.',
+    icono: 'audio',
+    disponible: false,
+  },
+  {
+    id: 'imagen',
+    numero: '04',
+    titulo: 'Conversor de Imágenes',
+    descripcion: 'Convertí, redimensioná y comprimí imágenes. Soporta JPEG, PNG, WEBP y BMP.',
+    icono: 'imagen',
+    disponible: false,
+  },
+  {
+    id: 'wifi',
+    numero: '05',
+    titulo: 'Generador QR Wi-Fi',
+    descripcion: 'Generá un QR para que cualquiera se conecte a tu red Wi-Fi escaneando.',
+    icono: 'wifi',
+    disponible: true,
+  },
+  {
+    id: 'paleta',
+    numero: '06',
+    titulo: 'Generador de Paletas',
+    descripcion: 'Creá paletas de colores armónicas. Bloqueá los que te gusten y generá combinaciones nuevas.',
+    icono: 'paleta',
+    disponible: true,
+  },
+  {
+    id: 'redimensionar',
+    numero: '07',
+    titulo: 'Redimensionar para Redes',
+    descripcion: 'Redimensioná imágenes al tamaño exacto de cada red social. Instagram, Facebook, X, TikTok y más.',
+    icono: 'recortar',
+    disponible: true,
+  },
+];
+---
+
+<Plantilla
+  titulo="Laboratorio Digital — S7ian Code"
+  descripcion="Herramientas digitales gratuitas: generador de contraseñas, códigos QR, conversor de audio e imágenes."
+>
+  <Nav/>
+
+  <main>
+    <div class="fondo-puntos">
+      <div class="panel-interior">
+        <section class="seccion" id="laboratorio">
+
+          <span class="etiqueta">Laboratorio</span>
+          <h2 class="titulo-dos-tonos">
+            <span class="negro">Laboratorio Digital.</span><br>
+            <span class="gris">Herramientas y experimentos.</span>
+          </h2>
+          <p class="typewriter" data-texto="Herramientas prácticas y gratuitas para resolver problemas cotidianos. Hacé clic en cualquiera para usarla." aria-label="Herramientas prácticas y gratuitas para resolver problemas cotidianos."></p>
+
+          <!-- Grilla de herramientas -->
+          <div class="lab-grilla">
+            {HERRAMIENTAS.map((h) => (
+              <button
+                class={`lab-card ${!h.disponible ? 'lab-card--pronto' : ''}`}
+                data-herramienta={h.id}
+                disabled={!h.disponible}
+              >
+                <div class="lab-card-top">
+                  <div class="icono-contenedor lab-card-icono">
+                    <IconoSVG nombre={h.icono} tamaño={22} grosor={1.5} />
+                  </div>
+                  <span class="lab-card-numero">{h.numero}</span>
+                </div>
+                <h3 class="lab-card-titulo">{h.titulo}</h3>
+                <p class="lab-card-desc">{h.descripcion}</p>
+                {h.disponible ? (
+                  <span class="lab-card-accion">Abrir herramienta →</span>
+                ) : (
+                  <span class="lab-card-pronto">Próximamente</span>
+                )}
+              </button>
+            ))}
+          </div>
+
+          <div class="lab-volver">
+            <Boton variante="fantasma" href="/#laboratorio">← Volver al inicio</Boton>
+          </div>
+
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <!-- ============================================================
+       MODAL: Generador de Contraseñas
+       ============================================================ -->
+  <div class="lab-modal-overlay" id="modal-contrasenas" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Generador de Contraseñas">
+    <div class="lab-modal">
+
+      <div class="lab-modal-header">
+        <div class="lab-modal-header-izq">
+          <IconoSVG nombre="candado" tamaño={28} grosor={1.4} />
+          <h3 class="lab-modal-titulo">Generador de Contraseñas</h3>
+        </div>
+        <button class="lab-modal-cerrar" aria-label="Cerrar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="lab-modal-body">
+        <div class="lab-modal-grid">
+
+          <!-- Columna izquierda: modos + descripción -->
+          <div class="lab-modal-grid-col">
+            <div class="gen-modos">
+              <button class="gen-modo activo" data-modo="segura">
+                <span class="gen-modo-nombre">Segura</span>
+                <span class="gen-modo-desc">Estilo iOS/Google</span>
+              </button>
+              <button class="gen-modo" data-modo="pro">
+                <span class="gen-modo-nombre">Pro</span>
+                <span class="gen-modo-desc">Configurá todo</span>
+              </button>
+              <button class="gen-modo" data-modo="ultra">
+                <span class="gen-modo-nombre">Ultra</span>
+                <span class="gen-modo-desc">Máxima seguridad</span>
+              </button>
+            </div>
+            <div class="gen-modo-info" id="gen-modo-info">
+              <p class="gen-modo-info-texto" id="gen-modo-info-segura">Contraseña legible con guiones, como las que genera iOS o Google. Usa letras y números, ideal para la mayoría de sitios y apps.</p>
+              <p class="gen-modo-info-texto" id="gen-modo-info-pro" style="display:none">Control total: elegí qué tipos de caracteres incluir, si querés guiones separadores y el largo exacto. Para cuando un sitio tiene requisitos específicos.</p>
+              <p class="gen-modo-info-texto" id="gen-modo-info-ultra" style="display:none">Incluye caracteres Unicode, símbolos matemáticos, griegos y especiales. Máxima entropía posible, pero algunos sitios podrían no aceptar todos los caracteres.</p>
+            </div>
+          </div>
+
+          <!-- Columna derecha: controles -->
+          <div class="lab-modal-grid-col">
+            <div class="gen-controles" id="gen-controles">
+              <div class="gen-control">
+                <div class="gen-control-label">
+                  <span>Largo</span>
+                  <span class="gen-control-valor" id="gen-largo-valor">16</span>
+                </div>
+                <input type="range" id="gen-largo" min="8" max="64" value="16" class="gen-slider" />
+                <div class="gen-presets">
+                  <button class="gen-preset" data-largo="12">12</button>
+                  <button class="gen-preset activo" data-largo="16">16</button>
+                  <button class="gen-preset" data-largo="20">20</button>
+                  <button class="gen-preset" data-largo="24">24</button>
+                  <button class="gen-preset" data-largo="32">32</button>
+                </div>
+              </div>
+              <div class="gen-opciones-custom" id="gen-opciones-pro" style="display:none">
+                <div class="gen-toggles">
+                  <label class="gen-toggle">
+                    <input type="checkbox" id="gen-mayusculas" checked />
+                    <span class="gen-toggle-switch"></span>
+                    <span class="gen-toggle-label">Mayúsculas</span>
+                    <span class="gen-toggle-ejemplo">A-Z</span>
+                  </label>
+                  <label class="gen-toggle">
+                    <input type="checkbox" id="gen-minusculas" checked />
+                    <span class="gen-toggle-switch"></span>
+                    <span class="gen-toggle-label">Minúsculas</span>
+                    <span class="gen-toggle-ejemplo">a-z</span>
+                  </label>
+                  <label class="gen-toggle">
+                    <input type="checkbox" id="gen-numeros" checked />
+                    <span class="gen-toggle-switch"></span>
+                    <span class="gen-toggle-label">Números</span>
+                    <span class="gen-toggle-ejemplo">0-9</span>
+                  </label>
+                  <label class="gen-toggle">
+                    <input type="checkbox" id="gen-simbolos" checked />
+                    <span class="gen-toggle-switch"></span>
+                    <span class="gen-toggle-label">Símbolos</span>
+                    <span class="gen-toggle-ejemplo">!@#$</span>
+                  </label>
+                  <label class="gen-toggle">
+                    <input type="checkbox" id="gen-guiones" checked />
+                    <span class="gen-toggle-switch"></span>
+                    <span class="gen-toggle-label">Guiones separadores</span>
+                    <span class="gen-toggle-ejemplo">xxxx-xxxx</span>
+                  </label>
+                </div>
+              </div>
+              <div id="gen-info-ultra" style="display:none"></div>
+            </div>
+          </div>
+
+          <!-- Full-width: resultado + fuerza -->
+          <div class="lab-modal-grid-full">
+            <div class="gen-resultado">
+              <input type="text" class="gen-password" id="gen-password" value="" placeholder="Generá tu contraseña" spellcheck="false" autocomplete="off" />
+              <button class="gen-copiar" id="gen-copiar" aria-label="Copiar contraseña" title="Copiar">
+                <svg class="gen-copiar-icono" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                <svg class="gen-copiar-check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+              </button>
+            </div>
+            <div class="gen-fuerza">
+              <div class="gen-fuerza-barra">
+                <div class="gen-fuerza-nivel" id="gen-fuerza-nivel"></div>
+              </div>
+              <span class="gen-fuerza-texto" id="gen-fuerza-texto">—</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Footer fijo con botón generar -->
+      <div class="lab-modal-footer">
+        <button class="gen-boton" id="gen-generar">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.78 7.78 5.5 5.5 0 0 1 7.78-7.78zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+          Generar contraseña
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODAL: Generador de Códigos QR
+       ============================================================ -->
+  <div class="lab-modal-overlay" id="modal-qr" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Generador de Códigos QR">
+    <div class="lab-modal lab-modal--ancho">
+
+      <div class="lab-modal-header">
+        <div class="lab-modal-header-izq">
+          <IconoSVG nombre="qr" tamaño={28} grosor={1.4} />
+          <h3 class="lab-modal-titulo">Generador de Códigos QR</h3>
+        </div>
+        <button class="lab-modal-cerrar" aria-label="Cerrar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="lab-modal-body">
+        <div class="lab-modal-grid">
+
+          <!-- Columna izquierda: preview QR -->
+          <div class="lab-modal-grid-col lab-modal-grid-col--centro">
+            <div class="qr-preview-zona">
+              <div class="qr-preview" id="qr-preview">
+                <canvas id="qr-canvas" width="280" height="280"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Columna derecha: opciones -->
+          <div class="lab-modal-grid-col">
+            <div class="qr-campo">
+              <label class="qr-label" for="qr-url">URL o texto</label>
+              <input type="text" class="qr-input" id="qr-url" placeholder="https://tusitio.com" spellcheck="false" autocomplete="off" value="https://stiancode.dev" />
+            </div>
+
+            <div class="qr-seccion">
+              <span class="qr-label">Fondo</span>
+              <div class="qr-opciones-fondo">
+                <button class="qr-opcion-fondo activo" data-fondo="transparente">
+                  <span class="qr-fondo-muestra qr-fondo-transparente"></span>
+                  <span>Transparente</span>
+                </button>
+                <button class="qr-opcion-fondo" data-fondo="blanco">
+                  <span class="qr-fondo-muestra" style="background:#fff"></span>
+                  <span>Blanco</span>
+                </button>
+                <button class="qr-opcion-fondo" data-fondo="negro">
+                  <span class="qr-fondo-muestra" style="background:#111"></span>
+                  <span>Negro</span>
+                </button>
+                <button class="qr-opcion-fondo" data-fondo="custom">
+                  <span class="qr-fondo-muestra" style="background:var(--acento)"></span>
+                  <span>Color</span>
+                </button>
+              </div>
+              <div class="qr-color-custom" id="qr-fondo-custom" style="display:none">
+                <span class="qr-color-label">Color de fondo</span>
+                <input type="color" id="qr-fondo-color" value="#7c5ce8" class="qr-color-picker" />
+                <input type="text" id="qr-fondo-hex" value="#7c5ce8" class="qr-hex-input" maxlength="7" spellcheck="false" placeholder="#7c5ce8" />
+              </div>
+            </div>
+
+            <div class="qr-seccion">
+              <span class="qr-label">Color del código</span>
+              <div class="qr-colores-rapidos">
+                <button class="qr-color-btn activo" data-color="#000000" style="background:#000;border-color:#333"></button>
+                <button class="qr-color-btn" data-color="#ffffff" style="background:#fff"></button>
+                <button class="qr-color-btn" data-color="#7c5ce8" style="background:#7c5ce8"></button>
+                <button class="qr-color-btn" data-color="#3b82f6" style="background:#3b82f6"></button>
+                <button class="qr-color-btn" data-color="#10b981" style="background:#10b981"></button>
+                <button class="qr-color-btn" data-color="#ef4444" style="background:#ef4444"></button>
+              </div>
+              <div class="qr-color-row">
+                <input type="color" id="qr-dot-color" value="#000000" class="qr-color-picker" title="Elegir color" />
+                <input type="text" id="qr-dot-hex" value="#000000" class="qr-hex-input" maxlength="7" spellcheck="false" placeholder="#000000" />
+              </div>
+            </div>
+
+            <div class="qr-seccion">
+              <div class="qr-toggle-row">
+                <label class="gen-toggle">
+                  <input type="checkbox" id="qr-logo-toggle" checked />
+                  <span class="gen-toggle-switch"></span>
+                  <span class="gen-toggle-label">Logo en el centro</span>
+                </label>
+              </div>
+              <div class="qr-logo-opciones" id="qr-logo-opciones">
+                <button class="qr-logo-btn activo" id="qr-logo-sitio" data-logo="sitio">Usar logo del sitio</button>
+                <label class="qr-logo-btn" id="qr-logo-custom-label" data-logo="custom">
+                  Subir imagen
+                  <input type="file" id="qr-logo-file" accept="image/*" style="display:none" />
+                </label>
+              </div>
+            </div>
+
+            <div class="qr-seccion">
+              <div class="gen-control-label">
+                <span class="qr-label">Tamaño de descarga</span>
+                <span class="gen-control-valor" id="qr-tamano-valor">512px</span>
+              </div>
+              <input type="range" id="qr-tamano" min="256" max="1024" step="128" value="512" class="gen-slider" />
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Footer fijo -->
+      <div class="lab-modal-footer qr-footer">
+        <button class="qr-accion-btn" id="qr-copiar">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copiar
+        </button>
+        <button class="gen-boton" id="qr-descargar">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Descargar PNG
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODAL: Generador QR Wi-Fi
+       ============================================================ -->
+  <div class="lab-modal-overlay" id="modal-wifi" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Generador QR Wi-Fi">
+    <div class="lab-modal lab-modal--wifi">
+
+      <div class="lab-modal-header">
+        <div class="lab-modal-header-izq">
+          <IconoSVG nombre="wifi" tamaño={28} grosor={1.4} />
+          <h3 class="lab-modal-titulo">Generador QR Wi-Fi</h3>
+        </div>
+        <button class="lab-modal-cerrar" aria-label="Cerrar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="lab-modal-body">
+        <div class="lab-modal-grid lab-modal-grid--tres">
+
+          <!-- Col 1: Datos de red -->
+          <div class="lab-modal-grid-col">
+            <div class="qr-campo">
+              <label class="qr-label" for="wifi-ssid">Nombre de la red (SSID)</label>
+              <input type="text" class="qr-input" id="wifi-ssid" placeholder="Mi Red Wi-Fi" spellcheck="false" autocomplete="off" />
+            </div>
+
+            <div class="qr-campo">
+              <label class="qr-label" for="wifi-pass">Contraseña</label>
+              <div class="wifi-pass-row">
+                <input type="password" class="qr-input wifi-pass-input" id="wifi-pass" placeholder="••••••••" spellcheck="false" autocomplete="off" />
+                <button class="wifi-pass-toggle" id="wifi-pass-toggle" aria-label="Mostrar contraseña" type="button">
+                  <svg class="wifi-eye-show" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg class="wifi-eye-hide" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="qr-seccion">
+              <span class="qr-label">Seguridad</span>
+              <div class="wifi-seguridad">
+                <button class="wifi-seg-btn activo" data-seg="WPA">WPA/WPA2</button>
+                <button class="wifi-seg-btn" data-seg="WEP">WEP</button>
+                <button class="wifi-seg-btn" data-seg="nopass">Sin contraseña</button>
+              </div>
+            </div>
+
+            <div class="qr-seccion">
+              <label class="gen-toggle">
+                <input type="checkbox" id="wifi-oculta" />
+                <span class="gen-toggle-switch"></span>
+                <span class="gen-toggle-label">Red oculta</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Col 2: Preview QR -->
+          <div class="lab-modal-grid-col lab-modal-grid-col--centro">
+            <div class="qr-preview-zona">
+              <div class="qr-preview" id="wifi-qr-preview">
+                <canvas id="wifi-canvas" width="280" height="280"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Col 3: Estilos -->
+          <div class="lab-modal-grid-col">
+            <div class="qr-seccion">
+              <span class="qr-label">Fondo</span>
+              <div class="qr-opciones-fondo">
+                <button class="qr-opcion-fondo wifi-fondo-btn activo" data-fondo="transparente">
+                  <span class="qr-fondo-muestra qr-fondo-transparente"></span>
+                  <span>Transparente</span>
+                </button>
+                <button class="qr-opcion-fondo wifi-fondo-btn" data-fondo="blanco">
+                  <span class="qr-fondo-muestra" style="background:#fff"></span>
+                  <span>Blanco</span>
+                </button>
+                <button class="qr-opcion-fondo wifi-fondo-btn" data-fondo="negro">
+                  <span class="qr-fondo-muestra" style="background:#111"></span>
+                  <span>Negro</span>
+                </button>
+                <button class="qr-opcion-fondo wifi-fondo-btn" data-fondo="custom">
+                  <span class="qr-fondo-muestra" style="background:var(--acento)"></span>
+                  <span>Color</span>
+                </button>
+              </div>
+              <div class="qr-color-custom" id="wifi-fondo-custom" style="display:none">
+                <span class="qr-color-label">Color de fondo</span>
+                <input type="color" id="wifi-fondo-color" value="#7c5ce8" class="qr-color-picker" />
+                <input type="text" id="wifi-fondo-hex" value="#7c5ce8" class="qr-hex-input" maxlength="7" spellcheck="false" />
+              </div>
+            </div>
+
+            <div class="qr-seccion">
+              <span class="qr-label">Color del código</span>
+              <div class="qr-colores-rapidos">
+                <button class="qr-color-btn wifi-color-btn activo" data-color="#000000" style="background:#000;border-color:#333"></button>
+                <button class="qr-color-btn wifi-color-btn" data-color="#ffffff" style="background:#fff"></button>
+                <button class="qr-color-btn wifi-color-btn" data-color="#7c5ce8" style="background:#7c5ce8"></button>
+                <button class="qr-color-btn wifi-color-btn" data-color="#3b82f6" style="background:#3b82f6"></button>
+                <button class="qr-color-btn wifi-color-btn" data-color="#10b981" style="background:#10b981"></button>
+                <button class="qr-color-btn wifi-color-btn" data-color="#ef4444" style="background:#ef4444"></button>
+              </div>
+              <div class="qr-color-row">
+                <input type="color" id="wifi-dot-color" value="#000000" class="qr-color-picker" title="Elegir color" />
+                <input type="text" id="wifi-dot-hex" value="#000000" class="qr-hex-input" maxlength="7" spellcheck="false" placeholder="#000000" />
+              </div>
+            </div>
+
+            <div class="qr-seccion">
+              <div class="qr-toggle-row">
+                <label class="gen-toggle">
+                  <input type="checkbox" id="wifi-logo-toggle" checked />
+                  <span class="gen-toggle-switch"></span>
+                  <span class="gen-toggle-label">Logo en el centro</span>
+                </label>
+              </div>
+              <div class="qr-logo-opciones" id="wifi-logo-opciones">
+                <button class="qr-logo-btn activo" data-logo="sitio">Usar logo del sitio</button>
+                <label class="qr-logo-btn" data-logo="custom">
+                  Subir imagen
+                  <input type="file" id="wifi-logo-file" accept="image/*" style="display:none" />
+                </label>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Footer fijo -->
+      <div class="lab-modal-footer qr-footer">
+        <button class="qr-accion-btn" id="wifi-copiar">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copiar
+        </button>
+        <button class="gen-boton" id="wifi-descargar">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Descargar PNG
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODAL: Generador de Paletas
+       ============================================================ -->
+  <div class="lab-modal-overlay" id="modal-paleta" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Generador de Paletas">
+    <div class="lab-modal lab-modal--paleta">
+
+      <div class="lab-modal-header">
+        <div class="lab-modal-header-izq">
+          <IconoSVG nombre="paleta" tamaño={28} grosor={1.4} />
+          <h3 class="lab-modal-titulo">Generador de Paletas</h3>
+        </div>
+        <button class="lab-modal-cerrar" aria-label="Cerrar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="lab-modal-body pal-body">
+
+        <!-- Modo de armonía -->
+        <div class="pal-modos">
+          <button class="pal-modo activo" data-armonia="random">Aleatorio</button>
+          <button class="pal-modo" data-armonia="analogous">Análogos</button>
+          <button class="pal-modo" data-armonia="complementary">Complementarios</button>
+          <button class="pal-modo" data-armonia="triadic">Triádicos</button>
+          <button class="pal-modo" data-armonia="split">Split</button>
+        </div>
+
+        <!-- 5 columnas de color -->
+        <div class="pal-columnas" id="pal-columnas">
+          <div class="pal-col" data-idx="0">
+            <div class="pal-color" id="pal-color-0"></div>
+            <div class="pal-info">
+              <button class="pal-hex" id="pal-hex-0" title="Copiar HEX"><span class="pal-hex-texto">#000000</span><svg class="pal-hex-icono" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+              <button class="pal-lock" id="pal-lock-0" aria-label="Bloquear color" title="Bloquear">
+                <svg class="pal-lock-open" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+                <svg class="pal-lock-closed" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="pal-col" data-idx="1">
+            <div class="pal-color" id="pal-color-1"></div>
+            <div class="pal-info">
+              <button class="pal-hex" id="pal-hex-1" title="Copiar HEX"><span class="pal-hex-texto">#000000</span><svg class="pal-hex-icono" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+              <button class="pal-lock" id="pal-lock-1" aria-label="Bloquear color" title="Bloquear">
+                <svg class="pal-lock-open" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+                <svg class="pal-lock-closed" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="pal-col" data-idx="2">
+            <div class="pal-color" id="pal-color-2"></div>
+            <div class="pal-info">
+              <button class="pal-hex" id="pal-hex-2" title="Copiar HEX"><span class="pal-hex-texto">#000000</span><svg class="pal-hex-icono" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+              <button class="pal-lock" id="pal-lock-2" aria-label="Bloquear color" title="Bloquear">
+                <svg class="pal-lock-open" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+                <svg class="pal-lock-closed" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="pal-col" data-idx="3">
+            <div class="pal-color" id="pal-color-3"></div>
+            <div class="pal-info">
+              <button class="pal-hex" id="pal-hex-3" title="Copiar HEX"><span class="pal-hex-texto">#000000</span><svg class="pal-hex-icono" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+              <button class="pal-lock" id="pal-lock-3" aria-label="Bloquear color" title="Bloquear">
+                <svg class="pal-lock-open" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+                <svg class="pal-lock-closed" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="pal-col" data-idx="4">
+            <div class="pal-color" id="pal-color-4"></div>
+            <div class="pal-info">
+              <button class="pal-hex" id="pal-hex-4" title="Copiar HEX"><span class="pal-hex-texto">#000000</span><svg class="pal-hex-icono" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+              <button class="pal-lock" id="pal-lock-4" aria-label="Bloquear color" title="Bloquear">
+                <svg class="pal-lock-open" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+                <svg class="pal-lock-closed" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <p class="pal-hint">Presioná <kbd>Espacio</kbd> para generar · Clic en el HEX para copiar</p>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="lab-modal-footer qr-footer">
+        <button class="qr-accion-btn" id="pal-copiar-css" title="Copiar como CSS">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copiar CSS
+        </button>
+        <button class="gen-boton" id="pal-generar">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.78 7.78 5.5 5.5 0 0 1 7.78-7.78zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+          Generar paleta
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODAL: Redimensionar para Redes
+       ============================================================ -->
+  <div class="lab-modal-overlay" id="modal-redimensionar" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Redimensionar para Redes">
+    <div class="lab-modal lab-modal--ancho">
+
+      <div class="lab-modal-header">
+        <div class="lab-modal-header-izq">
+          <IconoSVG nombre="recortar" tamaño={28} grosor={1.4} />
+          <h3 class="lab-modal-titulo">Redimensionar para Redes</h3>
+        </div>
+        <button class="lab-modal-cerrar" aria-label="Cerrar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="lab-modal-body">
+        <div class="lab-modal-grid">
+
+          <!-- Columna izquierda: upload + preview -->
+          <div class="lab-modal-grid-col">
+            <div class="rds-dropzone" id="rds-dropzone">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <p class="rds-dropzone-texto">Arrastrá una imagen o hacé clic</p>
+              <span class="rds-dropzone-formatos">JPG, PNG, WebP</span>
+              <input type="file" id="rds-file" accept="image/jpeg,image/png,image/webp" style="display:none" />
+            </div>
+            <div class="rds-preview-zona" id="rds-preview-zona" style="display:none">
+              <canvas id="rds-canvas"></canvas>
+              <p class="rds-hint">Arrastrá la imagen para reposicionar el recorte</p>
+              <div class="rds-preview-info">
+                <span class="rds-preview-dims" id="rds-dims"></span>
+                <button class="rds-cambiar" id="rds-cambiar">Cambiar imagen</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Columna derecha: presets + formato -->
+          <div class="lab-modal-grid-col">
+
+            <div class="qr-seccion">
+              <span class="qr-label">Plataforma</span>
+              <div class="rds-presets" id="rds-presets">
+                <button class="rds-preset activo" data-w="1080" data-h="1080" data-nombre="Instagram Post"><span class="rds-preset-nombre">IG Post</span><span class="rds-preset-dim">1080×1080</span></button>
+                <button class="rds-preset" data-w="1080" data-h="1350" data-nombre="Instagram Vertical"><span class="rds-preset-nombre">IG Vertical</span><span class="rds-preset-dim">1080×1350</span></button>
+                <button class="rds-preset" data-w="1080" data-h="1920" data-nombre="Instagram Story"><span class="rds-preset-nombre">IG Story</span><span class="rds-preset-dim">1080×1920</span></button>
+                <button class="rds-preset" data-w="1200" data-h="630" data-nombre="Facebook Post"><span class="rds-preset-nombre">FB Post</span><span class="rds-preset-dim">1200×630</span></button>
+                <button class="rds-preset" data-w="851" data-h="315" data-nombre="Facebook Portada"><span class="rds-preset-nombre">FB Portada</span><span class="rds-preset-dim">851×315</span></button>
+                <button class="rds-preset" data-w="1080" data-h="1920" data-nombre="Facebook Story"><span class="rds-preset-nombre">FB Story</span><span class="rds-preset-dim">1080×1920</span></button>
+                <button class="rds-preset" data-w="1280" data-h="720" data-nombre="X Post"><span class="rds-preset-nombre">X Post</span><span class="rds-preset-dim">1280×720</span></button>
+                <button class="rds-preset" data-w="1500" data-h="500" data-nombre="X Encabezado"><span class="rds-preset-nombre">X Encabezado</span><span class="rds-preset-dim">1500×500</span></button>
+                <button class="rds-preset" data-w="1080" data-h="1920" data-nombre="TikTok"><span class="rds-preset-nombre">TikTok</span><span class="rds-preset-dim">1080×1920</span></button>
+                <button class="rds-preset" data-w="1200" data-h="627" data-nombre="LinkedIn Post"><span class="rds-preset-nombre">LinkedIn Post</span><span class="rds-preset-dim">1200×627</span></button>
+                <button class="rds-preset" data-w="1280" data-h="720" data-nombre="YouTube Miniatura"><span class="rds-preset-nombre">YT Miniatura</span><span class="rds-preset-dim">1280×720</span></button>
+                <button class="rds-preset" data-w="1000" data-h="1500" data-nombre="Pinterest Pin"><span class="rds-preset-nombre">Pinterest Pin</span><span class="rds-preset-dim">1000×1500</span></button>
+                <button class="rds-preset" data-w="1440" data-h="1920" data-nombre="Threads Post"><span class="rds-preset-nombre">Threads Post</span><span class="rds-preset-dim">1440×1920</span></button>
+                <button class="rds-preset" data-w="500" data-h="500" data-nombre="WhatsApp Perfil"><span class="rds-preset-nombre">WA Perfil</span><span class="rds-preset-dim">500×500</span></button>
+              </div>
+            </div>
+
+            <div class="qr-seccion">
+              <span class="qr-label">Personalizado</span>
+              <div class="rds-custom">
+                <div class="rds-custom-campo">
+                  <label class="rds-custom-label" for="rds-ancho">Ancho</label>
+                  <input type="number" class="qr-input rds-custom-input" id="rds-ancho" value="1080" min="1" max="4096" />
+                </div>
+                <span class="rds-custom-x">×</span>
+                <div class="rds-custom-campo">
+                  <label class="rds-custom-label" for="rds-alto">Alto</label>
+                  <input type="number" class="qr-input rds-custom-input" id="rds-alto" value="1080" min="1" max="4096" />
+                </div>
+                <button class="rds-custom-aplicar" id="rds-aplicar">Aplicar</button>
+              </div>
+            </div>
+
+            <div class="qr-seccion">
+              <span class="qr-label">Formato de descarga</span>
+              <div class="rds-formatos">
+                <button class="rds-formato activo" data-fmt="jpeg">JPG</button>
+                <button class="rds-formato" data-fmt="png">PNG</button>
+                <button class="rds-formato" data-fmt="webp">WebP</button>
+              </div>
+            </div>
+
+            <div class="qr-seccion" id="rds-calidad-zona">
+              <div class="gen-control-label">
+                <span class="qr-label">Calidad</span>
+                <span class="gen-control-valor" id="rds-calidad-valor">90%</span>
+              </div>
+              <input type="range" id="rds-calidad" min="10" max="100" value="90" class="gen-slider" />
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+      <div class="lab-modal-footer qr-footer">
+        <button class="gen-boton" id="rds-descargar" disabled>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Descargar imagen
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <Footer/>
+</Plantilla>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+
+    // ============================================================
+    // Animar íconos SVG de la grilla (con delay escalonado)
+    // ============================================================
+    const iconObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          // Delay escalonado según posición
+          const cards = Array.from(document.querySelectorAll('.lab-card'));
+          const idx = cards.indexOf(entry.target as HTMLElement);
+          const delay = idx >= 0 ? idx * 150 : 0;
+          setTimeout(() => {
+            entry.target.classList.add('dibujado');
+          }, delay);
+          iconObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.lab-card').forEach(el => {
+      iconObserver.observe(el);
+    });
+
+    // ============================================================
+    // Sistema de modales
+    // ============================================================
+    const cards = document.querySelectorAll('.lab-card:not(.lab-card--pronto)');
+    const overlays = document.querySelectorAll('.lab-modal-overlay');
+    const cierres = document.querySelectorAll('.lab-modal-cerrar');
+
+    function abrirModal(id: string) {
+      const modal = document.getElementById(`modal-${id}`);
+      if (!modal) return;
+      modal.setAttribute('aria-hidden', 'false');
+      modal.classList.add('activo');
+      document.body.style.overflow = 'hidden';
+      // Activar animación de íconos SVG + typewriter del título
+      modal.querySelectorAll('.lab-modal-header-izq').forEach(el => el.classList.remove('dibujado'));
+      modal.querySelectorAll('.icono-contenedor').forEach(el => el.classList.remove('dibujado'));
+
+      // Resetear título para typewriter
+      const tituloEl = modal.querySelector('.lab-modal-titulo') as HTMLElement;
+      if (tituloEl) {
+        const textoCompleto = tituloEl.dataset.texto || tituloEl.textContent || '';
+        if (!tituloEl.dataset.texto) tituloEl.dataset.texto = textoCompleto;
+        tituloEl.textContent = '';
+        tituloEl.classList.add('lab-titulo-escribiendo');
+      }
+
+      setTimeout(() => {
+        modal.querySelectorAll('.lab-modal-header-izq').forEach(el => el.classList.add('dibujado'));
+        modal.querySelectorAll('.icono-contenedor').forEach(el => el.classList.add('dibujado'));
+
+        // Typewriter del título
+        if (tituloEl) {
+          const texto = tituloEl.dataset.texto || '';
+          let i = 0;
+          const velocidad = 40;
+          function escribir() {
+            if (i < texto.length) {
+              tituloEl.textContent = texto.slice(0, i + 1);
+              i++;
+              setTimeout(escribir, velocidad);
+            } else {
+              tituloEl.classList.remove('lab-titulo-escribiendo');
+            }
+          }
+          escribir();
+        }
+      }, 200);
+    }
+
+    function cerrarModal() {
+      overlays.forEach(m => {
+        m.setAttribute('aria-hidden', 'true');
+        m.classList.remove('activo');
+      });
+      document.body.style.overflow = '';
+    }
+
+    cards.forEach(card => {
+      card.addEventListener('click', () => {
+        const id = (card as HTMLElement).dataset.herramienta;
+        if (id) abrirModal(id);
+      });
+    });
+
+    cierres.forEach(btn => btn.addEventListener('click', cerrarModal));
+    overlays.forEach(ov => ov.addEventListener('click', (e) => { if (e.target === ov) cerrarModal(); }));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') cerrarModal(); });
+
+    // Separar en try/catch para que un error no frene los modales
+    try {
+    // ============================================================
+    // Generador de Contraseñas
+    // ============================================================
+    const $ = (id: string) => document.getElementById(id)!;
+    const elPassword    = $('gen-password') as HTMLInputElement;
+    const elCopiar      = $('gen-copiar');
+    const elGenerar     = $('gen-generar');
+    const elLargo       = $('gen-largo') as HTMLInputElement;
+    const elLargoValor  = $('gen-largo-valor');
+    const elFuerzaNivel = $('gen-fuerza-nivel') as HTMLElement;
+    const elFuerzaTexto = $('gen-fuerza-texto');
+    const elOpcionesPro = $('gen-opciones-pro');
+    const elInfoUltra   = $('gen-info-ultra');
+    const elMayusculas  = $('gen-mayusculas') as HTMLInputElement;
+    const elMinusculas  = $('gen-minusculas') as HTMLInputElement;
+    const elNumeros     = $('gen-numeros') as HTMLInputElement;
+    const elSimbolos    = $('gen-simbolos') as HTMLInputElement;
+    const elGuiones     = $('gen-guiones') as HTMLInputElement;
+
+    let modoActual = 'segura';
+
+    // Charsets
+    const CHARS = {
+      mayusculas: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+      minusculas: 'abcdefghijklmnopqrstuvwxyz',
+      numeros:    '0123456789',
+      simbolos:   '!@#$%^&*()_+-=[]{}|;:,.<>?',
+      ultra:      '!@#$%^&*()_+-=[]{}|;:,.<>?~`§±©®™°¶∆∑∏√∫≈≠≤≥αβγδεζηθλμπσφψωΩ¥£€₿¢«»†‡‰¿¡±÷×',
+    };
+
+    // --- Generar contraseña estilo Google/iOS (con guiones) ---
+    function generarSegura(largo: number): string {
+      const charset = CHARS.mayusculas + CHARS.minusculas + CHARS.numeros;
+      const grupoSize = 4;
+      // Generar caracteres sin guiones primero
+      const totalChars = largo;
+      const arr = new Uint32Array(totalChars);
+      crypto.getRandomValues(arr);
+      let chars = Array.from(arr, v => charset[v % charset.length]).join('');
+      // Insertar guiones cada 4 caracteres
+      const grupos: string[] = [];
+      for (let i = 0; i < chars.length; i += grupoSize) {
+        grupos.push(chars.slice(i, i + grupoSize));
+      }
+      return grupos.join('-');
+    }
+
+    // --- Generar contraseña Pro (configurable) ---
+    function generarPro(largo: number): string {
+      let charset = '';
+      if (elMayusculas.checked) charset += CHARS.mayusculas;
+      if (elMinusculas.checked) charset += CHARS.minusculas;
+      if (elNumeros.checked)    charset += CHARS.numeros;
+      if (elSimbolos.checked)   charset += CHARS.simbolos;
+      if (!charset) { elMinusculas.checked = true; charset = CHARS.minusculas; }
+
+      const arr = new Uint32Array(largo);
+      crypto.getRandomValues(arr);
+      let password = Array.from(arr, v => charset[v % charset.length]).join('');
+
+      if (elGuiones.checked) {
+        const grupos: string[] = [];
+        for (let i = 0; i < password.length; i += 4) {
+          grupos.push(password.slice(i, i + 4));
+        }
+        password = grupos.join('-');
+      }
+      return password;
+    }
+
+    // --- Generar contraseña Ultra ---
+    function generarUltra(largo: number): string {
+      const charset = CHARS.mayusculas + CHARS.minusculas + CHARS.numeros + CHARS.ultra;
+      const arr = new Uint32Array(largo);
+      crypto.getRandomValues(arr);
+      return Array.from(arr, v => charset[v % charset.length]).join('');
+    }
+
+    // --- Generar según modo ---
+    function generar() {
+      const largo = parseInt(elLargo.value);
+      let password: string;
+      let charsetSize: number;
+
+      switch (modoActual) {
+        case 'segura':
+          password = generarSegura(largo);
+          charsetSize = 62; // a-z A-Z 0-9
+          break;
+        case 'pro':
+          password = generarPro(largo);
+          charsetSize = 0;
+          if (elMayusculas.checked) charsetSize += 26;
+          if (elMinusculas.checked) charsetSize += 26;
+          if (elNumeros.checked)    charsetSize += 10;
+          if (elSimbolos.checked)   charsetSize += 28;
+          if (charsetSize === 0) charsetSize = 26;
+          break;
+        case 'ultra':
+          password = generarUltra(largo);
+          charsetSize = 62 + CHARS.ultra.length;
+          break;
+        default:
+          password = generarSegura(largo);
+          charsetSize = 62;
+      }
+
+      elPassword.value = password;
+      actualizarFuerza(largo, charsetSize);
+    }
+
+    // --- Fuerza ---
+    function actualizarFuerza(largo: number, charsetSize: number) {
+      const bits = Math.log2(charsetSize) * largo;
+      let nivel: number, texto: string, color: string;
+
+      if (bits < 40)       { nivel = 15;  texto = 'Muy débil';    color = '#ef4444'; }
+      else if (bits < 60)  { nivel = 30;  texto = 'Débil';        color = '#f97316'; }
+      else if (bits < 80)  { nivel = 50;  texto = 'Aceptable';    color = '#eab308'; }
+      else if (bits < 100) { nivel = 70;  texto = 'Fuerte';       color = '#22c55e'; }
+      else if (bits < 130) { nivel = 85;  texto = 'Muy fuerte';   color = '#10b981'; }
+      else                 { nivel = 100; texto = 'Impenetrable'; color = '#06b6d4'; }
+
+      elFuerzaNivel.style.width = nivel + '%';
+      elFuerzaNivel.style.background = color;
+      elFuerzaTexto.textContent = texto;
+      elFuerzaTexto.style.color = color;
+    }
+
+    // --- Modos ---
+    document.querySelectorAll('.gen-modo').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.gen-modo').forEach(b => b.classList.remove('activo'));
+        btn.classList.add('activo');
+        modoActual = (btn as HTMLElement).dataset.modo || 'segura';
+
+        elOpcionesPro.style.display = modoActual === 'pro' ? '' : 'none';
+        elInfoUltra.style.display = modoActual === 'ultra' ? '' : 'none';
+
+        // Mostrar descripción del modo
+        document.querySelectorAll('.gen-modo-info-texto').forEach(el => {
+          (el as HTMLElement).style.display = 'none';
+        });
+        const infoEl = document.getElementById(`gen-modo-info-${modoActual}`);
+        if (infoEl) infoEl.style.display = '';
+
+        generar();
+      });
+    });
+
+    // --- Slider ---
+    function actualizarSlider() {
+      elLargoValor.textContent = elLargo.value;
+      const pct = ((parseInt(elLargo.value) - 8) / (64 - 8)) * 100;
+      elLargo.style.setProperty('--pct', pct + '%');
+    }
+
+    elLargo.addEventListener('input', () => { actualizarSlider(); generar(); });
+    actualizarSlider();
+
+    // --- Presets de largo ---
+    document.querySelectorAll('.gen-preset').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const largo = (btn as HTMLElement).dataset.largo || '16';
+        elLargo.value = largo;
+        document.querySelectorAll('.gen-preset').forEach(b => b.classList.remove('activo'));
+        btn.classList.add('activo');
+        actualizarSlider();
+        generar();
+      });
+    });
+
+    // --- Toggles Pro ---
+    [elMayusculas, elMinusculas, elNumeros, elSimbolos, elGuiones].forEach(el => {
+      el.addEventListener('change', generar);
+    });
+
+    // --- Botón generar ---
+    elGenerar.addEventListener('click', generar);
+
+    // --- Copiar ---
+    elCopiar.addEventListener('click', async () => {
+      const text = elPassword.value;
+      if (!text) return;
+      await navigator.clipboard.writeText(text);
+      elCopiar.classList.add('gen-copiar--ok');
+      setTimeout(() => elCopiar.classList.remove('gen-copiar--ok'), 1500);
+    });
+
+    // --- Recalcular fuerza al editar manualmente ---
+    elPassword.addEventListener('input', () => {
+      const val = elPassword.value;
+      const unique = new Set(val).size;
+      actualizarFuerza(val.length, Math.max(unique, 26));
+    });
+
+    // --- Auto-generar al abrir modal ---
+    const observer = new MutationObserver(() => {
+      const modal = document.getElementById('modal-contrasenas');
+      if (modal?.classList.contains('activo') && !elPassword.value) {
+        generar();
+      }
+    });
+    const modalC = document.getElementById('modal-contrasenas');
+    if (modalC) observer.observe(modalC, { attributes: true, attributeFilter: ['class'] });
+
+    // ============================================================
+    // Generador de Códigos QR
+    // ============================================================
+    const qrCanvas     = document.getElementById('qr-canvas') as HTMLCanvasElement;
+    // Pre-inicializar contexto con willReadFrequently para evitar warning
+    qrCanvas.getContext('2d', { willReadFrequently: true });
+    const qrUrl        = document.getElementById('qr-url') as HTMLInputElement;
+    const qrDotColor   = document.getElementById('qr-dot-color') as HTMLInputElement;
+    const qrFondoColor = document.getElementById('qr-fondo-color') as HTMLInputElement;
+    const qrLogoToggle = document.getElementById('qr-logo-toggle') as HTMLInputElement;
+    const qrLogoOpts   = document.getElementById('qr-logo-opciones')!;
+    const qrLogoFile   = document.getElementById('qr-logo-file') as HTMLInputElement;
+    const qrTamano     = document.getElementById('qr-tamano') as HTMLInputElement;
+    const qrTamanoVal  = document.getElementById('qr-tamano-valor')!;
+    const qrDescargar  = document.getElementById('qr-descargar')!;
+    const qrCopiarBtn  = document.getElementById('qr-copiar')!;
+    const qrFondoCustom = document.getElementById('qr-fondo-custom')!;
+
+    let qrFondoTipo = 'transparente';
+    let qrColorDots = '#000000';
+    let qrUsarLogo = true;
+    let qrLogoCustom: HTMLImageElement | null = null;
+    let qrLogoTipo = 'sitio';
+
+    // Cargar logo del sitio
+    const logoSitio = new Image();
+    logoSitio.crossOrigin = 'anonymous';
+    logoSitio.src = '/favicon.png';
+
+    // Importar librería QR
+    async function loadQR() {
+      // @ts-ignore
+      const QRCode = await import('qrcode');
+      return QRCode.default || QRCode;
+    }
+
+    function getBgColor(): string {
+      switch (qrFondoTipo) {
+        case 'transparente': return 'rgba(0,0,0,0)';
+        case 'blanco':       return '#ffffff';
+        case 'negro':        return '#111111';
+        case 'custom':       return qrFondoColor.value;
+        default:             return 'rgba(0,0,0,0)';
+      }
+    }
+
+    // Reemplazar píxeles de un color por transparente
+    function hacerTransparente(canvas: HTMLCanvasElement, colorHex: string) {
+      const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
+      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const tr = parseInt(colorHex.slice(1, 3), 16);
+      const tg = parseInt(colorHex.slice(3, 5), 16);
+      const tb = parseInt(colorHex.slice(5, 7), 16);
+      const tolerancia = 40; // alta tolerancia para atrapar anti-aliasing
+
+      for (let i = 0; i < imgData.data.length; i += 4) {
+        const dr = Math.abs(imgData.data[i] - tr);
+        const dg = Math.abs(imgData.data[i + 1] - tg);
+        const db = Math.abs(imgData.data[i + 2] - tb);
+        if (dr < tolerancia && dg < tolerancia && db < tolerancia) {
+          imgData.data[i + 3] = 0;
+        }
+      }
+      ctx.putImageData(imgData, 0, 0);
+    }
+
+    async function generarQR() {
+      const QRCode = await loadQR();
+      const url = qrUrl.value.trim() || 'https://stiancode.dev';
+      const previewSize = 280;
+      const bgColor = getBgColor();
+      const esTransparente = qrFondoTipo === 'transparente';
+
+      // Para transparente: generar con un fondo temporal y después borrarlo
+      const tempBg = esTransparente
+        ? (qrColorDots === '#ffffff' ? '#000000' : '#ffffff')
+        : bgColor;
+
+      // Generar QR en canvas
+      try {
+        await QRCode.toCanvas(qrCanvas, url, {
+          width: previewSize,
+          margin: 2,
+          color: {
+            dark: qrColorDots,
+            light: tempBg,
+          },
+          errorCorrectionLevel: qrUsarLogo ? 'H' : 'M',
+        });
+
+        // Si es transparente, eliminar el fondo temporal
+        if (esTransparente) {
+          hacerTransparente(qrCanvas, tempBg);
+        }
+
+        // Dibujar logo si está activo
+        if (qrUsarLogo) {
+          const logo = qrLogoTipo === 'custom' && qrLogoCustom ? qrLogoCustom : logoSitio;
+          if (logo.complete && logo.naturalWidth > 0) {
+            dibujarLogoSobreQR(qrCanvas, logo);
+          }
+        }
+      } catch (err) {
+        console.error('Error generando QR:', err);
+      }
+    }
+
+    function dibujarLogoSobreQR(canvas: HTMLCanvasElement, logo: HTMLImageElement, dotColor?: string) {
+      const colorBorde = dotColor || qrColorDots;
+      const ctx = canvas.getContext('2d')!;
+      const borderWidth = Math.ceil(canvas.width * 0.008);
+      const padding = Math.ceil(canvas.width * 0.015);
+      const logoSize = Math.ceil(canvas.width * 0.14);
+      const boxSize = logoSize + padding * 2;
+      const outerSize = boxSize + borderWidth * 2;
+      const r = Math.ceil(outerSize * 0.18);
+
+      const ox = (canvas.width - outerSize) / 2;
+      const oy = (canvas.height - outerSize) / 2;
+      const bx = ox + borderWidth;
+      const by = oy + borderWidth;
+      const lx = bx + padding;
+      const ly = by + padding;
+
+      // Crear un canvas temporal con solo el logo box
+      const tmpCanvas = document.createElement('canvas');
+      tmpCanvas.width = canvas.width;
+      tmpCanvas.height = canvas.height;
+      const tmpCtx = tmpCanvas.getContext('2d')!;
+
+      // Marco redondeado del color del código QR
+      tmpCtx.fillStyle = colorBorde;
+      tmpCtx.beginPath();
+      tmpCtx.roundRect(ox, oy, outerSize, outerSize, r);
+      tmpCtx.fill();
+
+      // Interior: siempre transparente (solo queda el marco + logo)
+      tmpCtx.save();
+      tmpCtx.globalCompositeOperation = 'destination-out';
+      tmpCtx.beginPath();
+      tmpCtx.roundRect(bx, by, boxSize, boxSize, r - borderWidth);
+      tmpCtx.fill();
+      tmpCtx.restore();
+
+      // Logo
+      tmpCtx.imageSmoothingEnabled = true;
+      tmpCtx.imageSmoothingQuality = 'high';
+      tmpCtx.drawImage(logo, lx, ly, logoSize, logoSize);
+
+      // Ahora limpiar la zona en el canvas principal y pegar el logo box
+      ctx.save();
+      ctx.beginPath();
+      ctx.roundRect(ox - 1, oy - 1, outerSize + 2, outerSize + 2, r + 1);
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.fill();
+      ctx.restore();
+      ctx.globalCompositeOperation = 'source-over';
+
+      // Pegar el logo box completo encima
+      ctx.drawImage(tmpCanvas, 0, 0);
+    }
+
+    // --- Generar QR para descarga a tamaño real ---
+    async function generarQRDescarga(): Promise<HTMLCanvasElement> {
+      const QRCode = await loadQR();
+      const url = qrUrl.value.trim() || 'https://stiancode.dev';
+      const tamano = parseInt(qrTamano.value);
+      const bgColor = getBgColor();
+      const esTransparente = qrFondoTipo === 'transparente';
+      const tempBg = esTransparente
+        ? (qrColorDots === '#ffffff' ? '#000000' : '#ffffff')
+        : bgColor;
+
+      const canvas = document.createElement('canvas');
+      await QRCode.toCanvas(canvas, url, {
+        width: tamano,
+        margin: 2,
+        color: { dark: qrColorDots, light: tempBg },
+        errorCorrectionLevel: qrUsarLogo ? 'H' : 'M',
+      });
+
+      if (esTransparente) {
+        hacerTransparente(canvas, tempBg);
+      }
+
+      if (qrUsarLogo) {
+        const logo = qrLogoTipo === 'custom' && qrLogoCustom ? qrLogoCustom : logoSitio;
+        if (logo.complete && logo.naturalWidth > 0) {
+          dibujarLogoSobreQR(canvas, logo);
+        }
+      }
+
+      return canvas;
+    }
+
+    // --- Eventos QR ---
+
+    // URL: generar al escribir (con debounce)
+    let qrTimer: ReturnType<typeof setTimeout>;
+    qrUrl.addEventListener('input', () => {
+      clearTimeout(qrTimer);
+      qrTimer = setTimeout(generarQR, 300);
+    });
+
+    // Colores rápidos
+    document.querySelectorAll('.qr-color-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.qr-color-btn').forEach(b => b.classList.remove('activo'));
+        btn.classList.add('activo');
+        const color = (btn as HTMLElement).dataset.color;
+        if (color) {
+          qrColorDots = color;
+          qrDotColor.value = color;
+          qrDotHex.value = color;
+          generarQR();
+        }
+      });
+    });
+
+    const qrDotHex   = document.getElementById('qr-dot-hex') as HTMLInputElement;
+    const qrFondoHex = document.getElementById('qr-fondo-hex') as HTMLInputElement;
+
+    // Sincronizar picker ↔ hex para color del código
+    qrDotColor.addEventListener('input', () => {
+      qrColorDots = qrDotColor.value;
+      qrDotHex.value = qrDotColor.value;
+      document.querySelectorAll('.qr-color-btn').forEach(b => b.classList.remove('activo'));
+      generarQR();
+    });
+
+    qrDotHex.addEventListener('input', () => {
+      const val = qrDotHex.value;
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        qrColorDots = val;
+        qrDotColor.value = val;
+        document.querySelectorAll('.qr-color-btn').forEach(b => b.classList.remove('activo'));
+        generarQR();
+      }
+    });
+
+    // Fondo
+    document.querySelectorAll('.qr-opcion-fondo').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.qr-opcion-fondo').forEach(b => b.classList.remove('activo'));
+        btn.classList.add('activo');
+        qrFondoTipo = (btn as HTMLElement).dataset.fondo || 'transparente';
+        qrFondoCustom.style.display = qrFondoTipo === 'custom' ? 'flex' : 'none';
+
+        // Auto-ajustar color QR según fondo para que sea legible
+        function setDotColor(color: string) {
+          qrColorDots = color;
+          qrDotColor.value = color;
+          qrDotHex.value = color;
+          document.querySelectorAll('.qr-color-btn').forEach(b => b.classList.remove('activo'));
+          document.querySelector(`.qr-color-btn[data-color="${color}"]`)?.classList.add('activo');
+        }
+
+        const esOscuro = document.documentElement.getAttribute('data-tema') === 'oscuro';
+
+        if (qrFondoTipo === 'negro') {
+          setDotColor('#ffffff');
+        } else if (qrFondoTipo === 'blanco') {
+          setDotColor('#000000');
+        } else if (qrFondoTipo === 'transparente') {
+          setDotColor(esOscuro ? '#ffffff' : '#000000');
+        }
+
+        generarQR();
+      });
+    });
+
+    qrFondoColor.addEventListener('input', () => {
+      qrFondoHex.value = qrFondoColor.value;
+      generarQR();
+    });
+
+    qrFondoHex.addEventListener('input', () => {
+      const val = qrFondoHex.value;
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        qrFondoColor.value = val;
+        generarQR();
+      }
+    });
+
+    // Logo toggle
+    qrLogoToggle.addEventListener('change', () => {
+      qrUsarLogo = qrLogoToggle.checked;
+      qrLogoOpts.style.display = qrUsarLogo ? '' : 'none';
+      generarQR();
+    });
+
+    // Logo tipo
+    document.querySelectorAll('.qr-logo-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.qr-logo-btn').forEach(b => b.classList.remove('activo'));
+        btn.classList.add('activo');
+        qrLogoTipo = (btn as HTMLElement).dataset.logo || 'sitio';
+        generarQR();
+      });
+    });
+
+    // Logo custom upload
+    qrLogoFile.addEventListener('change', () => {
+      const file = qrLogoFile.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        qrLogoCustom = new Image();
+        qrLogoCustom.onload = () => {
+          qrLogoTipo = 'custom';
+          document.querySelectorAll('.qr-logo-btn').forEach(b => b.classList.remove('activo'));
+          document.getElementById('qr-logo-custom-label')?.classList.add('activo');
+          generarQR();
+        };
+        qrLogoCustom.src = e.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Tamaño
+    qrTamano.addEventListener('input', () => {
+      qrTamanoVal.textContent = qrTamano.value + 'px';
+      const pct = ((parseInt(qrTamano.value) - 256) / (1024 - 256)) * 100;
+      qrTamano.style.setProperty('--pct', pct + '%');
+    });
+    const qrPctInit = ((parseInt(qrTamano.value) - 256) / (1024 - 256)) * 100;
+    qrTamano.style.setProperty('--pct', qrPctInit + '%');
+
+    // Descargar
+    qrDescargar.addEventListener('click', async () => {
+      const qrCanvasDl = await generarQRDescarga();
+      const tamano = parseInt(qrTamano.value);
+      const footerH = 48;
+      const totalH = tamano + footerH;
+
+      // Canvas final con QR + branding
+      const finalCanvas = document.createElement('canvas');
+      finalCanvas.width = tamano;
+      finalCanvas.height = totalH;
+      const fCtx = finalCanvas.getContext('2d')!;
+
+      // Fondo del footer
+      const esOscuro = qrColorDots === '#ffffff' || qrFondoTipo === 'negro';
+      fCtx.fillStyle = esOscuro ? '#111111' : '#ffffff';
+      fCtx.fillRect(0, tamano, tamano, footerH);
+
+      // QR
+      fCtx.drawImage(qrCanvasDl, 0, 0);
+
+      // Texto branding
+      const fontSize = Math.max(11, Math.round(tamano * 0.022));
+      fCtx.font = `500 ${fontSize}px "Instrument Sans", sans-serif`;
+      fCtx.fillStyle = esOscuro ? '#888' : '#999';
+      fCtx.textAlign = 'left';
+      fCtx.fillText('S7ian Code — stiancode.dev', 8, tamano + footerH / 2 + fontSize * 0.35);
+
+      // Info
+      const infoTexto = `${qrFondoTipo} · ${qrColorDots}`;
+      fCtx.textAlign = 'right';
+      fCtx.fillText(infoTexto, tamano - 8, tamano + footerH / 2 + fontSize * 0.35);
+
+      const link = document.createElement('a');
+      const fondoNombre = qrFondoTipo === 'custom' ? qrFondoColor.value.replace('#', '') : qrFondoTipo;
+      const colorNombre = qrColorDots.replace('#', '');
+      link.download = `QR-S7ianCode-fondo-${fondoNombre}-color-${colorNombre}-${tamano}px.png`;
+      link.href = finalCanvas.toDataURL('image/png');
+      link.click();
+    });
+
+    // Copiar
+    qrCopiarBtn.addEventListener('click', async () => {
+      const canvas = await generarQRDescarga();
+      canvas.toBlob(async (blob) => {
+        if (!blob) return;
+        await navigator.clipboard.write([
+          new ClipboardItem({ 'image/png': blob })
+        ]);
+        qrCopiarBtn.classList.add('gen-copiar--ok');
+        setTimeout(() => qrCopiarBtn.classList.remove('gen-copiar--ok'), 1500);
+      }, 'image/png');
+    });
+
+    // Auto-generar al abrir modal QR (con color según tema)
+    const observerQR = new MutationObserver(() => {
+      const modal = document.getElementById('modal-qr');
+      if (modal?.classList.contains('activo')) {
+        const esOscuro = document.documentElement.getAttribute('data-tema') === 'oscuro';
+        const colorInicial = esOscuro ? '#ffffff' : '#000000';
+        if (qrFondoTipo === 'transparente') {
+          qrColorDots = colorInicial;
+          qrDotColor.value = colorInicial;
+          qrDotHex.value = colorInicial;
+          document.querySelectorAll('.qr-color-btn').forEach(b => b.classList.remove('activo'));
+          document.querySelector(`.qr-color-btn[data-color="${colorInicial}"]`)?.classList.add('activo');
+        }
+        generarQR();
+      }
+    });
+    const modalQR = document.getElementById('modal-qr');
+    if (modalQR) observerQR.observe(modalQR, { attributes: true, attributeFilter: ['class'] });
+
+    // ============================================================
+    // Generador QR Wi-Fi
+    // ============================================================
+    const wifiCanvas = document.getElementById('wifi-canvas') as HTMLCanvasElement;
+    wifiCanvas.getContext('2d', { willReadFrequently: true });
+    const wifiSsid       = document.getElementById('wifi-ssid') as HTMLInputElement;
+    const wifiPass       = document.getElementById('wifi-pass') as HTMLInputElement;
+    const wifiOculta     = document.getElementById('wifi-oculta') as HTMLInputElement;
+    const wifiPassToggle = document.getElementById('wifi-pass-toggle')!;
+    const wifiDescargar  = document.getElementById('wifi-descargar')!;
+    const wifiCopiarBtn  = document.getElementById('wifi-copiar')!;
+    const wifiDotPicker  = document.getElementById('wifi-dot-color') as HTMLInputElement;
+    const wifiDotHexEl   = document.getElementById('wifi-dot-hex') as HTMLInputElement;
+    const wifiFondoCustom = document.getElementById('wifi-fondo-custom')!;
+    const wifiFondoPicker = document.getElementById('wifi-fondo-color') as HTMLInputElement;
+    const wifiFondoHexEl  = document.getElementById('wifi-fondo-hex') as HTMLInputElement;
+
+    const wifiLogoToggle = document.getElementById('wifi-logo-toggle') as HTMLInputElement;
+    const wifiLogoOpts   = document.getElementById('wifi-logo-opciones')!;
+    const wifiLogoFile   = document.getElementById('wifi-logo-file') as HTMLInputElement;
+
+    let wifiSeg = 'WPA';
+    let wifiDotColor = '#000000';
+    let wifiFondo = 'transparente';
+    let wifiUsarLogo = true;
+    let wifiLogoCustom: HTMLImageElement | null = null;
+    let wifiLogoTipo = 'sitio';
+
+    function getWifiString(): string {
+      const ssid = wifiSsid.value.trim() || 'MiRedWiFi';
+      const pass = wifiPass.value || 'password123';
+      const oculta = wifiOculta.checked;
+      const esc = (s: string) => s.replace(/([\\;,:"'])/g, '\\$1');
+      if (wifiSeg === 'nopass') {
+        return `WIFI:T:nopass;S:${esc(ssid)};H:${oculta};;`;
+      }
+      return `WIFI:T:${wifiSeg};S:${esc(ssid)};P:${esc(pass)};H:${oculta};;`;
+    }
+
+    function getWifiBgColor(): string {
+      switch (wifiFondo) {
+        case 'transparente': return 'rgba(0,0,0,0)';
+        case 'blanco':       return '#ffffff';
+        case 'negro':        return '#111111';
+        case 'custom':       return wifiFondoPicker.value;
+        default:             return 'rgba(0,0,0,0)';
+      }
+    }
+
+    function setWifiDotColor(color: string) {
+      wifiDotColor = color;
+      wifiDotPicker.value = color;
+      wifiDotHexEl.value = color;
+      document.querySelectorAll('.wifi-color-btn').forEach(b => b.classList.remove('activo'));
+      document.querySelector(`.wifi-color-btn[data-color="${color}"]`)?.classList.add('activo');
+    }
+
+    async function generarWifiQR() {
+      const QRCode = await loadQR();
+      const wifiStr = getWifiString();
+      const bgColor = getWifiBgColor();
+      const esTransparente = wifiFondo === 'transparente';
+      const tempBg = esTransparente
+        ? (wifiDotColor === '#ffffff' ? '#000000' : '#ffffff')
+        : bgColor;
+
+      try {
+        await QRCode.toCanvas(wifiCanvas, wifiStr, {
+          width: 280,
+          margin: 2,
+          color: { dark: wifiDotColor, light: tempBg },
+          errorCorrectionLevel: wifiUsarLogo ? 'H' : 'M',
+        });
+        if (esTransparente) {
+          hacerTransparente(wifiCanvas, tempBg);
+        }
+        if (wifiUsarLogo) {
+          const logo = wifiLogoTipo === 'custom' && wifiLogoCustom ? wifiLogoCustom : logoSitio;
+          if (logo.complete && logo.naturalWidth > 0) {
+            dibujarLogoSobreQR(wifiCanvas, logo, wifiDotColor);
+          }
+        }
+      } catch (err) {
+        console.error('Error generando QR Wi-Fi:', err);
+      }
+    }
+
+    async function generarWifiDescarga(): Promise<HTMLCanvasElement> {
+      const QRCode = await loadQR();
+      const wifiStr = getWifiString();
+      const bgColor = getWifiBgColor();
+      const esTransparente = wifiFondo === 'transparente';
+      const tempBg = esTransparente
+        ? (wifiDotColor === '#ffffff' ? '#000000' : '#ffffff')
+        : bgColor;
+
+      const canvas = document.createElement('canvas');
+      await QRCode.toCanvas(canvas, wifiStr, {
+        width: 512,
+        margin: 2,
+        color: { dark: wifiDotColor, light: tempBg },
+        errorCorrectionLevel: wifiUsarLogo ? 'H' : 'M',
+      });
+      if (esTransparente) hacerTransparente(canvas, tempBg);
+      if (wifiUsarLogo) {
+        const logo = wifiLogoTipo === 'custom' && wifiLogoCustom ? wifiLogoCustom : logoSitio;
+        if (logo.complete && logo.naturalWidth > 0) {
+          dibujarLogoSobreQR(canvas, logo, wifiDotColor);
+        }
+      }
+      return canvas;
+    }
+
+    // Debounce
+    let wifiTimer: ReturnType<typeof setTimeout>;
+    function wifiDebounce() {
+      clearTimeout(wifiTimer);
+      wifiTimer = setTimeout(generarWifiQR, 300);
+    }
+
+    wifiSsid.addEventListener('input', wifiDebounce);
+    wifiPass.addEventListener('input', wifiDebounce);
+    wifiOculta.addEventListener('change', () => generarWifiQR());
+
+    // Toggle mostrar/ocultar contraseña
+    wifiPassToggle.addEventListener('click', () => {
+      const isPass = wifiPass.type === 'password';
+      wifiPass.type = isPass ? 'text' : 'password';
+      wifiPassToggle.querySelector('.wifi-eye-show')!.setAttribute('style', isPass ? 'display:none' : '');
+      wifiPassToggle.querySelector('.wifi-eye-hide')!.setAttribute('style', isPass ? '' : 'display:none');
+    });
+
+    // Seguridad
+    document.querySelectorAll('.wifi-seg-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.wifi-seg-btn').forEach(b => b.classList.remove('activo'));
+        btn.classList.add('activo');
+        wifiSeg = (btn as HTMLElement).dataset.seg || 'WPA';
+        const passField = wifiPass.closest('.qr-campo') as HTMLElement;
+        if (passField) passField.style.display = wifiSeg === 'nopass' ? 'none' : '';
+        generarWifiQR();
+      });
+    });
+
+    // Colores rápidos
+    document.querySelectorAll('.wifi-color-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const color = (btn as HTMLElement).dataset.color;
+        if (color) { setWifiDotColor(color); generarWifiQR(); }
+      });
+    });
+
+    // Color picker + hex
+    wifiDotPicker.addEventListener('input', () => {
+      setWifiDotColor(wifiDotPicker.value);
+      generarWifiQR();
+    });
+
+    wifiDotHexEl.addEventListener('input', () => {
+      if (/^#[0-9a-fA-F]{6}$/.test(wifiDotHexEl.value)) {
+        setWifiDotColor(wifiDotHexEl.value);
+        generarWifiQR();
+      }
+    });
+
+    // Fondo
+    document.querySelectorAll('.wifi-fondo-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.wifi-fondo-btn').forEach(b => b.classList.remove('activo'));
+        btn.classList.add('activo');
+        wifiFondo = (btn as HTMLElement).dataset.fondo || 'transparente';
+        wifiFondoCustom.style.display = wifiFondo === 'custom' ? 'flex' : 'none';
+
+        // Auto-ajustar color
+        const esOscuro = document.documentElement.getAttribute('data-tema') === 'oscuro';
+        if (wifiFondo === 'negro') setWifiDotColor('#ffffff');
+        else if (wifiFondo === 'blanco') setWifiDotColor('#000000');
+        else if (wifiFondo === 'transparente') setWifiDotColor(esOscuro ? '#ffffff' : '#000000');
+
+        generarWifiQR();
+      });
+    });
+
+    // Fondo custom picker + hex
+    wifiFondoPicker.addEventListener('input', () => {
+      wifiFondoHexEl.value = wifiFondoPicker.value;
+      generarWifiQR();
+    });
+    wifiFondoHexEl.addEventListener('input', () => {
+      if (/^#[0-9a-fA-F]{6}$/.test(wifiFondoHexEl.value)) {
+        wifiFondoPicker.value = wifiFondoHexEl.value;
+        generarWifiQR();
+      }
+    });
+
+    // Logo toggle
+    wifiLogoToggle.addEventListener('change', () => {
+      wifiUsarLogo = wifiLogoToggle.checked;
+      wifiLogoOpts.style.display = wifiUsarLogo ? '' : 'none';
+      generarWifiQR();
+    });
+
+    // Logo tipo
+    wifiLogoOpts.querySelectorAll('.qr-logo-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        wifiLogoOpts.querySelectorAll('.qr-logo-btn').forEach(b => b.classList.remove('activo'));
+        btn.classList.add('activo');
+        wifiLogoTipo = (btn as HTMLElement).dataset.logo || 'sitio';
+        generarWifiQR();
+      });
+    });
+
+    // Logo custom upload
+    wifiLogoFile.addEventListener('change', () => {
+      const file = wifiLogoFile.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        wifiLogoCustom = new Image();
+        wifiLogoCustom.onload = () => {
+          wifiLogoTipo = 'custom';
+          wifiLogoOpts.querySelectorAll('.qr-logo-btn').forEach(b => b.classList.remove('activo'));
+          wifiLogoOpts.querySelector('[data-logo="custom"]')?.classList.add('activo');
+          generarWifiQR();
+        };
+        wifiLogoCustom.src = e.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Descargar
+    wifiDescargar.addEventListener('click', async () => {
+      const canvas = await generarWifiDescarga();
+      const tamano = 512;
+      const footerH = 48;
+      const finalCanvas = document.createElement('canvas');
+      finalCanvas.width = tamano;
+      finalCanvas.height = tamano + footerH;
+      const fCtx = finalCanvas.getContext('2d')!;
+      const esOscuroDl = wifiDotColor === '#ffffff' || wifiFondo === 'negro';
+      fCtx.fillStyle = esOscuroDl ? '#111111' : '#ffffff';
+      fCtx.fillRect(0, tamano, tamano, footerH);
+      fCtx.drawImage(canvas, 0, 0);
+      fCtx.font = '500 11px "Instrument Sans", sans-serif';
+      fCtx.fillStyle = esOscuroDl ? '#888' : '#999';
+      fCtx.textAlign = 'left';
+      const ssidNombre = wifiSsid.value.trim() || 'MiRedWiFi';
+      fCtx.fillText(`Wi-Fi: ${ssidNombre} — S7ian Code`, 8, tamano + footerH / 2 + 4);
+      fCtx.textAlign = 'right';
+      fCtx.fillText(`${wifiFondo} · ${wifiDotColor}`, tamano - 8, tamano + footerH / 2 + 4);
+
+      const link = document.createElement('a');
+      link.download = `QR-WiFi-${ssidNombre.replace(/\s+/g, '-')}-S7ianCode.png`;
+      link.href = finalCanvas.toDataURL('image/png');
+      link.click();
+    });
+
+    // Copiar
+    wifiCopiarBtn.addEventListener('click', async () => {
+      const canvas = await generarWifiDescarga();
+      canvas.toBlob(async (blob) => {
+        if (!blob) return;
+        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+        wifiCopiarBtn.classList.add('gen-copiar--ok');
+        setTimeout(() => wifiCopiarBtn.classList.remove('gen-copiar--ok'), 1500);
+      }, 'image/png');
+    });
+
+    // Auto-generar al abrir con QR ficticio
+    const observerWifi = new MutationObserver(() => {
+      const modal = document.getElementById('modal-wifi');
+      if (modal?.classList.contains('activo')) {
+        const esOscuro = document.documentElement.getAttribute('data-tema') === 'oscuro';
+        if (wifiFondo === 'transparente') {
+          setWifiDotColor(esOscuro ? '#ffffff' : '#000000');
+        }
+        generarWifiQR();
+      }
+    });
+    const modalWifi = document.getElementById('modal-wifi');
+    if (modalWifi) observerWifi.observe(modalWifi, { attributes: true, attributeFilter: ['class'] });
+
+    // ============================================================
+    // Generador de Paletas
+    // ============================================================
+
+    // --- Utilidades HSL ↔ HEX ---
+    function hslToRgb(h: number, s: number, l: number): [number, number, number] {
+      h = ((h % 360) + 360) % 360;
+      s = Math.max(0, Math.min(1, s));
+      l = Math.max(0, Math.min(1, l));
+      const c = (1 - Math.abs(2 * l - 1)) * s;
+      const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+      const m = l - c / 2;
+      let r = 0, g = 0, b = 0;
+      if (h < 60)       { r = c; g = x; b = 0; }
+      else if (h < 120) { r = x; g = c; b = 0; }
+      else if (h < 180) { r = 0; g = c; b = x; }
+      else if (h < 240) { r = 0; g = x; b = c; }
+      else if (h < 300) { r = x; g = 0; b = c; }
+      else              { r = c; g = 0; b = x; }
+      return [Math.round((r + m) * 255), Math.round((g + m) * 255), Math.round((b + m) * 255)];
+    }
+
+    function rgbToHex(r: number, g: number, b: number): string {
+      return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('');
+    }
+
+    function hslToHex(h: number, s: number, l: number): string {
+      const [r, g, b] = hslToRgb(h, s, l);
+      return rgbToHex(r, g, b);
+    }
+
+
+    // --- Algoritmos de armonía ---
+    function randomHue(): number { return Math.random() * 360; }
+    function randomSat(): number { return 0.45 + Math.random() * 0.4; } // 45%-85%
+    function randomLig(): number { return 0.35 + Math.random() * 0.35; } // 35%-70%
+    function varyLig(base: number, range = 0.15): number {
+      return Math.max(0.2, Math.min(0.8, base + (Math.random() - 0.5) * range * 2));
+    }
+    function varySat(base: number, range = 0.1): number {
+      return Math.max(0.25, Math.min(0.9, base + (Math.random() - 0.5) * range * 2));
+    }
+
+    function generarPaletaRandom(): string[] {
+      const colores: string[] = [];
+      const hBase = randomHue();
+      for (let i = 0; i < 5; i++) {
+        const h = (hBase + Math.random() * 360) % 360;
+        colores.push(hslToHex(h, randomSat(), randomLig()));
+      }
+      return colores;
+    }
+
+    function generarPaletaAnalogos(): string[] {
+      const hBase = randomHue();
+      const s = randomSat();
+      const l = randomLig();
+      return [-30, -15, 0, 15, 30].map(offset =>
+        hslToHex((hBase + offset + 360) % 360, varySat(s), varyLig(l))
+      );
+    }
+
+    function generarPaletaComplementarios(): string[] {
+      const hBase = randomHue();
+      const s = randomSat();
+      const l = randomLig();
+      return [0, 15, 180, 195, 210].map(offset =>
+        hslToHex((hBase + offset) % 360, varySat(s), varyLig(l))
+      );
+    }
+
+    function generarPaletaTriadicos(): string[] {
+      const hBase = randomHue();
+      const s = randomSat();
+      const l = randomLig();
+      return [0, 10, 120, 130, 240].map(offset =>
+        hslToHex((hBase + offset) % 360, varySat(s), varyLig(l))
+      );
+    }
+
+    function generarPaletaSplit(): string[] {
+      const hBase = randomHue();
+      const s = randomSat();
+      const l = randomLig();
+      return [0, 15, 150, 180, 210].map(offset =>
+        hslToHex((hBase + offset) % 360, varySat(s), varyLig(l))
+      );
+    }
+
+    // --- Estado ---
+    const palColores: string[] = ['#264653', '#2a9d8f', '#e9c46a', '#f4a261', '#e76f51'];
+    const palLocked: boolean[] = [false, false, false, false, false];
+    let palArmonia = 'random';
+
+    // --- Renderizar paleta ---
+    function renderPaleta() {
+      for (let i = 0; i < 5; i++) {
+        const colorEl = document.getElementById(`pal-color-${i}`);
+        const hexEl = document.getElementById(`pal-hex-${i}`);
+        if (colorEl) colorEl.style.backgroundColor = palColores[i];
+        if (hexEl) {
+          const textoSpan = hexEl.querySelector('.pal-hex-texto');
+          if (textoSpan) textoSpan.textContent = palColores[i].toUpperCase();
+        }
+      }
+    }
+
+    // --- Generar nueva paleta ---
+    function generarPaleta() {
+      let nuevos: string[];
+      switch (palArmonia) {
+        case 'analogous':      nuevos = generarPaletaAnalogos(); break;
+        case 'complementary':  nuevos = generarPaletaComplementarios(); break;
+        case 'triadic':        nuevos = generarPaletaTriadicos(); break;
+        case 'split':          nuevos = generarPaletaSplit(); break;
+        default:               nuevos = generarPaletaRandom(); break;
+      }
+      for (let i = 0; i < 5; i++) {
+        if (!palLocked[i]) palColores[i] = nuevos[i];
+      }
+      renderPaleta();
+    }
+
+    // --- Eventos: modos ---
+    document.querySelectorAll('.pal-modo').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.pal-modo').forEach(b => b.classList.remove('activo'));
+        btn.classList.add('activo');
+        palArmonia = (btn as HTMLElement).dataset.armonia || 'random';
+        generarPaleta();
+      });
+    });
+
+    // --- Eventos: candados ---
+    for (let i = 0; i < 5; i++) {
+      const lockBtn = document.getElementById(`pal-lock-${i}`);
+      if (lockBtn) {
+        lockBtn.addEventListener('click', () => {
+          palLocked[i] = !palLocked[i];
+          lockBtn.classList.toggle('locked', palLocked[i]);
+        });
+      }
+    }
+
+    // --- Eventos: copiar HEX individual ---
+    for (let i = 0; i < 5; i++) {
+      const hexBtn = document.getElementById(`pal-hex-${i}`);
+      if (hexBtn) {
+        hexBtn.addEventListener('click', async () => {
+          await navigator.clipboard.writeText(palColores[i].toUpperCase());
+          hexBtn.classList.add('pal-copiado');
+          const textoSpan = hexBtn.querySelector('.pal-hex-texto');
+          if (textoSpan) {
+            const textoOriginal = textoSpan.textContent;
+            textoSpan.textContent = '¡Copiado!';
+            setTimeout(() => {
+              hexBtn.classList.remove('pal-copiado');
+              textoSpan.textContent = textoOriginal;
+            }, 1200);
+          }
+        });
+      }
+    }
+
+    // --- Evento: botón generar ---
+    document.getElementById('pal-generar')?.addEventListener('click', generarPaleta);
+
+    // --- Evento: barra espaciadora (solo con modal paleta abierto) ---
+    document.addEventListener('keydown', (e) => {
+      const modalPaleta = document.getElementById('modal-paleta');
+      if (!modalPaleta?.classList.contains('activo')) return;
+      if (e.code === 'Space' && !(e.target instanceof HTMLInputElement) && !(e.target instanceof HTMLTextAreaElement)) {
+        e.preventDefault();
+        generarPaleta();
+      }
+    });
+
+    // --- Copiar como CSS variables ---
+    document.getElementById('pal-copiar-css')?.addEventListener('click', async () => {
+      const css = palColores.map((c, i) => `  --color-${i + 1}: ${c.toUpperCase()};`).join('\n');
+      const texto = `:root {\n${css}\n}`;
+      await navigator.clipboard.writeText(texto);
+      const btn = document.getElementById('pal-copiar-css');
+      if (btn) {
+        btn.classList.add('gen-copiar--ok');
+        const orig = btn.innerHTML;
+        btn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg> ¡Copiado!`;
+        setTimeout(() => {
+          btn.classList.remove('gen-copiar--ok');
+          btn.innerHTML = orig;
+        }, 1500);
+      }
+    });
+
+    // --- Auto-generar al abrir modal ---
+    const observerPaleta = new MutationObserver(() => {
+      const modal = document.getElementById('modal-paleta');
+      if (modal?.classList.contains('activo')) {
+        renderPaleta();
+      }
+    });
+    const modalPaleta = document.getElementById('modal-paleta');
+    if (modalPaleta) observerPaleta.observe(modalPaleta, { attributes: true, attributeFilter: ['class'] });
+
+    // Render inicial
+    renderPaleta();
+
+    // ============================================================
+    // Redimensionar para Redes
+    // ============================================================
+
+    const rdsDropzone = document.getElementById('rds-dropzone')!;
+    const rdsFileInput = document.getElementById('rds-file') as HTMLInputElement;
+    const rdsPreviewZona = document.getElementById('rds-preview-zona')!;
+    const rdsCanvas = document.getElementById('rds-canvas') as HTMLCanvasElement;
+    const rdsDims = document.getElementById('rds-dims')!;
+    const rdsCambiar = document.getElementById('rds-cambiar')!;
+    const rdsDescargar = document.getElementById('rds-descargar') as HTMLButtonElement;
+    const rdsAnchoInput = document.getElementById('rds-ancho') as HTMLInputElement;
+    const rdsAltoInput = document.getElementById('rds-alto') as HTMLInputElement;
+    const rdsAplicar = document.getElementById('rds-aplicar')!;
+    const rdsCalidad = document.getElementById('rds-calidad') as HTMLInputElement;
+    const rdsCalidadValor = document.getElementById('rds-calidad-valor')!;
+    const rdsCalidadZona = document.getElementById('rds-calidad-zona')!;
+
+    let rdsImagen: HTMLImageElement | null = null;
+    let rdsTargetW = 1080;
+    let rdsTargetH = 1080;
+    let rdsFormato = 'jpeg';
+    let rdsNombrePreset = 'Instagram Post';
+    // Pan: 0.5 = centrado, 0 = borde izq/arriba, 1 = borde der/abajo
+    let rdsPanX = 0.5;
+    let rdsPanY = 0.5;
+
+    // --- Calcular crop con pan ---
+    function rdsCalcCrop(imgW: number, imgH: number, tW: number, tH: number) {
+      const srcRatio = imgW / imgH;
+      const dstRatio = tW / tH;
+      let sw = imgW, sh = imgH, sx = 0, sy = 0;
+      if (srcRatio > dstRatio) {
+        // Imagen más ancha: recortar horizontalmente
+        sw = imgH * dstRatio;
+        const maxOffset = imgW - sw;
+        sx = maxOffset * rdsPanX;
+      } else {
+        // Imagen más alta: recortar verticalmente
+        sh = imgW / dstRatio;
+        const maxOffset = imgH - sh;
+        sy = maxOffset * rdsPanY;
+      }
+      return { sx, sy, sw, sh };
+    }
+
+    // --- Cargar imagen ---
+    function rdsCargarArchivo(file: File) {
+      if (!file.type.startsWith('image/')) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          rdsImagen = img;
+          rdsPanX = 0.5;
+          rdsPanY = 0.5;
+          rdsDropzone.style.display = 'none';
+          rdsPreviewZona.style.display = '';
+          rdsDescargar.disabled = false;
+          rdsRenderPreview();
+        };
+        img.src = e.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // --- Render preview ---
+    function rdsRenderPreview() {
+      if (!rdsImagen) return;
+      const ctx = rdsCanvas.getContext('2d');
+      if (!ctx) return;
+
+      const maxPreviewW = 360;
+      const ratio = rdsTargetW / rdsTargetH;
+      let prevW = maxPreviewW;
+      let prevH = prevW / ratio;
+      if (prevH > 340) { prevH = 340; prevW = prevH * ratio; }
+
+      rdsCanvas.width = prevW;
+      rdsCanvas.height = prevH;
+
+      const { sx, sy, sw, sh } = rdsCalcCrop(rdsImagen.width, rdsImagen.height, rdsTargetW, rdsTargetH);
+
+      ctx.clearRect(0, 0, prevW, prevH);
+      ctx.drawImage(rdsImagen, sx, sy, sw, sh, 0, 0, prevW, prevH);
+
+      rdsDims.textContent = `${rdsTargetW} × ${rdsTargetH} px`;
+      rdsAnchoInput.value = String(rdsTargetW);
+      rdsAltoInput.value = String(rdsTargetH);
+    }
+
+    // --- Drag para reposicionar imagen ---
+    let rdsDragging = false;
+    let rdsDragStartX = 0;
+    let rdsDragStartY = 0;
+    let rdsPanStartX = 0;
+    let rdsPanStartY = 0;
+
+    rdsCanvas.style.cursor = 'grab';
+
+    rdsCanvas.addEventListener('mousedown', (e) => {
+      if (!rdsImagen) return;
+      rdsDragging = true;
+      rdsDragStartX = e.clientX;
+      rdsDragStartY = e.clientY;
+      rdsPanStartX = rdsPanX;
+      rdsPanStartY = rdsPanY;
+      rdsCanvas.style.cursor = 'grabbing';
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!rdsDragging || !rdsImagen) return;
+      const dx = e.clientX - rdsDragStartX;
+      const dy = e.clientY - rdsDragStartY;
+      // Sensibilidad: mover 200px = recorrer todo el rango
+      const sensitivity = 200;
+      rdsPanX = Math.max(0, Math.min(1, rdsPanStartX - dx / sensitivity));
+      rdsPanY = Math.max(0, Math.min(1, rdsPanStartY - dy / sensitivity));
+      rdsRenderPreview();
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (rdsDragging) {
+        rdsDragging = false;
+        rdsCanvas.style.cursor = 'grab';
+      }
+    });
+
+    // Touch para mobile
+    rdsCanvas.addEventListener('touchstart', (e) => {
+      if (!rdsImagen) return;
+      rdsDragging = true;
+      const t = e.touches[0];
+      rdsDragStartX = t.clientX;
+      rdsDragStartY = t.clientY;
+      rdsPanStartX = rdsPanX;
+      rdsPanStartY = rdsPanY;
+    }, { passive: true });
+
+    window.addEventListener('touchmove', (e) => {
+      if (!rdsDragging || !rdsImagen) return;
+      const t = e.touches[0];
+      const dx = t.clientX - rdsDragStartX;
+      const dy = t.clientY - rdsDragStartY;
+      const sensitivity = 200;
+      rdsPanX = Math.max(0, Math.min(1, rdsPanStartX - dx / sensitivity));
+      rdsPanY = Math.max(0, Math.min(1, rdsPanStartY - dy / sensitivity));
+      rdsRenderPreview();
+    }, { passive: true });
+
+    window.addEventListener('touchend', () => { rdsDragging = false; });
+
+    // --- Generar imagen final para descarga ---
+    function rdsGenerarBlob(): Promise<Blob | null> {
+      return new Promise((resolve) => {
+        if (!rdsImagen) { resolve(null); return; }
+        const offscreen = document.createElement('canvas');
+        offscreen.width = rdsTargetW;
+        offscreen.height = rdsTargetH;
+        const ctx = offscreen.getContext('2d');
+        if (!ctx) { resolve(null); return; }
+
+        const { sx, sy, sw, sh } = rdsCalcCrop(rdsImagen.width, rdsImagen.height, rdsTargetW, rdsTargetH);
+        ctx.drawImage(rdsImagen, sx, sy, sw, sh, 0, 0, rdsTargetW, rdsTargetH);
+
+        const mimeType = `image/${rdsFormato}`;
+        const quality = rdsFormato === 'png' ? undefined : parseInt(rdsCalidad.value) / 100;
+        offscreen.toBlob((blob) => resolve(blob), mimeType, quality);
+      });
+    }
+
+    // --- Eventos: dropzone ---
+    rdsDropzone.addEventListener('click', () => rdsFileInput.click());
+    rdsFileInput.addEventListener('change', () => {
+      if (rdsFileInput.files?.[0]) rdsCargarArchivo(rdsFileInput.files[0]);
+    });
+
+    rdsDropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      rdsDropzone.classList.add('rds-drag');
+    });
+    rdsDropzone.addEventListener('dragleave', () => rdsDropzone.classList.remove('rds-drag'));
+    rdsDropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      rdsDropzone.classList.remove('rds-drag');
+      if (e.dataTransfer?.files?.[0]) rdsCargarArchivo(e.dataTransfer.files[0]);
+    });
+
+    // --- Evento: cambiar imagen ---
+    rdsCambiar.addEventListener('click', () => {
+      rdsImagen = null;
+      rdsFileInput.value = '';
+      rdsDropzone.style.display = '';
+      rdsPreviewZona.style.display = 'none';
+      rdsDescargar.disabled = true;
+    });
+
+    // --- Eventos: presets ---
+    document.querySelectorAll('.rds-preset').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.rds-preset').forEach(b => b.classList.remove('activo'));
+        btn.classList.add('activo');
+        const el = btn as HTMLElement;
+        rdsTargetW = parseInt(el.dataset.w || '1080');
+        rdsTargetH = parseInt(el.dataset.h || '1080');
+        rdsNombrePreset = el.dataset.nombre || 'Imagen';
+        rdsPanX = 0.5; rdsPanY = 0.5;
+        rdsRenderPreview();
+      });
+    });
+
+    // --- Evento: personalizado ---
+    rdsAplicar.addEventListener('click', () => {
+      const w = parseInt(rdsAnchoInput.value);
+      const h = parseInt(rdsAltoInput.value);
+      if (w > 0 && h > 0 && w <= 4096 && h <= 4096) {
+        rdsTargetW = w;
+        rdsTargetH = h;
+        rdsNombrePreset = 'Personalizado';
+        rdsPanX = 0.5; rdsPanY = 0.5;
+        document.querySelectorAll('.rds-preset').forEach(b => b.classList.remove('activo'));
+        rdsRenderPreview();
+      }
+    });
+
+    // --- Eventos: formato ---
+    document.querySelectorAll('.rds-formato').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.rds-formato').forEach(b => b.classList.remove('activo'));
+        btn.classList.add('activo');
+        rdsFormato = (btn as HTMLElement).dataset.fmt || 'jpeg';
+        // Mostrar/ocultar calidad (no aplica a PNG)
+        rdsCalidadZona.style.display = rdsFormato === 'png' ? 'none' : '';
+      });
+    });
+
+    // --- Evento: calidad slider ---
+    function rdsActualizarCalidad() {
+      const val = parseInt(rdsCalidad.value);
+      rdsCalidadValor.textContent = `${val}%`;
+      let color = '#10b981'; // verde
+      let label = 'Alta';
+      if (val < 50) { color = '#ef4444'; label = 'Baja'; }
+      else if (val < 75) { color = '#f59e0b'; label = 'Media'; }
+      rdsCalidadValor.style.color = color;
+      rdsCalidadValor.textContent = `${val}% · ${label}`;
+    }
+    rdsCalidad.addEventListener('input', rdsActualizarCalidad);
+    rdsActualizarCalidad();
+
+    // --- Evento: descargar ---
+    rdsDescargar.addEventListener('click', async () => {
+      const blob = await rdsGenerarBlob();
+      if (!blob) return;
+      const ext = rdsFormato === 'jpeg' ? 'jpg' : rdsFormato;
+      const nombre = rdsNombrePreset.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${nombre}-${rdsTargetW}x${rdsTargetH}.${ext}`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    } catch (err) {
+      console.error('Error inicializando herramientas:', err);
+    }
+  });
+</script>
+
+<style is:global>
+  /* ============================================================
+     Laboratorio — Grilla de herramientas
+     ============================================================ */
+
+  .lab-grilla {
+    margin-top: 52px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--borde);
+    border-radius: 18px;
+    overflow: hidden;
+    transition: background var(--transicion);
+  }
+
+  .lab-card {
+    background: var(--fondo);
+    padding: 30px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    font-family: var(--fuente-principal);
+    color: inherit;
+    transition: background 0.25s;
+  }
+
+  .lab-card:hover { background: var(--card); }
+  .lab-card:hover .lab-card-icono { transform: scale(1.1) rotate(-5deg); }
+  .lab-card:hover .lab-card-accion { color: var(--texto); }
+
+  .lab-card--pronto {
+    cursor: default;
+    opacity: 0.5;
+  }
+
+  .lab-card--pronto:hover { background: var(--fondo); }
+  .lab-card--pronto:hover .lab-card-icono { transform: none; }
+
+  .lab-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .lab-card-icono {
+    transition: background var(--transicion), transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .lab-card-numero {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gris-titulo);
+    letter-spacing: 0.05em;
+    transition: color var(--transicion);
+  }
+
+  .lab-card-titulo {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--texto);
+    letter-spacing: -0.2px;
+    line-height: 1.25;
+    transition: color var(--transicion);
+  }
+
+  .lab-card-desc {
+    font-size: 13px;
+    color: var(--gris-sub);
+    line-height: 1.6;
+    transition: color var(--transicion);
+  }
+
+  .lab-card-accion {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--acento);
+    margin-top: auto;
+    transition: color 0.2s;
+  }
+
+  .lab-card-pronto {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--gris-titulo);
+    margin-top: auto;
+    font-style: italic;
+  }
+
+  .lab-volver { margin-top: 52px; }
+
+  @media (max-width: 1024px) { .lab-grilla { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px)  { .lab-grilla { grid-template-columns: 1fr; } }
+
+  /* ============================================================
+     Modal — Sistema base
+     ============================================================ */
+
+  .lab-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s;
+  }
+
+  .lab-modal-overlay.activo {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .lab-modal {
+    background: var(--fondo);
+    border: 1px solid var(--borde);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 760px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: translateY(20px) scale(0.97);
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), background var(--transicion), border-color var(--transicion);
+  }
+
+  .lab-modal-overlay.activo .lab-modal {
+    transform: translateY(0) scale(1);
+  }
+
+  .lab-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--borde);
+    flex-shrink: 0;
+    transition: border-color var(--transicion);
+  }
+
+  .lab-modal-header-izq {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .lab-modal-titulo {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--texto);
+    transition: color var(--transicion);
+  }
+
+  /* Íconos más lentos en laboratorio */
+  .lab-card.dibujado .icono-svg path,
+  .lab-card.dibujado .icono-svg circle,
+  .lab-card.dibujado .icono-svg rect,
+  .lab-card.dibujado .icono-svg line,
+  .lab-card.dibujado .icono-svg polyline,
+  .lab-modal-header-izq.dibujado .icono-svg path,
+  .lab-modal-header-izq.dibujado .icono-svg circle,
+  .lab-modal-header-izq.dibujado .icono-svg rect,
+  .lab-modal-header-izq.dibujado .icono-svg line,
+  .lab-modal-header-izq.dibujado .icono-svg polyline {
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 1.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .lab-titulo-escribiendo::after {
+    content: '|';
+    animation: parpadeo 0.7s infinite;
+    color: var(--acento);
+    font-weight: 300;
+    margin-left: 1px;
+  }
+
+  .lab-modal-cerrar {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: var(--ghost-fondo);
+    border: 1px solid var(--borde);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--gris-sub);
+    transition: background 0.2s, color 0.2s, border-color var(--transicion);
+  }
+
+  .lab-modal-cerrar:hover {
+    background: var(--borde);
+    color: var(--texto);
+  }
+
+  .lab-modal-body {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+  }
+
+  /* Grid 2 columnas desktop */
+  .lab-modal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+  }
+
+  .lab-modal-grid-col {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .lab-modal-grid-col--centro {
+    align-items: center;
+    justify-content: center;
+  }
+
+  .lab-modal-grid--tres {
+    grid-template-columns: 1fr auto 1fr;
+  }
+
+  .lab-modal-grid-full {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* ============================================================
+     Generador de Contraseñas
+     ============================================================ */
+
+  /* Modos */
+  .gen-modos {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  .gen-modo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 12px 8px;
+    background: var(--ghost-fondo);
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    cursor: pointer;
+    font-family: var(--fuente-principal);
+    color: inherit;
+    transition: background 0.25s, border-color 0.25s, transform 0.2s;
+  }
+
+  .gen-modo:hover { background: var(--card); transform: translateY(-1px); }
+
+  .gen-modo.activo {
+    background: var(--ghost-fondo);
+    border-color: var(--acento);
+    box-shadow: 0 0 0 1px var(--acento);
+  }
+
+  .gen-modo-nombre {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--texto);
+    transition: color var(--transicion);
+  }
+
+  .gen-modo.activo .gen-modo-nombre { color: var(--acento); }
+
+  .gen-modo-desc {
+    font-size: 10px;
+    color: var(--gris-titulo);
+    transition: color var(--transicion);
+  }
+
+  /* Descripción del modo */
+  .gen-modo-info-texto {
+    font-size: 13px;
+    color: var(--gris-sub);
+    line-height: 1.55;
+    transition: color var(--transicion);
+  }
+
+  /* Resultado (editable) */
+  .gen-resultado {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--card);
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    padding: 14px 16px;
+    transition: background var(--transicion), border-color var(--transicion);
+  }
+
+  .gen-password {
+    flex: 1;
+    font-family: 'Courier New', monospace;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--texto);
+    background: none;
+    border: none;
+    outline: none;
+    width: 100%;
+    min-width: 0;
+    transition: color var(--transicion);
+  }
+
+  .gen-password::placeholder { color: var(--gris-titulo); }
+
+  .gen-copiar {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: var(--ghost-fondo);
+    border: 1px solid var(--borde);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--gris-sub);
+    flex-shrink: 0;
+    transition: background 0.2s, color 0.2s, transform 0.2s, border-color var(--transicion);
+  }
+
+  .gen-copiar:hover {
+    background: var(--borde);
+    color: var(--texto);
+    transform: scale(1.05);
+  }
+
+  .gen-copiar-check { display: none; }
+
+  .gen-copiar--ok {
+    background: #10b981 !important;
+    color: #fff !important;
+    border-color: #10b981 !important;
+  }
+
+  .gen-copiar--ok .gen-copiar-icono { display: none; }
+  .gen-copiar--ok .gen-copiar-check { display: block; }
+
+  /* Fuerza */
+  .gen-fuerza {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .gen-fuerza-barra {
+    flex: 1;
+    height: 4px;
+    background: var(--borde);
+    border-radius: 4px;
+    overflow: hidden;
+    transition: background var(--transicion);
+  }
+
+  .gen-fuerza-nivel {
+    height: 100%;
+    width: 0;
+    border-radius: 4px;
+    transition: width 0.4s, background 0.4s;
+  }
+
+  .gen-fuerza-texto {
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: color 0.4s;
+  }
+
+  /* Controles */
+  .gen-controles {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  .gen-control-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .gen-control-label span:first-child {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gris-sub);
+    transition: color var(--transicion);
+  }
+
+  .gen-control-valor {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--acento);
+    min-width: 28px;
+    text-align: right;
+  }
+
+  /* Slider */
+  .gen-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    border-radius: 4px;
+    background: linear-gradient(to right, var(--acento) var(--pct, 50%), var(--borde) var(--pct, 50%));
+    outline: none;
+    transition: background var(--transicion);
+  }
+
+  .gen-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--acento);
+    cursor: pointer;
+    border: 2px solid var(--fondo);
+    box-shadow: 0 0 0 2px var(--acento);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .gen-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+  }
+
+  .gen-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--acento);
+    cursor: pointer;
+    border: 2px solid var(--fondo);
+    box-shadow: 0 0 0 2px var(--acento);
+  }
+
+  /* Toggles */
+  .gen-toggles {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .gen-toggle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .gen-toggle:hover { background: var(--card); }
+
+  .gen-toggle input { display: none; }
+
+  .gen-toggle-switch {
+    width: 38px;
+    height: 22px;
+    border-radius: 12px;
+    background: var(--borde);
+    position: relative;
+    flex-shrink: 0;
+    transition: background 0.3s;
+  }
+
+  .gen-toggle-switch::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--gris-sub);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s;
+  }
+
+  .gen-toggle input:checked + .gen-toggle-switch {
+    background: var(--acento);
+  }
+
+  .gen-toggle input:checked + .gen-toggle-switch::after {
+    transform: translateX(16px);
+    background: #fff;
+  }
+
+  .gen-toggle-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--texto);
+    flex: 1;
+    transition: color var(--transicion);
+  }
+
+  .gen-toggle-ejemplo {
+    font-size: 12px;
+    font-family: 'Courier New', monospace;
+    color: var(--gris-titulo);
+    transition: color var(--transicion);
+  }
+
+  /* Botón generar */
+  .gen-boton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 13px;
+    font-family: var(--fuente-principal);
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--gradiente);
+    border: none;
+    border-radius: var(--radio-pill);
+    cursor: pointer;
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s;
+  }
+
+  .gen-boton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(124, 92, 232, 0.3);
+  }
+
+  .gen-boton:active { transform: scale(0.98); }
+
+  /* Footer fijo del modal */
+  .lab-modal-footer {
+    padding: 16px 24px 20px;
+    border-top: 1px solid var(--borde);
+    flex-shrink: 0;
+    transition: border-color var(--transicion);
+  }
+
+  /* Presets de largo */
+  .gen-presets {
+    display: flex;
+    gap: 6px;
+    margin-top: 16px;
+  }
+
+  .gen-preset {
+    font-family: var(--fuente-principal);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gris-sub);
+    background: var(--ghost-fondo);
+    border: 1px solid var(--borde);
+    padding: 4px 12px;
+    border-radius: var(--radio-pill);
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+  }
+
+  .gen-preset:hover { background: var(--borde); color: var(--texto); }
+
+  .gen-preset.activo {
+    background: var(--acento);
+    color: #fff;
+    border-color: var(--acento);
+  }
+
+  /* Info ultra */
+  .gen-info-ultra {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 14px;
+    background: var(--card);
+    border-radius: 10px;
+    border: 1px solid var(--borde);
+    transition: background var(--transicion), border-color var(--transicion);
+  }
+
+  .gen-info-texto {
+    font-size: 13px;
+    color: var(--gris-sub);
+    line-height: 1.5;
+    transition: color var(--transicion);
+  }
+
+  .gen-info-aviso {
+    font-size: 12px;
+    color: var(--gris-titulo);
+    transition: color var(--transicion);
+  }
+
+  /* ============================================================
+     Generador QR
+     ============================================================ */
+
+  .lab-modal--ancho { max-width: 820px; }
+  .lab-modal--wifi { max-width: 960px; }
+
+  .qr-campo { display: flex; flex-direction: column; gap: 8px; }
+
+  .qr-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gris-sub);
+    transition: color var(--transicion);
+  }
+
+  .qr-input {
+    font-family: var(--fuente-principal);
+    font-size: 14px;
+    color: var(--texto);
+    background: var(--card);
+    border: 1px solid var(--borde);
+    border-radius: 10px;
+    padding: 12px 14px;
+    outline: none;
+    transition: background var(--transicion), border-color 0.2s, color var(--transicion);
+  }
+
+  .qr-input:focus { border-color: var(--acento); }
+  .qr-input::placeholder { color: var(--gris-titulo); }
+
+  /* Preview */
+  .qr-preview-zona {
+    display: flex;
+    justify-content: center;
+    padding: 8px 0;
+  }
+
+  .qr-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 280px;
+    height: 280px;
+    border-radius: 16px;
+    background-image:
+      linear-gradient(45deg, var(--ghost-fondo) 25%, transparent 25%),
+      linear-gradient(-45deg, var(--ghost-fondo) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, var(--ghost-fondo) 75%),
+      linear-gradient(-45deg, transparent 75%, var(--ghost-fondo) 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+    border: 1px solid var(--borde);
+    overflow: hidden;
+    transition: border-color var(--transicion);
+  }
+
+  .qr-preview canvas {
+    display: block;
+    border-radius: 12px;
+  }
+
+  /* Sección de controles QR */
+  .qr-seccion {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* Opciones de fondo */
+  .qr-opciones-fondo {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+  }
+
+  .qr-opcion-fondo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 6px;
+    background: var(--ghost-fondo);
+    border: 1px solid var(--borde);
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: var(--fuente-principal);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--gris-sub);
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+  }
+
+  .qr-opcion-fondo:hover { background: var(--card); color: var(--texto); }
+
+  .qr-opcion-fondo.activo {
+    border-color: var(--acento);
+    box-shadow: 0 0 0 1px var(--acento);
+    color: var(--texto);
+  }
+
+  .qr-fondo-muestra {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1px solid var(--borde);
+    transition: border-color var(--transicion);
+  }
+
+  .qr-fondo-transparente {
+    background-image:
+      linear-gradient(45deg, #ccc 25%, transparent 25%),
+      linear-gradient(-45deg, #ccc 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #ccc 75%),
+      linear-gradient(-45deg, transparent 75%, #ccc 75%);
+    background-size: 8px 8px;
+    background-position: 0 0, 0 4px, 4px -4px, -4px 0;
+  }
+
+  /* Color custom */
+  .qr-color-custom {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-top: 6px;
+  }
+
+  .qr-color-label {
+    font-size: 12px;
+    color: var(--gris-sub);
+    transition: color var(--transicion);
+  }
+
+  .qr-color-picker {
+    width: 36px;
+    height: 30px;
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    padding: 2px;
+    cursor: pointer;
+    background: var(--ghost-fondo);
+    transition: border-color var(--transicion);
+  }
+
+  .qr-color-picker::-webkit-color-swatch-wrapper { padding: 2px; }
+  .qr-color-picker::-webkit-color-swatch { border-radius: 4px; border: none; }
+
+  .qr-color-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+  }
+
+  .qr-hex-input {
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--texto);
+    background: var(--card);
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    padding: 6px 10px;
+    width: 90px;
+    outline: none;
+    transition: border-color 0.2s, background var(--transicion), color var(--transicion);
+  }
+
+  .qr-hex-input:focus { border-color: var(--acento); }
+
+  /* Colores rápidos */
+  .qr-colores-rapidos {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .qr-color-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 2px solid var(--borde);
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .qr-color-btn:hover { transform: scale(1.1); }
+
+  .qr-color-btn.activo {
+    border-color: var(--acento);
+    box-shadow: 0 0 0 2px var(--acento);
+  }
+
+  /* Logo opciones */
+  .qr-toggle-row { display: flex; }
+
+  .qr-logo-opciones {
+    display: flex;
+    gap: 6px;
+  }
+
+  .qr-logo-btn {
+    font-family: var(--fuente-principal);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--gris-sub);
+    background: var(--ghost-fondo);
+    border: 1px solid var(--borde);
+    padding: 8px 14px;
+    border-radius: var(--radio-pill);
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+  }
+
+  .qr-logo-btn:hover { background: var(--card); color: var(--texto); }
+
+  .qr-logo-btn.activo {
+    background: var(--acento);
+    color: #fff;
+    border-color: var(--acento);
+  }
+
+  /* Footer QR */
+  .qr-footer {
+    display: flex;
+    gap: 8px;
+  }
+
+  .qr-footer .gen-boton { flex: 1; }
+
+  .qr-accion-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 13px 18px;
+    font-family: var(--fuente-principal);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ghost-texto);
+    background: var(--ghost-fondo);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-pill);
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, transform 0.25s, border-color var(--transicion);
+  }
+
+  .qr-accion-btn:hover {
+    background: var(--borde);
+    color: var(--texto);
+    transform: translateY(-1px);
+  }
+
+  .qr-accion-btn.gen-copiar--ok {
+    background: #10b981 !important;
+    color: #fff !important;
+    border-color: #10b981 !important;
+  }
+
+  /* ============================================================
+     Generador QR Wi-Fi
+     ============================================================ */
+
+  .wifi-pass-row {
+    display: flex;
+    gap: 6px;
+  }
+
+  .wifi-pass-input { flex: 1; }
+
+  .wifi-pass-toggle {
+    width: 44px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--ghost-fondo);
+    border: 1px solid var(--borde);
+    border-radius: 10px;
+    cursor: pointer;
+    color: var(--gris-sub);
+    transition: background 0.2s, color 0.2s, border-color var(--transicion);
+  }
+
+  .wifi-pass-toggle:hover { background: var(--borde); color: var(--texto); }
+
+  .wifi-seguridad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  .wifi-seg-btn {
+    font-family: var(--fuente-principal);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gris-sub);
+    background: var(--ghost-fondo);
+    border: 1px solid var(--borde);
+    padding: 10px 8px;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+  }
+
+  .wifi-seg-btn:hover { background: var(--card); color: var(--texto); }
+
+  .wifi-seg-btn.activo {
+    border-color: var(--acento);
+    box-shadow: 0 0 0 1px var(--acento);
+    color: var(--acento);
+  }
+
+  /* ============================================================
+     Generador de Paletas
+     ============================================================ */
+
+  .lab-modal--paleta {
+    max-width: 880px;
+  }
+
+  .pal-body {
+    padding: 20px 24px !important;
+    gap: 16px !important;
+  }
+
+  .pal-modos {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .pal-modo {
+    font-family: var(--fuente-principal);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gris-sub);
+    background: var(--ghost-fondo);
+    border: 1px solid var(--borde);
+    padding: 8px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+  }
+
+  .pal-modo:hover { background: var(--card); color: var(--texto); }
+
+  .pal-modo.activo {
+    border-color: var(--acento);
+    box-shadow: 0 0 0 1px var(--acento);
+    color: var(--acento);
+  }
+
+  .pal-columnas {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .pal-col {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .pal-color {
+    height: 220px;
+    transition: background-color 0.4s;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .pal-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 8px;
+    background: var(--card);
+    border: 1px solid var(--borde);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    transition: background var(--transicion), border-color var(--transicion);
+  }
+
+  .pal-hex {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--texto);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 6px;
+    transition: background 0.2s, color var(--transicion);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .pal-hex-icono {
+    display: none;
+    flex-shrink: 0;
+  }
+
+  .pal-hex:hover {
+    background: var(--borde);
+  }
+
+  .pal-hex:hover .pal-hex-icono {
+    display: block;
+  }
+
+  .pal-hex.pal-copiado {
+    background: #10b981 !important;
+    color: #fff !important;
+  }
+
+  .pal-hex.pal-copiado .pal-hex-icono {
+    display: none !important;
+  }
+
+  .pal-lock {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: none;
+    border: 1px solid transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--gris-sub);
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+    flex-shrink: 0;
+  }
+
+  .pal-lock:hover {
+    background: var(--borde);
+    color: var(--texto);
+  }
+
+  .pal-lock.locked {
+    color: var(--acento);
+    border-color: var(--acento);
+    background: var(--ghost-fondo);
+  }
+
+  .pal-lock.locked .pal-lock-open { display: none; }
+  .pal-lock.locked .pal-lock-closed { display: block !important; }
+
+  .pal-hint {
+    font-size: 12px;
+    color: var(--gris-titulo);
+    text-align: center;
+    transition: color var(--transicion);
+  }
+
+  .pal-hint kbd {
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-family: var(--fuente-principal);
+    font-weight: 600;
+    background: var(--ghost-fondo);
+    border: 1px solid var(--borde);
+    border-radius: 6px;
+    color: var(--texto);
+    transition: background var(--transicion), border-color var(--transicion), color var(--transicion);
+  }
+
+  /* ============================================================
+     Redimensionar para Redes
+     ============================================================ */
+
+  .rds-dropzone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 40px 24px;
+    border: 2px dashed var(--borde);
+    border-radius: 14px;
+    cursor: pointer;
+    text-align: center;
+    color: var(--gris-sub);
+    transition: border-color 0.25s, background 0.25s, color var(--transicion);
+  }
+
+  .rds-dropzone:hover,
+  .rds-dropzone.rds-drag {
+    border-color: var(--acento);
+    background: rgba(124, 92, 232, 0.05);
+  }
+
+  .rds-dropzone-texto {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--texto);
+    transition: color var(--transicion);
+  }
+
+  .rds-dropzone-formatos {
+    font-size: 12px;
+    color: var(--gris-titulo);
+    transition: color var(--transicion);
+  }
+
+  .rds-preview-zona {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .rds-preview-zona canvas {
+    width: 100%;
+    max-height: 340px;
+    object-fit: contain;
+    border-radius: 12px;
+    background: var(--card);
+    border: 1px solid var(--borde);
+    transition: background var(--transicion), border-color var(--transicion);
+  }
+
+  .rds-preview-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .rds-preview-dims {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gris-titulo);
+    font-family: 'Courier New', monospace;
+    transition: color var(--transicion);
+  }
+
+  .rds-cambiar {
+    font-family: var(--fuente-principal);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--acento);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: background 0.2s;
+  }
+
+  .rds-cambiar:hover { background: var(--ghost-fondo); }
+
+  .rds-hint {
+    font-size: 11px;
+    color: var(--gris-titulo);
+    text-align: center;
+    margin: -4px 0;
+    transition: color var(--transicion);
+  }
+
+  .rds-presets {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+  }
+
+  .rds-preset {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 10px 6px;
+    font-family: var(--fuente-principal);
+    background: var(--ghost-fondo);
+    border: 1px solid var(--borde);
+    border-radius: 10px;
+    cursor: pointer;
+    color: inherit;
+    transition: background 0.2s, border-color 0.2s, transform 0.2s;
+  }
+
+  .rds-preset:hover { background: var(--card); transform: translateY(-1px); }
+
+  .rds-preset.activo {
+    border-color: var(--acento);
+    box-shadow: 0 0 0 1px var(--acento);
+  }
+
+  .rds-preset-nombre {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--texto);
+    transition: color var(--transicion);
+  }
+
+  .rds-preset.activo .rds-preset-nombre { color: var(--acento); }
+
+  .rds-preset-dim {
+    font-size: 9px;
+    color: var(--gris-titulo);
+    font-family: 'Courier New', monospace;
+    transition: color var(--transicion);
+  }
+
+  .rds-custom {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+  }
+
+  .rds-custom-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+  }
+
+  .rds-custom-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gris-titulo);
+    transition: color var(--transicion);
+  }
+
+  .rds-custom-input {
+    text-align: center;
+    font-size: 13px !important;
+    padding: 8px !important;
+  }
+
+  .rds-custom-x {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gris-titulo);
+    padding-bottom: 8px;
+    transition: color var(--transicion);
+  }
+
+  .rds-custom-aplicar {
+    font-family: var(--fuente-principal);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--acento);
+    background: var(--ghost-fondo);
+    border: 1px solid var(--borde);
+    padding: 9px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s, border-color 0.2s;
+  }
+
+  .rds-custom-aplicar:hover { background: var(--card); border-color: var(--acento); }
+
+  .rds-formatos {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  .rds-formato {
+    font-family: var(--fuente-principal);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--gris-sub);
+    background: var(--ghost-fondo);
+    border: 1px solid var(--borde);
+    padding: 10px 8px;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+  }
+
+  .rds-formato:hover { background: var(--card); color: var(--texto); }
+
+  .rds-formato.activo {
+    border-color: var(--acento);
+    box-shadow: 0 0 0 1px var(--acento);
+    color: var(--acento);
+  }
+
+  /* ============================================================
+     Responsive modales
+     ============================================================ */
+  @media (max-width: 768px) {
+    .lab-modal-overlay { padding: 10px; }
+    .lab-modal { max-width: 100%; max-height: 92vh; border-radius: 16px; }
+    .lab-modal--ancho { max-width: 100%; }
+    .lab-modal--wifi { max-width: 100%; }
+    .lab-modal--paleta { max-width: 100%; }
+    .lab-modal-grid--tres { grid-template-columns: 1fr; }
+    .lab-modal-header { padding: 16px 18px; }
+    .lab-modal-body { padding: 18px; gap: 16px; }
+    .lab-modal-footer { padding: 14px 18px 16px; }
+
+    .lab-modal-grid { grid-template-columns: 1fr; gap: 16px; }
+
+    .gen-password { font-size: 13px; }
+    .gen-toggle { padding: 8px 10px; gap: 10px; }
+    .gen-toggle-switch { width: 34px; height: 20px; }
+    .gen-toggle-switch::after { width: 14px; height: 14px; }
+    .gen-toggle input:checked + .gen-toggle-switch::after { transform: translateX(14px); }
+
+    .qr-preview { width: 220px; height: 220px; }
+    .qr-preview canvas { width: 220px !important; height: 220px !important; }
+    .qr-opciones-fondo { grid-template-columns: repeat(2, 1fr); }
+    .qr-footer { flex-direction: column; }
+
+    .pal-columnas { grid-template-columns: repeat(5, 1fr); gap: 3px; }
+    .pal-color { height: 120px; }
+    .pal-info { padding: 6px 4px; flex-direction: column; gap: 4px; }
+    .pal-hex { font-size: 10px; padding: 2px 4px; }
+    .pal-lock { width: 26px; height: 26px; }
+    .pal-modos { gap: 4px; }
+    .pal-modo { padding: 6px 10px; font-size: 11px; }
+
+    .rds-presets { grid-template-columns: repeat(3, 1fr); gap: 4px; }
+    .rds-preset { padding: 8px 4px; }
+    .rds-preset-nombre { font-size: 10px; }
+    .rds-dropzone { padding: 28px 16px; }
+  }
+</style>

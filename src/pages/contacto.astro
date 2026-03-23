@@ -1,0 +1,909 @@
+---
+// ============================================================
+// contacto.astro — Página de contacto dedicada
+//
+// Formulario wizard multi-paso embebido + info de contacto.
+// ============================================================
+import Plantilla     from '../layouts/Plantilla.astro';
+import Nav           from '../components/Nav.astro';
+import Footer        from '../components/Footer.astro';
+import IconoSVG      from '../components/ui/IconoSVG.astro';
+import AgendarMeet   from '../components/AgendarMeet.astro';
+import Boton         from '../components/Boton.astro';
+
+const DATOS = {
+  email:     'anterior.sembrar-0o@icloud.com',
+  linkedin:  'https://www.linkedin.com/in/laurosa/',
+  github:    'https://github.com/lauro-sa',
+  instagram: 'https://www.instagram.com/stianlauro/',
+};
+---
+
+<Plantilla
+  titulo="Contacto | S7ian Code"
+  descripcion="Ponete en contacto para tu próximo proyecto web, PWA o solución digital."
+>
+  <Nav />
+
+  <main>
+    <div class="fondo-puntos">
+      <section class="seccion contacto-pagina">
+
+        <!-- Cabecera -->
+        <div class="contacto-cabecera">
+          <span class="etiqueta">Contacto</span>
+          <h1 class="titulo-dos-tonos">
+            <span class="negro">Hablemos de</span><br>
+            <span class="gris">tu proyecto.</span>
+          </h1>
+          <p class="contacto-intro">
+            Completá el formulario o escribime directamente. Respondo en menos de 24hs.
+          </p>
+        </div>
+
+        <!-- Layout de dos columnas -->
+        <div class="contacto-grid">
+
+          <!-- ===== Columna izquierda: Info ===== -->
+          <aside class="contacto-info">
+
+            <div class="contacto-tarjeta">
+              <div class="contacto-tarjeta-icono icono-contenedor contacto-animable">
+                <IconoSVG nombre="correo" tamaño={20} grosor={1.5} />
+              </div>
+              <div>
+                <h3 class="contacto-tarjeta-titulo">Email</h3>
+                <a href={`mailto:${DATOS.email}`} class="contacto-tarjeta-dato">{DATOS.email}</a>
+              </div>
+            </div>
+
+            <div class="contacto-tarjeta">
+              <div class="contacto-tarjeta-icono icono-contenedor contacto-animable">
+                <IconoSVG nombre="ubicacion" tamaño={20} grosor={1.5} />
+              </div>
+              <div>
+                <h3 class="contacto-tarjeta-titulo">Ubicación</h3>
+                <span class="contacto-tarjeta-dato">Buenos Aires, Argentina</span>
+              </div>
+            </div>
+
+            <div class="contacto-tarjeta">
+              <div class="contacto-tarjeta-icono icono-contenedor contacto-animable">
+                <IconoSVG nombre="calendario" tamaño={20} grosor={1.5} />
+              </div>
+              <div>
+                <h3 class="contacto-tarjeta-titulo">Disponibilidad</h3>
+                <span class="contacto-tarjeta-dato">Disponible para nuevos proyectos</span>
+              </div>
+            </div>
+
+            <!-- Redes -->
+            <div class="contacto-redes">
+              <h3 class="contacto-redes-titulo">Encontrame en</h3>
+              <div class="contacto-redes-links">
+                <a href={DATOS.linkedin} class="contacto-red" target="_blank" rel="noopener noreferrer" title="LinkedIn">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+                  LinkedIn
+                </a>
+                <a href={DATOS.github} class="contacto-red" target="_blank" rel="noopener noreferrer" title="GitHub">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0 0 22 12.017C22 6.484 17.522 2 12 2Z"/></svg>
+                  GitHub
+                </a>
+                <a href={DATOS.instagram} class="contacto-red" target="_blank" rel="noopener noreferrer" title="Instagram">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                  Instagram
+                </a>
+              </div>
+            </div>
+
+            <!-- FAQ rápido -->
+            <div class="contacto-faq">
+              <h3 class="contacto-faq-titulo">Preguntas frecuentes</h3>
+
+              <details class="contacto-faq-item">
+                <summary>¿Cuánto tarda un proyecto?</summary>
+                <p>Los tiempos dependen del alcance de cada proyecto. Una vez que conversemos sobre tu idea, te doy un estimado realista y un plan de trabajo claro.</p>
+              </details>
+
+              <details class="contacto-faq-item">
+                <summary>¿Trabajás con clientes de otros países?</summary>
+                <p>Sí, trabajo de forma remota con clientes de cualquier parte del mundo. La comunicación se adapta a tu zona horaria.</p>
+              </details>
+
+              <details class="contacto-faq-item">
+                <summary>¿Qué necesito para empezar?</summary>
+                <p>Solo una idea clara de lo que necesitás. Completá el formulario y coordino una llamada para definir los detalles juntos.</p>
+              </details>
+            </div>
+
+          </aside>
+
+          <!-- ===== Columna derecha: Formulario ===== -->
+          <div class="contacto-form-wrapper">
+            <!-- Agendar reunión -->
+            <AgendarMeet />
+
+            <div class="contacto-form-card">
+
+              <!-- Barra de progreso -->
+              <div class="contacto-progreso">
+                <div class="contacto-progreso-barra" id="progresoContacto" style="width: 20%"></div>
+              </div>
+              <span class="contacto-paso-indicador" id="pasoIndicadorContacto">Paso 1 de 5</span>
+
+              <form id="formularioContactoPagina" novalidate>
+                <div class="contacto-form-cuerpo">
+
+                  <!-- PASO 1 -->
+                  <div class="contacto-paso activo" data-paso="1">
+                    <div class="contacto-titulo-con-icono">
+                      <div class="icono-contenedor contacto-titulo-icono contacto-animable">
+                        <IconoSVG nombre="mano" tamaño={22} grosor={1.5} />
+                      </div>
+                      <h3 class="contacto-form-titulo">Empecemos</h3>
+                    </div>
+                    <p class="contacto-form-subtitulo">Contanos un poco sobre vos.</p>
+
+                    <div class="contacto-campo">
+                      <label for="cp-nombre">¿Cómo te llamás?</label>
+                      <input type="text" id="cp-nombre" name="nombre" placeholder="Tu nombre" required autocomplete="name" />
+                    </div>
+                    <div class="contacto-campo">
+                      <label for="cp-email">¿Tu email?</label>
+                      <input type="email" id="cp-email" name="email" placeholder="nombre@ejemplo.com" required autocomplete="email" />
+                    </div>
+                  </div>
+
+                  <!-- PASO 2 -->
+                  <div class="contacto-paso" data-paso="2">
+                    <div class="contacto-titulo-con-icono">
+                      <div class="icono-contenedor contacto-titulo-icono contacto-animable">
+                        <IconoSVG nombre="cubo" tamaño={22} grosor={1.5} />
+                      </div>
+                      <h3 class="contacto-form-titulo">¿Qué necesitás?</h3>
+                    </div>
+                    <p class="contacto-form-subtitulo">Elegí el tipo de proyecto.</p>
+
+                    <div class="contacto-opciones" role="radiogroup" aria-label="Tipo de proyecto">
+                      <label class="contacto-opcion">
+                        <input type="radio" name="tipo" value="sitio-web" />
+                        <span class="contacto-opcion-card">
+                          <span class="contacto-opcion-icono contacto-animable"><IconoSVG nombre="ventana" tamaño={24} grosor={1.5} /></span>
+                          <span class="contacto-opcion-texto">Sitio Web</span>
+                        </span>
+                      </label>
+                      <label class="contacto-opcion">
+                        <input type="radio" name="tipo" value="pwa" />
+                        <span class="contacto-opcion-card">
+                          <span class="contacto-opcion-icono contacto-animable"><IconoSVG nombre="pwa" tamaño={24} grosor={1.5} /></span>
+                          <span class="contacto-opcion-texto">PWA</span>
+                        </span>
+                      </label>
+                      <label class="contacto-opcion">
+                        <input type="radio" name="tipo" value="ecommerce" />
+                        <span class="contacto-opcion-card">
+                          <span class="contacto-opcion-icono contacto-animable"><IconoSVG nombre="carrito" tamaño={24} grosor={1.5} /></span>
+                          <span class="contacto-opcion-texto">E-commerce</span>
+                        </span>
+                      </label>
+                      <label class="contacto-opcion">
+                        <input type="radio" name="tipo" value="landing" />
+                        <span class="contacto-opcion-card">
+                          <span class="contacto-opcion-icono contacto-animable"><IconoSVG nombre="rayo" tamaño={24} grosor={1.5} /></span>
+                          <span class="contacto-opcion-texto">Landing Page</span>
+                        </span>
+                      </label>
+                      <label class="contacto-opcion">
+                        <input type="radio" name="tipo" value="rediseno" />
+                        <span class="contacto-opcion-card">
+                          <span class="contacto-opcion-icono contacto-animable"><IconoSVG nombre="diamante" tamaño={24} grosor={1.5} /></span>
+                          <span class="contacto-opcion-texto">Rediseño</span>
+                        </span>
+                      </label>
+                      <label class="contacto-opcion">
+                        <input type="radio" name="tipo" value="otro" />
+                        <span class="contacto-opcion-card">
+                          <span class="contacto-opcion-icono contacto-animable"><IconoSVG nombre="bombilla" tamaño={24} grosor={1.5} /></span>
+                          <span class="contacto-opcion-texto">Otro</span>
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <!-- PASO 3 -->
+                  <div class="contacto-paso" data-paso="3">
+                    <div class="contacto-titulo-con-icono">
+                      <div class="icono-contenedor contacto-titulo-icono contacto-animable">
+                        <IconoSVG nombre="mensaje" tamaño={22} grosor={1.5} />
+                      </div>
+                      <h3 class="contacto-form-titulo">Contanos más</h3>
+                    </div>
+                    <p class="contacto-form-subtitulo">Una breve idea de lo que tenés en mente.</p>
+
+                    <div class="contacto-campo">
+                      <label for="cp-descripcion">Describí tu proyecto</label>
+                      <textarea id="cp-descripcion" name="descripcion" placeholder="Ej: Necesito una web para mi estudio de arquitectura con portfolio y formulario de contacto..." rows="4" required></textarea>
+                    </div>
+                    <div class="contacto-campo">
+                      <label for="cp-plazo">¿Tenés una fecha estimada? <span class="contacto-opcional">(opcional)</span></label>
+                      <input type="text" id="cp-plazo" name="plazo" placeholder="Ej: Para mayo, Sin apuro, Lo antes posible..." />
+                    </div>
+                  </div>
+
+                  <!-- PASO 4 -->
+                  <div class="contacto-paso" data-paso="4">
+                    <div class="contacto-titulo-con-icono">
+                      <div class="icono-contenedor contacto-titulo-icono contacto-animable">
+                        <IconoSVG nombre="link" tamaño={22} grosor={1.5} />
+                      </div>
+                      <h3 class="contacto-form-titulo">¿Tenés referencias?</h3>
+                    </div>
+                    <p class="contacto-form-subtitulo">Links de sitios o diseños que te gusten.</p>
+
+                    <div class="contacto-referencias" id="contenedorRefsPagina">
+                      <div class="contacto-referencia-item">
+                        <div class="contacto-campo">
+                          <label>Link de referencia</label>
+                          <input type="url" name="referencia_url[]" placeholder="https://ejemplo.com" />
+                        </div>
+                        <div class="contacto-campo">
+                          <label>¿Qué te gusta? <span class="contacto-opcional">(opcional)</span></label>
+                          <input type="text" name="referencia_nota[]" placeholder="Ej: El diseño minimalista, los colores..." />
+                        </div>
+                      </div>
+                    </div>
+
+                    <button type="button" class="contacto-agregar-ref" id="btnAgregarRefPagina">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                      Agregar otra referencia
+                    </button>
+                    <p class="contacto-nota-skip">Este paso es opcional, podés saltearlo.</p>
+                  </div>
+
+                  <!-- PASO 5 -->
+                  <div class="contacto-paso" data-paso="5">
+                    <div class="contacto-titulo-con-icono">
+                      <div class="icono-contenedor contacto-titulo-icono contacto-animable">
+                        <IconoSVG nombre="moneda" tamaño={22} grosor={1.5} />
+                      </div>
+                      <h3 class="contacto-form-titulo">Últimos detalles</h3>
+                    </div>
+                    <p class="contacto-form-subtitulo">Para preparar una propuesta adecuada.</p>
+
+                    <div class="contacto-campo">
+                      <label>Rango de presupuesto estimado</label>
+                      <div class="contacto-opciones-lista" role="radiogroup" aria-label="Presupuesto">
+                        <label class="contacto-opcion-lista"><input type="radio" name="presupuesto" value="basico" /><span>Básico — Menos de USD 500</span></label>
+                        <label class="contacto-opcion-lista"><input type="radio" name="presupuesto" value="medio" /><span>Medio — USD 500 – 2.000</span></label>
+                        <label class="contacto-opcion-lista"><input type="radio" name="presupuesto" value="premium" /><span>Premium — USD 2.000 – 5.000</span></label>
+                        <label class="contacto-opcion-lista"><input type="radio" name="presupuesto" value="enterprise" /><span>Enterprise — Más de USD 5.000</span></label>
+                        <label class="contacto-opcion-lista"><input type="radio" name="presupuesto" value="no-se" /><span>Todavía no lo tengo definido</span></label>
+                      </div>
+                    </div>
+
+                    <div class="contacto-campo">
+                      <label>¿Cómo preferís que te contactemos?</label>
+                      <div class="contacto-opciones-contacto">
+                        <label class="contacto-check"><input type="checkbox" name="contacto_via" value="email" checked /><span class="contacto-check-contenido"><IconoSVG nombre="correo" tamaño={16} grosor={1.5} clase="contacto-check-icono" /> Email</span></label>
+                        <label class="contacto-check"><input type="checkbox" name="contacto_via" value="whatsapp" /><span class="contacto-check-contenido"><IconoSVG nombre="mensaje" tamaño={16} grosor={1.5} clase="contacto-check-icono" /> WhatsApp</span></label>
+                        <label class="contacto-check"><input type="checkbox" name="contacto_via" value="llamada" /><span class="contacto-check-contenido"><IconoSVG nombre="telefono" tamaño={16} grosor={1.5} clase="contacto-check-icono" /> Llamada</span></label>
+                      </div>
+                    </div>
+
+                    <div class="contacto-campo" id="campoWhatsappPagina" style="display:none">
+                      <label for="cp-telefono">Tu número de WhatsApp</label>
+                      <input type="tel" id="cp-telefono" name="telefono" placeholder="+54 9 11 1234-5678" autocomplete="tel" />
+                    </div>
+                  </div>
+
+                </div><!-- .contacto-form-cuerpo -->
+
+                <!-- Navegación -->
+                <div class="contacto-form-nav">
+                  <Boton variante="fantasma" class="contacto-btn-atras" id="btnAtrasPagina" style="visibility:hidden">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+                    Atrás
+                  </Boton>
+                  <Boton class="contacto-btn-siguiente" id="btnSiguientePagina">
+                    Siguiente
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                  </Boton>
+                </div>
+              </form>
+
+              <!-- Éxito -->
+              <div class="contacto-exito" id="pantallaExitoPagina" style="display:none">
+                <div class="contacto-exito-icono contacto-animable">
+                  <div class="icono-contenedor contacto-icono-exito">
+                    <IconoSVG nombre="check" tamaño={32} grosor={2} />
+                  </div>
+                </div>
+                <h3 class="contacto-form-titulo">¡Mensaje enviado!</h3>
+                <p class="contacto-form-subtitulo">Gracias por tu interés. Te respondo a la brevedad.</p>
+                <Boton id="btnResetPagina">Enviar otro mensaje</Boton>
+              </div>
+
+            </div>
+          </div>
+
+        </div><!-- .contacto-grid -->
+
+        <!-- Volver -->
+        <div class="contacto-volver">
+          <Boton variante="fantasma" href="/">← Volver al inicio</Boton>
+        </div>
+
+      </section>
+    </div>
+  </main>
+
+  <Footer />
+</Plantilla>
+
+<style>
+  .contacto-pagina {
+    padding-top: clamp(120px, 15vw, 180px);
+  }
+
+  /* ===== Cabecera ===== */
+  .contacto-cabecera {
+    margin-bottom: 56px;
+  }
+  .contacto-intro {
+    font-size: 16px;
+    color: var(--gris-sub);
+    line-height: 1.7;
+    margin-top: 20px;
+    max-width: 500px;
+    transition: color var(--transicion);
+  }
+
+  /* ===== Grid dos columnas ===== */
+  .contacto-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    gap: 48px;
+    align-items: start;
+  }
+
+  /* ===== Info lateral ===== */
+  .contacto-info {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .contacto-tarjeta {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 20px;
+    background: var(--card);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-card);
+    transition: background var(--transicion), border-color var(--transicion);
+  }
+  .contacto-tarjeta-icono {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+  }
+  .contacto-tarjeta-titulo {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--gris-titulo);
+    margin-bottom: 2px;
+    transition: color var(--transicion);
+  }
+  .contacto-tarjeta-dato {
+    font-size: 14px;
+    color: var(--texto);
+    text-decoration: none;
+    transition: color var(--transicion);
+  }
+  a.contacto-tarjeta-dato:hover {
+    color: var(--acento);
+  }
+
+  /* Redes */
+  .contacto-redes {
+    padding: 20px;
+    background: var(--card);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-card);
+    margin-top: 8px;
+    transition: background var(--transicion), border-color var(--transicion);
+  }
+  .contacto-redes-titulo {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--gris-titulo);
+    margin-bottom: 14px;
+    transition: color var(--transicion);
+  }
+  .contacto-redes-links {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .contacto-red {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--gris-sub);
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: color 0.2s, background 0.2s;
+  }
+  .contacto-red:hover {
+    color: var(--texto);
+    background: var(--ghost-fondo);
+  }
+
+  /* FAQ */
+  .contacto-faq {
+    padding: 20px;
+    background: var(--card);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-card);
+    margin-top: 8px;
+    transition: background var(--transicion), border-color var(--transicion);
+  }
+  .contacto-faq-titulo {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--gris-titulo);
+    margin-bottom: 14px;
+    transition: color var(--transicion);
+  }
+  .contacto-faq-item {
+    border-bottom: 1px solid var(--borde);
+    transition: border-color var(--transicion);
+  }
+  .contacto-faq-item:last-child {
+    border-bottom: none;
+  }
+  .contacto-faq-item summary {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--texto);
+    padding: 12px 0;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: color var(--transicion);
+  }
+  .contacto-faq-item summary::after {
+    content: '+';
+    font-size: 18px;
+    color: var(--gris-sub);
+    transition: transform 0.2s;
+  }
+  .contacto-faq-item[open] summary::after {
+    content: '−';
+  }
+  .contacto-faq-item p {
+    font-size: 13px;
+    color: var(--gris-sub);
+    line-height: 1.7;
+    padding-bottom: 12px;
+    transition: color var(--transicion);
+  }
+
+  /* ===== Card del formulario ===== */
+  .contacto-form-card {
+    background: var(--card);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-card);
+    padding: 32px;
+    position: sticky;
+    top: 100px;
+    transition: background var(--transicion), border-color var(--transicion);
+  }
+
+  /* Progreso */
+  .contacto-progreso {
+    height: 4px;
+    background: var(--ghost-fondo);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  .contacto-progreso-barra {
+    height: 100%;
+    background: var(--gradiente);
+    border-radius: 4px;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .contacto-paso-indicador {
+    font-size: 12px;
+    color: var(--gris-sub);
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  /* Cuerpo con altura mínima */
+  .contacto-form-cuerpo {
+    min-height: 320px;
+  }
+
+  /* Pasos */
+  .contacto-paso { display: none; }
+  .contacto-paso.activo {
+    display: block;
+    animation: cpFadeIn 0.3s ease;
+  }
+  @keyframes cpFadeIn {
+    from { opacity: 0; transform: translateX(16px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes cpShake {
+    0%, 100% { transform: translateX(0); }
+    25%      { transform: translateX(-6px); }
+    75%      { transform: translateX(6px); }
+  }
+
+  /* Dibujo lento de íconos en esta página */
+  .contacto-form-card .dibujado .icono-svg path,
+  .contacto-form-card .dibujado .icono-svg circle,
+  .contacto-form-card .dibujado .icono-svg rect,
+  .contacto-form-card .dibujado .icono-svg line,
+  .contacto-form-card .dibujado .icono-svg polyline {
+    transition: stroke-dashoffset 1.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Título con ícono */
+  .contacto-titulo-con-icono {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 6px;
+  }
+  .contacto-titulo-icono {
+    width: 36px;
+    height: 36px;
+  }
+  .contacto-form-titulo {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--texto);
+    transition: color var(--transicion);
+  }
+  .contacto-form-subtitulo {
+    font-size: 14px;
+    color: var(--gris-sub);
+    margin-bottom: 24px;
+    line-height: 1.5;
+    transition: color var(--transicion);
+  }
+
+  /* Campos */
+  .contacto-campo { margin-bottom: 18px; }
+  .contacto-campo label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--texto);
+    margin-bottom: 6px;
+    transition: color var(--transicion);
+  }
+  .contacto-opcional { color: var(--gris-sub); font-weight: 400; }
+  .contacto-campo input[type="text"],
+  .contacto-campo input[type="email"],
+  .contacto-campo input[type="url"],
+  .contacto-campo input[type="tel"],
+  .contacto-campo textarea {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 15px;
+    font-family: var(--fuente-principal);
+    color: var(--texto);
+    background: var(--fondo-alt);
+    border: 1px solid var(--borde);
+    border-radius: 10px;
+    outline: none;
+    transition: border-color 0.2s, background var(--transicion), color var(--transicion);
+  }
+  .contacto-campo input:focus,
+  .contacto-campo textarea:focus { border-color: var(--acento); }
+  .contacto-campo textarea { resize: vertical; min-height: 90px; }
+  .contacto-campo input::placeholder,
+  .contacto-campo textarea::placeholder { color: var(--gris-titulo); }
+
+  .contacto-campo.error input,
+  .contacto-campo.error textarea { border-color: #e74c3c; }
+
+  /* Opciones card */
+  .contacto-opciones {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .contacto-opcion input { position: absolute; opacity: 0; pointer-events: none; }
+  .contacto-opcion-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 10px;
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    cursor: pointer;
+    background: var(--fondo-alt);
+    transition: border-color 0.2s, background 0.2s, transform 0.15s;
+  }
+  .contacto-opcion-card:hover { border-color: var(--acento); transform: translateY(-2px); }
+  .contacto-opcion input:checked + .contacto-opcion-card { border-color: var(--acento); background: var(--ghost-fondo); }
+  .contacto-opcion-icono { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; }
+  .contacto-opcion-texto { font-size: 13px; font-weight: 500; color: var(--texto); text-align: center; transition: color var(--transicion); }
+
+  /* Opciones lista */
+  .contacto-opciones-lista { display: flex; flex-direction: column; gap: 8px; }
+  .contacto-opcion-lista { display: block; cursor: pointer; }
+  .contacto-opcion-lista input { position: absolute; opacity: 0; pointer-events: none; }
+  .contacto-opcion-lista span {
+    display: block; padding: 12px 16px; font-size: 14px;
+    color: var(--texto); background: var(--fondo-alt); border: 1px solid var(--borde);
+    border-radius: 10px; transition: border-color 0.2s, background 0.2s, color var(--transicion);
+  }
+  .contacto-opcion-lista:hover span { border-color: var(--acento); }
+  .contacto-opcion-lista input:checked + span { border-color: var(--acento); background: var(--ghost-fondo); }
+
+  /* Checks contacto */
+  .contacto-opciones-contacto { display: flex; gap: 10px; flex-wrap: wrap; }
+  .contacto-check { cursor: pointer; }
+  .contacto-check input { position: absolute; opacity: 0; pointer-events: none; }
+  .contacto-check-contenido {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 16px; font-size: 14px; color: var(--texto);
+    background: var(--fondo-alt); border: 1px solid var(--borde);
+    border-radius: 10px; transition: border-color 0.2s, background 0.2s, color var(--transicion);
+  }
+  .contacto-check:hover .contacto-check-contenido { border-color: var(--acento); }
+  .contacto-check input:checked + .contacto-check-contenido { border-color: var(--acento); background: var(--ghost-fondo); }
+  .contacto-check-icono path,
+  .contacto-check-icono circle,
+  .contacto-check-icono polyline { stroke-dasharray: 0 !important; stroke-dashoffset: 0 !important; }
+
+  /* Referencias */
+  .contacto-referencia-item {
+    padding: 14px; background: var(--fondo-alt); border: 1px solid var(--borde);
+    border-radius: 12px; margin-bottom: 10px;
+    transition: background var(--transicion), border-color var(--transicion);
+  }
+  .contacto-referencia-item .contacto-campo:last-child { margin-bottom: 0; }
+  .contacto-referencia-item input { background: var(--fondo) !important; }
+
+  .contacto-agregar-ref {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: none; border: none; color: var(--acento);
+    font-size: 13px; font-weight: 500; font-family: var(--fuente-principal);
+    cursor: pointer; padding: 6px 0; transition: opacity 0.2s;
+  }
+  .contacto-agregar-ref:hover { opacity: 0.7; }
+  .contacto-nota-skip { font-size: 12px; color: var(--gris-sub); margin-top: 12px; }
+
+  /* Nav del form */
+  .contacto-form-nav {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--borde);
+  }
+  .contacto-btn-atras { padding: 10px 20px; font-size: 14px; }
+  .contacto-btn-siguiente { padding: 12px 28px; font-size: 14px; margin-left: auto; }
+
+  /* Éxito */
+  .contacto-exito { text-align: center; padding: 40px 20px; }
+  .contacto-icono-exito { width: 64px; height: 64px; margin: 0 auto 16px; }
+  .contacto-exito .contacto-form-titulo { margin-bottom: 10px; }
+  .contacto-exito .contacto-form-subtitulo { margin-bottom: 24px; }
+
+  /* Volver */
+  .contacto-volver { margin-top: 48px; }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 860px) {
+    .contacto-grid { grid-template-columns: 1fr; }
+    .contacto-form-card { position: static; }
+  }
+  @media (max-width: 480px) {
+    .contacto-form-card { padding: 24px 20px; }
+    .contacto-form-cuerpo { min-height: 280px; }
+    .contacto-opciones { grid-template-columns: repeat(2, 1fr); }
+    .contacto-opciones-contacto { flex-direction: column; }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('formularioContactoPagina');
+    const barra = document.getElementById('progresoContacto');
+    const indicador = document.getElementById('pasoIndicadorContacto');
+    const btnAtras = document.getElementById('btnAtrasPagina');
+    const btnSiguiente = document.getElementById('btnSiguientePagina');
+    const btnAgregarRef = document.getElementById('btnAgregarRefPagina');
+    const contenedorRefs = document.getElementById('contenedorRefsPagina');
+    const pantallaExito = document.getElementById('pantallaExitoPagina');
+    const btnReset = document.getElementById('btnResetPagina');
+    const campoWhatsapp = document.getElementById('campoWhatsappPagina');
+
+    if (!form) return;
+
+    const totalPasos = 5;
+    let pasoActual = 1;
+
+    // Animar íconos de la sidebar con IntersectionObserver
+    const infoAnimables = document.querySelectorAll('.contacto-info .contacto-animable');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('dibujado');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.2 });
+    infoAnimables.forEach(el => observer.observe(el));
+
+    // Animar íconos del formulario por paso
+    function animarIconosPaso() {
+      form.querySelectorAll('.contacto-animable.dibujado').forEach(el => el.classList.remove('dibujado'));
+      const pasoEl = form.querySelector(`[data-paso="${pasoActual}"]`);
+      if (!pasoEl) return;
+      const animables = pasoEl.querySelectorAll('.contacto-animable');
+      animables.forEach((el, i) => {
+        setTimeout(() => el.classList.add('dibujado'), 250 + i * 250);
+      });
+    }
+
+    // Trigger inicial
+    animarIconosPaso();
+
+    function actualizarPaso() {
+      const pasos = form.querySelectorAll('.contacto-paso');
+      pasos.forEach(p => p.classList.remove('activo'));
+      form.querySelector(`[data-paso="${pasoActual}"]`).classList.add('activo');
+
+      barra.style.width = `${(pasoActual / totalPasos) * 100}%`;
+      indicador.textContent = `Paso ${pasoActual} de ${totalPasos}`;
+      btnAtras.style.visibility = pasoActual === 1 ? 'hidden' : 'visible';
+
+      if (pasoActual === totalPasos) {
+        btnSiguiente.innerHTML = `Enviar <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="22 2 15 22 11 13 2 9 22 2"/></svg>`;
+      } else {
+        btnSiguiente.innerHTML = `Siguiente <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>`;
+      }
+      animarIconosPaso();
+    }
+
+    function validarPaso() {
+      form.querySelectorAll('.contacto-campo.error').forEach(c => c.classList.remove('error'));
+
+      if (pasoActual === 1) {
+        let valido = true;
+        const nombre = document.getElementById('cp-nombre');
+        const email = document.getElementById('cp-email');
+        if (!nombre.value.trim()) { nombre.closest('.contacto-campo').classList.add('error'); valido = false; }
+        if (!email.value.trim() || !email.validity.valid) { email.closest('.contacto-campo').classList.add('error'); valido = false; }
+        return valido;
+      }
+      if (pasoActual === 2) {
+        if (!form.querySelector('input[name="tipo"]:checked')) {
+          const opciones = form.querySelector('.contacto-opciones');
+          opciones.style.animation = 'none';
+          opciones.offsetHeight;
+          opciones.style.animation = 'cpShake 0.4s ease';
+          return false;
+        }
+        return true;
+      }
+      if (pasoActual === 3) {
+        const desc = document.getElementById('cp-descripcion');
+        if (!desc.value.trim()) { desc.closest('.contacto-campo').classList.add('error'); return false; }
+        return true;
+      }
+      return true;
+    }
+
+    btnSiguiente.addEventListener('click', () => {
+      if (!validarPaso()) return;
+      if (pasoActual === totalPasos) { enviarFormulario(); return; }
+      pasoActual++;
+      actualizarPaso();
+    });
+
+    btnAtras.addEventListener('click', () => {
+      if (pasoActual > 1) { pasoActual--; actualizarPaso(); }
+    });
+
+    btnAgregarRef.addEventListener('click', () => {
+      const nuevo = document.createElement('div');
+      nuevo.className = 'contacto-referencia-item';
+      nuevo.innerHTML = `
+        <div class="contacto-campo">
+          <label>Link de referencia</label>
+          <input type="url" name="referencia_url[]" placeholder="https://ejemplo.com" />
+        </div>
+        <div class="contacto-campo" style="margin-bottom:0">
+          <label>¿Qué te gusta? <span class="contacto-opcional">(opcional)</span></label>
+          <input type="text" name="referencia_nota[]" placeholder="Ej: La tipografía, las animaciones..." />
+        </div>`;
+      contenedorRefs.appendChild(nuevo);
+    });
+
+    document.querySelectorAll('#formularioContactoPagina input[name="contacto_via"]').forEach(cb => {
+      cb.addEventListener('change', () => {
+        const checked = document.querySelector('#formularioContactoPagina input[name="contacto_via"][value="whatsapp"]').checked;
+        campoWhatsapp.style.display = checked ? 'block' : 'none';
+      });
+    });
+
+    btnReset.addEventListener('click', () => {
+      form.reset();
+      pasoActual = 1;
+      actualizarPaso();
+      form.style.display = '';
+      pantallaExito.style.display = 'none';
+      const refs = contenedorRefs.querySelectorAll('.contacto-referencia-item');
+      refs.forEach((ref, i) => { if (i > 0) ref.remove(); });
+    });
+
+    function enviarFormulario() {
+      const datos = new FormData(form);
+      const nombre = datos.get('nombre');
+      const email = datos.get('email');
+      const tipo = datos.get('tipo') || 'No especificado';
+      const descripcion = datos.get('descripcion');
+      const plazo = datos.get('plazo') || 'No especificado';
+      const presupuesto = datos.get('presupuesto') || 'No especificado';
+
+      const urls = datos.getAll('referencia_url[]').filter(u => u.trim());
+      const notas = datos.getAll('referencia_nota[]');
+      let refsTexto = '';
+      urls.forEach((url, i) => {
+        refsTexto += `\n  - ${url}`;
+        if (notas[i]?.trim()) refsTexto += ` (${notas[i].trim()})`;
+      });
+
+      const vias = datos.getAll('contacto_via').join(', ') || 'Email';
+      const telefono = datos.get('telefono');
+
+      const cuerpo = `Hola! Soy ${nombre}.
+
+TIPO DE PROYECTO: ${tipo}
+
+DESCRIPCIÓN:
+${descripcion}
+
+PLAZO ESTIMADO: ${plazo}
+
+REFERENCIAS:${refsTexto || '\n  Ninguna'}
+
+PRESUPUESTO: ${presupuesto}
+
+CONTACTAR VÍA: ${vias}${telefono ? `\nTELÉFONO: ${telefono}` : ''}
+
+---
+Enviado desde stiancode.dev/contacto`;
+
+      const mailto = `mailto:anterior.sembrar-0o@icloud.com?subject=${encodeURIComponent(`Nuevo proyecto: ${tipo} — ${nombre}`)}&body=${encodeURIComponent(cuerpo)}`;
+      window.open(mailto, '_blank');
+
+      form.style.display = 'none';
+      pantallaExito.style.display = 'block';
+      const exitoAnimable = pantallaExito.querySelector('.contacto-animable');
+      if (exitoAnimable) {
+        exitoAnimable.classList.remove('dibujado');
+        setTimeout(() => exitoAnimable.classList.add('dibujado'), 100);
+      }
+    }
+  });
+</script>

@@ -1,0 +1,997 @@
+---
+// ============================================================
+// novedades.astro — Resumen semanal de noticias tech en español
+//
+// Fuentes: RSS de sitios tech hispanohablantes (build time)
+// Diseño: acordeón — título + desc breve + thumb → expande
+// ============================================================
+import Plantilla from '../layouts/Plantilla.astro';
+import Nav       from '../components/Nav.astro';
+import Footer    from '../components/Footer.astro';
+import Boton     from '../components/Boton.astro';
+
+// --- Fuentes RSS en español ---
+const FUENTES = [
+  { nombre: 'Xataka',          url: 'https://feeds.weblogssl.com/xataka',         categoria: 'Tech' },
+  { nombre: 'Genbeta',         url: 'https://feeds.weblogssl.com/genbeta',        categoria: 'Dev' },
+  { nombre: 'Applesfera',      url: 'https://feeds.weblogssl.com/applesfera',     categoria: 'Apple' },
+  { nombre: 'Xataka Android',  url: 'https://feeds.weblogssl.com/xatakandroid',   categoria: 'Android' },
+  { nombre: 'Xataka Móvil',    url: 'https://feeds.weblogssl.com/xatakamovil',   categoria: 'Mobile' },
+];
+
+// --- Decodificar entidades HTML ---
+function decodificarHTML(texto: string): string {
+  const entidades: Record<string, string> = {
+    '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"',
+    '&apos;': "'", '&nbsp;': ' ', '&ndash;': '–', '&mdash;': '—',
+    '&laquo;': '«', '&raquo;': '»', '&iexcl;': '¡', '&iquest;': '¿',
+    '&ntilde;': 'ñ', '&Ntilde;': 'Ñ', '&aacute;': 'á', '&eacute;': 'é',
+    '&iacute;': 'í', '&oacute;': 'ó', '&uacute;': 'ú', '&Aacute;': 'Á',
+    '&Eacute;': 'É', '&Iacute;': 'Í', '&Oacute;': 'Ó', '&Uacute;': 'Ú',
+    '&uuml;': 'ü', '&Uuml;': 'Ü',
+  };
+  let resultado = texto;
+  for (const [entidad, caracter] of Object.entries(entidades)) {
+    resultado = resultado.replaceAll(entidad, caracter);
+  }
+  resultado = resultado.replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)));
+  resultado = resultado.replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
+  return resultado;
+}
+
+// --- Parser RSS simple ---
+function extraerEntre(xml: string, tag: string): string {
+  const abre = `<${tag}`;
+  const cierra = `</${tag}>`;
+  const i = xml.indexOf(abre);
+  if (i === -1) return '';
+  const finAbre = xml.indexOf('>', i) + 1;
+  const j = xml.indexOf(cierra, finAbre);
+  if (j === -1) return '';
+  let contenido = xml.slice(finAbre, j).trim();
+  if (contenido.startsWith('<![CDATA[')) {
+    contenido = contenido.slice(9, contenido.lastIndexOf(']]>'));
+  }
+  return contenido;
+}
+
+function extraerImagen(xml: string): string {
+  const mediaMatch = xml.match(/url="([^"]+\.(jpg|jpeg|png|webp)[^"]*)"/i);
+  if (mediaMatch) return mediaMatch[1];
+  const encMatch = xml.match(/<enclosure[^>]+url="([^"]+)"/i);
+  if (encMatch) return encMatch[1];
+  const imgMatch = xml.match(/<img[^>]+src="([^"]+)"/i);
+  if (imgMatch) return imgMatch[1];
+  return '';
+}
+
+interface Articulo {
+  titulo: string;
+  descripcion: string;
+  url: string;
+  imagen: string;
+  fecha: Date;
+  fuente: string;
+  categoria: string;
+  minLectura: number;
+}
+
+function parsearRSS(xml: string, fuente: typeof FUENTES[0]): Articulo[] {
+  const articulos: Articulo[] = [];
+  const items = xml.split(/<item[\s>]/);
+  for (let i = 1; i < items.length; i++) {
+    const item = items[i];
+    const titulo = decodificarHTML(extraerEntre(item, 'title').replace(/<[^>]*>/g, '').trim());
+    const url = extraerEntre(item, 'link').replace(/<[^>]*>/g, '').trim();
+    const descRaw = extraerEntre(item, 'description').replace(/<[^>]*>/g, '').trim();
+    const descripcion = decodificarHTML(descRaw).slice(0, 500);
+    const fechaStr = extraerEntre(item, 'pubDate');
+    const fecha = fechaStr ? new Date(fechaStr) : new Date();
+    const imagen = extraerImagen(item);
+    if (titulo && url) {
+      // ~200 palabras/min, mínimo 1 min (la desc es resumen, el artículo real es más largo)
+      const palabras = descripcion.split(/\s+/).length;
+      const minLectura = Math.max(2, Math.round(palabras / 40));
+      articulos.push({ titulo, descripcion, url, imagen, fecha, fuente: fuente.nombre, categoria: fuente.categoria, minLectura });
+    }
+  }
+  return articulos;
+}
+
+// --- Fetch en build time ---
+const todosArticulos: Articulo[] = [];
+await Promise.all(FUENTES.map(async (fuente) => {
+  try {
+    const res = await fetch(fuente.url, { signal: AbortSignal.timeout(8000) });
+    if (!res.ok) return;
+    const xml = await res.text();
+    todosArticulos.push(...parsearRSS(xml, fuente));
+  } catch (err) {
+    console.warn(`RSS falló para ${fuente.nombre}:`, err);
+  }
+}));
+
+// --- Deduplicar ---
+const vistas = new Set<string>();
+const unicos = todosArticulos.filter(art => {
+  const clave = art.titulo.toLowerCase().slice(0, 60);
+  if (vistas.has(clave)) return false;
+  vistas.add(clave);
+  return true;
+});
+
+// --- Agrupar por semana ---
+function inicioSemana(fecha: Date): string {
+  const d = new Date(fecha);
+  const dia = d.getDay();
+  const diff = d.getDate() - dia + (dia === 0 ? -6 : 1);
+  return new Date(d.getFullYear(), d.getMonth(), diff).toISOString().split('T')[0];
+}
+
+function formatearRango(claveLunes: string): string {
+  const lunes = new Date(claveLunes + 'T00:00:00');
+  const domingo = new Date(lunes);
+  domingo.setDate(domingo.getDate() + 6);
+  const opc: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short' };
+  return `${lunes.toLocaleDateString('es-AR', opc)} — ${domingo.toLocaleDateString('es-AR', opc)}, ${lunes.getFullYear()}`;
+}
+
+const hoyClaveSemanma = inicioSemana(new Date());
+
+interface Semana { clave: string; rango: string; esActual: boolean; articulos: Articulo[]; }
+
+const grupos: Record<string, Articulo[]> = {};
+for (const art of unicos) {
+  const clave = inicioSemana(art.fecha);
+  if (!grupos[clave]) grupos[clave] = [];
+  grupos[clave].push(art);
+}
+
+const semanas: Semana[] = Object.keys(grupos)
+  .sort().reverse().slice(0, 5)
+  .map(clave => ({
+    clave,
+    rango: formatearRango(clave),
+    esActual: clave === hoyClaveSemanma,
+    articulos: grupos[clave].sort((a, b) => b.fecha.getTime() - a.fecha.getTime()).slice(0, 20),
+  }));
+
+const categoriasSet = new Set(unicos.map(a => a.categoria));
+const categorias = ['Todos', ...Array.from(categoriasSet)];
+
+// ============================================================
+// TIMELINE — Noticias más fuertes de meses anteriores (curadas)
+// EDITAR: agregar/quitar noticias mes a mes
+// ============================================================
+interface NoticiaHistorica {
+  mes: string;       // Ej: "Marzo 2026"
+  noticias: {
+    titulo: string;
+    descripcion: string;
+    tag: string;      // Dev, Apple, IA, Android, Web
+    url?: string;
+  }[];
+}
+
+const TIMELINE: NoticiaHistorica[] = [
+  {
+    mes: 'Febrero 2026',
+    noticias: [
+      {
+        titulo: 'Apple lanza Xcode 17 con IA integrada para autocompletar código Swift',
+        descripcion: 'Apple presentó Xcode 17 con un copiloto de IA nativo que autocompleta código Swift y SwiftUI, entrena con los frameworks de Apple y funciona 100% en el dispositivo.',
+        tag: 'Apple',
+        url: 'https://developer.apple.com',
+      },
+      {
+        titulo: 'React 19.1 mejora Server Components y reduce el bundle un 30%',
+        descripcion: 'La actualización trae mejoras significativas en Server Components, mejor tree-shaking y una reducción notable en el tamaño del bundle final.',
+        tag: 'Web',
+      },
+    ],
+  },
+  {
+    mes: 'Enero 2026',
+    noticias: [
+      {
+        titulo: 'TypeScript 5.8 llega con inferencia de tipos más inteligente',
+        descripcion: 'La nueva versión de TypeScript introduce mejoras en la inferencia de tipos genéricos, decoradores estándar y mejor rendimiento del compilador.',
+        tag: 'Dev',
+      },
+      {
+        titulo: 'Android 16 Developer Preview disponible para desarrolladores',
+        descripcion: 'Google lanzó la primera preview de Android 16 con nuevas APIs de privacidad, mejor soporte para pantallas plegables y widgets interactivos.',
+        tag: 'Android',
+      },
+    ],
+  },
+  {
+    mes: 'Diciembre 2025',
+    noticias: [
+      {
+        titulo: 'Astro 5.0 lanzado con Content Layer y Server Islands',
+        descripcion: 'El framework Astro alcanzó su versión 5.0 con Content Layer para gestión de contenido flexible y Server Islands para hidratación parcial del servidor.',
+        tag: 'Web',
+      },
+    ],
+  },
+  {
+    mes: 'Noviembre 2025',
+    noticias: [
+      {
+        titulo: 'Apple presenta los chips M5 y las nuevas MacBook Pro',
+        descripcion: 'Apple lanzó su nueva generación de chips M5 con mejoras en rendimiento de hasta 40% y nuevas capacidades de Neural Engine para desarrolladores.',
+        tag: 'Apple',
+      },
+      {
+        titulo: 'Bun 1.2 desafía a Node.js con compatibilidad total de npm',
+        descripcion: 'Bun alcanzó compatibilidad casi total con el ecosistema npm y mejoró su bundler integrado, posicionándose como alternativa real a Node.js.',
+        tag: 'Dev',
+      },
+    ],
+  },
+  {
+    mes: 'Octubre 2025',
+    noticias: [
+      {
+        titulo: 'Next.js 15 estable con Turbopack como bundler por defecto',
+        descripcion: 'Vercel lanzó Next.js 15 con Turbopack reemplazando a Webpack, reduciendo los tiempos de compilación en desarrollo hasta un 70%.',
+        tag: 'Web',
+      },
+    ],
+  },
+  {
+    mes: 'Septiembre 2025',
+    noticias: [
+      {
+        titulo: 'Apple lanza iOS 19 y Swift 6.1 con mejoras en concurrencia',
+        descripcion: 'iOS 19 llegó con rediseño visual y Swift 6.1 trajo mejoras en el modelo de concurrencia, haciendo el código asíncrono más seguro y simple.',
+        tag: 'Apple',
+      },
+      {
+        titulo: 'Deno 2.1 añade soporte nativo para workspaces de monorepo',
+        descripcion: 'Deno reforzó su apuesta empresarial con soporte nativo de monorepos, mejor compatibilidad con Node.js y npm packages.',
+        tag: 'Dev',
+      },
+    ],
+  },
+  {
+    mes: 'Agosto 2025',
+    noticias: [
+      {
+        titulo: 'Tailwind CSS 4.0 reescrito desde cero con un nuevo engine',
+        descripcion: 'Tailwind 4.0 fue reescrito completamente con un nuevo motor basado en Rust, compilaciones 10x más rápidas y nueva sintaxis de configuración en CSS.',
+        tag: 'Web',
+      },
+    ],
+  },
+  {
+    mes: 'Julio 2025',
+    noticias: [
+      {
+        titulo: 'Google presenta Gemini 2.0 con capacidades de código avanzadas',
+        descripcion: 'Gemini 2.0 llegó con mejoras notables en generación y comprensión de código, integrándose profundamente con Android Studio.',
+        tag: 'IA',
+      },
+    ],
+  },
+  {
+    mes: 'Junio 2025',
+    noticias: [
+      {
+        titulo: 'Apple WWDC 2025: visionOS 3, SwiftUI 7 y nuevas APIs de IA',
+        descripcion: 'La conferencia de desarrolladores de Apple trajo visionOS 3 con más herramientas para Vision Pro, SwiftUI 7 con nuevos componentes y APIs de Apple Intelligence para terceros.',
+        tag: 'Apple',
+      },
+      {
+        titulo: 'Node.js 24 LTS lanzado con soporte nativo de TypeScript',
+        descripcion: 'Node.js 24 LTS incluyó soporte experimental para ejecutar TypeScript sin transpilación previa, simplificando el setup de proyectos.',
+        tag: 'Dev',
+      },
+    ],
+  },
+  {
+    mes: 'Mayo 2025',
+    noticias: [
+      {
+        titulo: 'Google I/O 2025: Android 16 preview, Kotlin 2.2 y Material You 4',
+        descripcion: 'Google presentó las novedades para desarrolladores Android, incluyendo mejoras en Kotlin, Jetpack Compose y el nuevo sistema de diseño Material You.',
+        tag: 'Android',
+      },
+    ],
+  },
+  {
+    mes: 'Abril 2025',
+    noticias: [
+      {
+        titulo: 'Claude 3.5 Opus y la nueva era de asistentes de código con IA',
+        descripcion: 'Anthropic lanzó Claude 3.5 Opus con capacidades avanzadas de programación, marcando un antes y después en la asistencia de código con IA.',
+        tag: 'IA',
+      },
+      {
+        titulo: 'Vite 7.0 llega con HMR instantáneo y soporte de módulos ES mejorado',
+        descripcion: 'Vite 7.0 introdujo Hot Module Replacement prácticamente instantáneo y mejor soporte para módulos ES nativos del navegador.',
+        tag: 'Dev',
+      },
+    ],
+  },
+];
+---
+
+<Plantilla
+  titulo="Pulso Tech — S7ian Code"
+  descripcion="Pulso Tech: resumen semanal de noticias tech en español. Apple, Android, desarrollo web y más."
+>
+  <Nav/>
+
+  <main>
+    <div class="fondo-puntos">
+      <div class="panel-interior">
+        <section class="seccion" id="novedades">
+
+          <span class="etiqueta">Pulso Tech</span>
+          <h2 class="titulo-dos-tonos">
+            <span class="negro">Pulso Tech.</span><br>
+            <span class="gris">El resumen semanal.</span>
+          </h2>
+          <p class="typewriter" data-texto="Noticias curadas en español sobre tecnología, desarrollo, Apple, Android y más — agrupadas por semana." aria-label="Noticias curadas en español sobre tecnología, desarrollo, Apple, Android y más — agrupadas por semana."></p>
+
+          <!-- Filtros -->
+          <div class="nv-filtros">
+            {categorias.map((cat) => (
+              <button class={`nv-filtro ${cat === 'Todos' ? 'activo' : ''}`} data-cat={cat.toLowerCase()}>
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          <!-- Semanas -->
+          {semanas.length === 0 ? (
+            <div class="nv-vacio">
+              <p>No hay novedades disponibles en este momento.</p>
+            </div>
+          ) : (
+            semanas.map((semana) => (
+              <div class="nv-semana" data-semana={semana.clave}>
+
+                <div class="nv-semana-header">
+                  <div class="nv-semana-izq">
+                    {semana.esActual && <span class="nv-badge">Esta semana</span>}
+                    <h3 class="nv-semana-rango">{semana.rango}</h3>
+                  </div>
+                  <span class="nv-semana-count">{semana.articulos.length} artículos</span>
+                </div>
+
+                <div class="nv-lista">
+                  {semana.articulos.map((art) => (
+                    <div class="nv-item" data-cat={art.categoria.toLowerCase()}>
+
+                      {/* --- HEADER: siempre visible --- */}
+                      <button class="nv-item-btn" aria-expanded="false">
+                        <div class="nv-item-texto">
+                          <div class="nv-item-meta">
+                            <span class="nv-item-cat">{art.categoria}</span>
+                            <span class="nv-item-fuente">{art.fuente}</span>
+                            <span class="nv-item-sep">·</span>
+                            <span class="nv-item-fecha">
+                              {art.fecha.toLocaleDateString('es-AR', { day: 'numeric', month: 'short' })}
+                            </span>
+                            <span class="nv-item-sep">·</span>
+                            <span class="nv-item-lectura">{art.minLectura} min de lectura</span>
+                          </div>
+                          <h4 class="nv-item-titulo">{art.titulo}</h4>
+                          <p class="nv-item-preview">{art.descripcion.slice(0, 110)}...</p>
+                        </div>
+                        {art.imagen && (
+                          <div class="nv-item-thumb">
+                            <img src={art.imagen} alt="" loading="lazy" />
+                          </div>
+                        )}
+                        <svg class="nv-item-flecha" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+                      </button>
+
+                      {/* --- CUERPO: expandible --- */}
+                      <div class="nv-item-cuerpo">
+                        <div class="nv-item-expandido">
+                          {art.imagen && (
+                            <img class="nv-item-img-grande" src={art.imagen} alt="" loading="lazy" />
+                          )}
+                          <p class="nv-item-desc">{art.descripcion}</p>
+                          <a class="nv-item-link" href={art.url} target="_blank" rel="noopener noreferrer">
+                            Ir a la noticia →
+                          </a>
+                        </div>
+                      </div>
+
+                    </div>
+                  ))}
+                </div>
+
+              </div>
+            ))
+          )}
+
+          {/* ============================================================
+              TIMELINE — Lo más fuerte de cada mes
+              ============================================================ */}
+          <div class="tl-seccion">
+            <div class="tl-header">
+              <h3 class="tl-titulo">
+                <span class="negro">Lo más fuerte.</span>
+                <span class="gris">Mes a mes.</span>
+              </h3>
+              <p class="tl-sub">Las noticias de desarrollo y tecnología que marcaron cada mes del último año.</p>
+            </div>
+
+            <div class="tl-linea">
+              {TIMELINE.map((mes) => (
+                <div class="tl-mes">
+                  <div class="tl-mes-marker">
+                    <div class="tl-mes-punto"></div>
+                    <div class="tl-mes-linea"></div>
+                  </div>
+                  <div class="tl-mes-contenido">
+                    <h4 class="tl-mes-nombre">{mes.mes}</h4>
+                    {mes.noticias.map((n) => (
+                      <div class="tl-noticia">
+                        <span class="tl-noticia-tag">{n.tag}</span>
+                        <h5 class="tl-noticia-titulo">{n.titulo}</h5>
+                        <p class="tl-noticia-desc">{n.descripcion}</p>
+                        {n.url && (
+                          <a class="tl-noticia-link" href={n.url} target="_blank" rel="noopener noreferrer">
+                            Ver más →
+                          </a>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div class="nv-volver">
+            <Boton variante="fantasma" href="/#noticias">← Volver al inicio</Boton>
+          </div>
+
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <Footer/>
+</Plantilla>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+
+    // --- Acordeón: solo uno abierto a la vez ---
+    const todosItems = document.querySelectorAll('.nv-item');
+
+    function cerrarItem(item: Element) {
+      const cuerpo = item.querySelector('.nv-item-cuerpo') as HTMLElement;
+      const btn = item.querySelector('.nv-item-btn') as HTMLElement;
+      if (!cuerpo || !btn) return;
+      cuerpo.style.maxHeight = '0';
+      item.classList.remove('abierto');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+
+    function abrirItem(item: Element) {
+      const cuerpo = item.querySelector('.nv-item-cuerpo') as HTMLElement;
+      const btn = item.querySelector('.nv-item-btn') as HTMLElement;
+      if (!cuerpo || !btn) return;
+      cuerpo.style.maxHeight = cuerpo.scrollHeight + 'px';
+      item.classList.add('abierto');
+      btn.setAttribute('aria-expanded', 'true');
+    }
+
+    todosItems.forEach(item => {
+      const btn = item.querySelector('.nv-item-btn');
+      if (!btn) return;
+
+      btn.addEventListener('click', () => {
+        const yaAbierto = item.classList.contains('abierto');
+
+        // Cerrar todos
+        todosItems.forEach(otro => {
+          if (otro !== item && otro.classList.contains('abierto')) {
+            cerrarItem(otro);
+          }
+        });
+
+        // Toggle el actual
+        if (yaAbierto) {
+          cerrarItem(item);
+        } else {
+          abrirItem(item);
+        }
+      });
+    });
+
+    // --- Filtros ---
+    const filtros = document.querySelectorAll('.nv-filtro');
+    const semanas = document.querySelectorAll('.nv-semana');
+
+    filtros.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filtros.forEach(b => b.classList.remove('activo'));
+        btn.classList.add('activo');
+        const cat = (btn as HTMLElement).dataset.cat || 'todos';
+
+        // Cerrar cualquier item abierto
+        todosItems.forEach(item => cerrarItem(item));
+
+        todosItems.forEach(item => {
+          const el = item as HTMLElement;
+          el.style.display = (cat === 'todos' || el.dataset.cat === cat) ? '' : 'none';
+        });
+
+        semanas.forEach(sem => {
+          const visibles = sem.querySelectorAll('.nv-item:not([style*="display: none"])');
+          (sem as HTMLElement).style.display = visibles.length > 0 ? '' : 'none';
+        });
+      });
+    });
+  });
+</script>
+
+<style is:global>
+  /* ============================================================
+     Novedades — Acordeón con thumbnail
+     ============================================================ */
+
+  /* --- Filtros --- */
+  .nv-filtros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 32px;
+  }
+
+  .nv-filtro {
+    font-family: var(--fuente-principal);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gris-sub);
+    background: var(--ghost-fondo);
+    border: 1px solid var(--borde);
+    padding: 6px 16px;
+    border-radius: var(--radio-pill);
+    cursor: pointer;
+    transition: background 0.25s, color 0.25s, border-color 0.25s;
+  }
+
+  .nv-filtro:hover { background: var(--borde); color: var(--texto); }
+
+  .nv-filtro.activo {
+    background: var(--acento);
+    color: #fff;
+    border-color: var(--acento);
+  }
+
+  /* --- Semana --- */
+  .nv-semana { margin-top: 52px; }
+  .nv-semana:first-of-type { margin-top: 40px; }
+
+  .nv-semana-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 16px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid var(--borde);
+    transition: border-color var(--transicion);
+  }
+
+  .nv-semana-izq { display: flex; align-items: center; gap: 10px; }
+
+  .nv-badge {
+    font-size: 10px;
+    font-weight: 700;
+    color: #fff;
+    background: var(--gradiente);
+    padding: 3px 10px;
+    border-radius: var(--radio-pill);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+
+  .nv-semana-rango {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--texto);
+    transition: color var(--transicion);
+  }
+
+  .nv-semana-count {
+    font-size: 12px;
+    color: var(--gris-titulo);
+    transition: color var(--transicion);
+  }
+
+  /* --- Lista --- */
+  .nv-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  /* --- Item --- */
+  .nv-item {
+    border-radius: 14px;
+    transition: background 0.3s;
+  }
+
+  /* --- Botón header (siempre visible) --- */
+  .nv-item-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 14px;
+    background: none;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    text-align: left;
+    color: inherit;
+    font-family: var(--fuente-principal);
+    position: relative;
+    transition: background 0.3s;
+  }
+
+  .nv-item-btn:hover {
+    background: var(--card);
+  }
+
+  /* Texto (izquierda) */
+  .nv-item-texto {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding-right: 28px;
+  }
+
+  .nv-item-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .nv-item-cat {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--acento);
+    background: var(--ghost-fondo);
+    padding: 2px 8px;
+    border-radius: var(--radio-pill);
+    border: 1px solid var(--borde);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    transition: background var(--transicion), color var(--transicion), border-color var(--transicion);
+  }
+
+  .nv-item-fuente {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--gris-sub);
+    transition: color var(--transicion);
+  }
+
+  .nv-item-sep {
+    font-size: 11px;
+    color: var(--gris-titulo);
+  }
+
+  .nv-item-fecha {
+    font-size: 11px;
+    color: var(--gris-titulo);
+    transition: color var(--transicion);
+  }
+
+  .nv-item-lectura {
+    font-size: 11px;
+    color: var(--gris-titulo);
+    transition: color var(--transicion);
+  }
+
+  .nv-item-titulo {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--texto);
+    line-height: 1.4;
+    letter-spacing: -0.2px;
+    transition: color 0.3s;
+  }
+
+  .nv-item-btn:hover .nv-item-titulo {
+    color: var(--acento);
+  }
+
+  .nv-item-preview {
+    font-size: 13px;
+    color: var(--gris-sub);
+    line-height: 1.5;
+    transition: color var(--transicion);
+  }
+
+  /* Thumbnail (derecha) */
+  .nv-item-thumb {
+    width: 96px;
+    height: 68px;
+    border-radius: 10px;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 1px solid var(--borde);
+    transition: border-color var(--transicion);
+  }
+
+  .nv-item-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+
+  .nv-item-btn:hover .nv-item-thumb img {
+    transform: scale(1.08);
+  }
+
+  /* Flecha */
+  .nv-item-flecha {
+    position: absolute;
+    right: 14px;
+    top: 18px;
+    color: var(--gris-titulo);
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.3s;
+    flex-shrink: 0;
+  }
+
+  .nv-item.abierto .nv-item-flecha {
+    transform: rotate(180deg);
+    color: var(--acento);
+  }
+
+  /* --- Cuerpo expandible --- */
+  .nv-item-cuerpo {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .nv-item.abierto {
+    background: var(--card);
+  }
+
+  .nv-item-expandido {
+    padding: 0 14px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .nv-item-img-grande {
+    width: 100%;
+    max-height: 280px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid var(--borde);
+    transition: border-color var(--transicion);
+  }
+
+  .nv-item-desc {
+    font-size: 14px;
+    color: var(--gris-sub);
+    line-height: 1.7;
+    transition: color var(--transicion);
+  }
+
+  .nv-item-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--gradiente);
+    padding: 9px 20px;
+    border-radius: var(--radio-pill);
+    text-decoration: none;
+    width: fit-content;
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s;
+  }
+
+  .nv-item-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(124, 92, 232, 0.3);
+  }
+
+  /* --- Vacío --- */
+  .nv-vacio {
+    padding: 80px 0;
+    text-align: center;
+    color: var(--gris-sub);
+    font-size: 15px;
+  }
+
+  /* ============================================================
+     Timeline — Lo más fuerte mes a mes
+     ============================================================ */
+
+  .tl-seccion {
+    margin-top: 80px;
+    padding-top: 48px;
+    border-top: 1px solid var(--borde);
+    transition: border-color var(--transicion);
+  }
+
+  .tl-header { margin-bottom: 40px; }
+
+  .tl-titulo {
+    font-size: clamp(22px, 3.5vw, 32px);
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -1px;
+  }
+
+  .tl-titulo .negro { color: var(--texto); transition: color var(--transicion); }
+  .tl-titulo .gris  { color: var(--gris-titulo); transition: color var(--transicion); }
+
+  .tl-sub {
+    font-size: 14px;
+    color: var(--gris-sub);
+    margin-top: 10px;
+    line-height: 1.6;
+    transition: color var(--transicion);
+  }
+
+  /* Línea vertical */
+  .tl-linea {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .tl-mes {
+    display: flex;
+    gap: 20px;
+  }
+
+  /* Marcadores */
+  .tl-mes-marker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    width: 20px;
+  }
+
+  .tl-mes-punto {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--acento);
+    flex-shrink: 0;
+    margin-top: 6px;
+    box-shadow: 0 0 0 3px var(--ghost-fondo);
+    transition: background var(--transicion), box-shadow var(--transicion);
+  }
+
+  .tl-mes-linea {
+    width: 1px;
+    flex: 1;
+    background: var(--borde);
+    transition: background var(--transicion);
+  }
+
+  .tl-mes:last-child .tl-mes-linea { display: none; }
+
+  /* Contenido del mes */
+  .tl-mes-contenido {
+    padding-bottom: 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .tl-mes:last-child .tl-mes-contenido { padding-bottom: 0; }
+
+  .tl-mes-nombre {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--acento);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    transition: color var(--transicion);
+  }
+
+  /* Noticia dentro del timeline */
+  .tl-noticia {
+    padding: 14px 16px;
+    background: var(--card);
+    border-radius: 12px;
+    border: 1px solid var(--borde);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: background 0.3s, border-color var(--transicion), transform 0.25s;
+  }
+
+  .tl-noticia:hover {
+    transform: translateX(4px);
+  }
+
+  .tl-noticia-tag {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--acento);
+    background: var(--ghost-fondo);
+    padding: 2px 8px;
+    border-radius: var(--radio-pill);
+    border: 1px solid var(--borde);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    width: fit-content;
+    transition: background var(--transicion), color var(--transicion), border-color var(--transicion);
+  }
+
+  .tl-noticia-titulo {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--texto);
+    line-height: 1.4;
+    transition: color var(--transicion);
+  }
+
+  .tl-noticia-desc {
+    font-size: 13px;
+    color: var(--gris-sub);
+    line-height: 1.6;
+    transition: color var(--transicion);
+  }
+
+  .tl-noticia-link {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--acento);
+    text-decoration: none;
+    width: fit-content;
+    transition: color 0.2s;
+  }
+
+  .tl-noticia-link:hover { text-decoration: underline; }
+
+  /* --- Volver --- */
+  .nv-volver { margin-top: 52px; }
+
+  /* --- Responsive --- */
+  @media (max-width: 768px) {
+    .nv-semana-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+    }
+
+    .nv-filtros { gap: 4px; }
+    .nv-filtro { font-size: 12px; padding: 5px 12px; }
+
+    .nv-item-btn { padding: 14px 10px; gap: 12px; }
+    .nv-item-titulo { font-size: 14px; }
+    .nv-item-preview { font-size: 12px; }
+
+    .nv-item-thumb { width: 72px; height: 52px; border-radius: 8px; }
+    .nv-item-img-grande { max-height: 180px; }
+    .nv-item-expandido { padding: 0 10px 16px; }
+
+    .tl-seccion { margin-top: 56px; padding-top: 36px; }
+    .tl-mes { gap: 14px; }
+    .tl-mes-contenido { padding-bottom: 28px; }
+    .tl-noticia { padding: 12px 14px; }
+    .tl-noticia-titulo { font-size: 13px; }
+  }
+</style>

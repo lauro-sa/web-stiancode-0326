@@ -1,0 +1,57 @@
+/* ============================================================
+   variables.css — Tokens de diseño de stiancode.dev
+   Paleta monocromática, más sobria que Salix.
+   Cambiar estos valores para ajustar colores globalmente.
+   ============================================================ */
+
+/* Tema Claro */
+[data-tema="claro"] {
+  --fondo:          #ffffff;
+  --fondo-alt:      #f8f7fc;
+  --texto:          #10151d;
+  --gris-titulo:    #a0a0b8;
+  --gris-sub:       #5a5a72;
+  --borde:          #e2e0ef;
+  --card:           #f3f1fa;
+  --btn-fondo:      #7c5ce8;
+  --btn-texto:      #ffffff;
+  --ghost-fondo:    #eeeaf6;
+  --ghost-texto:    #6b6b8a;
+  --ico-color:      #7c5ce8;
+  --punto-grid:     rgba(124, 92, 232, 0.08);
+  --ruido-opacidad: 0.015;
+
+  --acento:         #7c5ce8;
+  --acento-alt:     #4c9cd0;
+  --gradiente:      linear-gradient(135deg, #7c5ce8 0%, #8964e8 50%, #4c9cd0 100%);
+}
+
+/* Tema Oscuro */
+[data-tema="oscuro"] {
+  --fondo:          #10151d;
+  --fondo-alt:      #161c28;
+  --texto:          #e2e4ea;
+  --gris-titulo:    #3a3f52;
+  --gris-sub:       #8b8fa8;
+  --borde:          #1e2436;
+  --card:           #181e2a;
+  --btn-fondo:      #7c5ce8;
+  --btn-texto:      #ffffff;
+  --ghost-fondo:    rgba(155, 122, 250, 0.1);
+  --ghost-texto:    #8b8fa8;
+  --ico-color:      #9b7afa;
+  --punto-grid:     rgba(124, 92, 232, 0.06);
+  --ruido-opacidad: 0.028;
+
+  --acento:         #a78bfa;
+  --acento-alt:     #60b0e0;
+  --gradiente:      linear-gradient(135deg, #9b7afa 0%, #a78bfa 50%, #60b0e0 100%);
+}
+
+:root {
+  --fuente-principal: 'Instrument Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --radio-pill:   100px;
+  --radio-card:   16px;
+  --radio-icono:  10px;
+  --transicion:   0.5s ease;
+}

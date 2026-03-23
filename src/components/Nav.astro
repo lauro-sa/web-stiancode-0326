@@ -1,0 +1,214 @@
+---
+// ============================================================
+// Nav.astro — Navegación de stiancode.dev
+// EDITAR: links del array LINKS_NAV
+// ============================================================
+
+// Links de navegación — EDITAR
+const rutaActual = Astro.url.pathname;
+const esInicio = rutaActual === '/' || rutaActual === '/index.html';
+
+const LINKS_NAV = [
+  { texto: 'Servicios',    href: '/#servicios'   },
+  { texto: 'Proyectos',    href: '/#proyectos'   },
+  { texto: 'Sobre mí',     href: '/sobre-mi'     },
+  { texto: 'Laboratorio',  href: '/laboratorio'  },
+  { texto: 'Pulso Tech',   href: '/novedades'     },
+  { texto: 'Contacto',     href: '/contacto'      },
+];
+
+// Links del menú móvil: incluye "Inicio" solo si no estamos en home
+const LINKS_MOBILE = esInicio
+  ? LINKS_NAV
+  : [{ texto: 'Inicio', href: '/' }, ...LINKS_NAV];
+
+const REDES = [
+  { href: 'https://www.linkedin.com/in/laurosa/', label: 'LinkedIn', icono: 'linkedin' },
+  { href: 'https://github.com/lauro-sa',          label: 'GitHub',   icono: 'github' },
+  { href: 'mailto:anterior.sembrar-0o@icloud.com', label: 'Email',   icono: 'email' },
+];
+
+const AÑO = new Date().getFullYear();
+---
+
+<nav id="nav-principal" class="nav">
+
+  <a href="/" class="logo" aria-label="S7ian Code inicio">
+    <img class="logo-img" src="/logo-claro.png" alt="S7ian Code" width="32" height="32" />
+    <span class="logo-nombre">S7ian Code</span>
+  </a>
+
+  <ul class="nav-links" role="list">
+    {LINKS_NAV.map((link) => (
+      <li><a href={link.href}>{link.texto}</a></li>
+    ))}
+  </ul>
+
+  <div class="nav-derecha">
+    <button id="boton-tema" class="boton-tema" aria-label="Cambiar tema">
+      <svg class="icono-tema icono-sol" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      <svg class="icono-tema icono-sistema" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      <svg class="icono-tema icono-luna" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <button id="boton-hamburguesa" class="hamburguesa" aria-label="Abrir menú" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div id="menu-mobile" class="menu-mobile" role="dialog">
+  <div class="menu-mobile-contenido">
+    <nav class="menu-mobile-nav">
+      {LINKS_MOBILE.map((link, i) => (
+        <a href={link.href} class="link-menu" style={`--i:${i}`}>{link.texto}</a>
+      ))}
+    </nav>
+
+    <div class="menu-mobile-footer">
+      <div class="menu-mobile-tema">
+        <button id="boton-tema-mobile" class="boton-tema boton-tema-menu" aria-label="Cambiar tema">
+          <svg class="icono-tema icono-sol" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg class="icono-tema icono-sistema" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          <svg class="icono-tema icono-luna" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+        <span class="menu-mobile-tema-label">Tema</span>
+      </div>
+
+      <div class="menu-mobile-separador"></div>
+
+      <div class="menu-mobile-redes">
+        {REDES.map((red) => (
+          <a href={red.href} class="menu-red" title={red.label} target={red.icono !== 'email' ? '_blank' : undefined} rel={red.icono !== 'email' ? 'noopener noreferrer' : undefined} aria-label={red.label}>
+            {red.icono === 'linkedin' && <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>}
+            {red.icono === 'github' && <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0 0 22 12.017C22 6.484 17.522 2 12 2Z"/></svg>}
+            {red.icono === 'email' && <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>}
+          </a>
+        ))}
+      </div>
+      <span class="menu-mobile-marca">S7ian Code · © {AÑO}</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .nav { position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:16px 36px;transition:background .4s,border-bottom .4s; }
+  .nav.fijo { background:color-mix(in srgb,var(--fondo) 88%,transparent);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--borde); }
+
+  .logo { display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--texto); }
+  .logo-img { width:32px;height:32px;object-fit:contain; }
+  .logo-nombre { font-size:16px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;background:linear-gradient(90deg,#7c5ce8 0%,#7c5ce8 30%,#8964e8 55%,#4c9cd0 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:tracking-in 2s cubic-bezier(0.215,0.61,0.355,1) both; }
+  @keyframes tracking-in { 0% { letter-spacing:-0.5em;opacity:0; } 40% { opacity:0.6; } 100% { letter-spacing:0.05em;opacity:1; } }
+
+  .nav-links { display:flex;align-items:center;gap:2px;list-style:none; }
+  .nav-links a { text-decoration:none;font-size:14px;font-weight:500;color:var(--gris-sub);padding:8px 14px;border-radius:8px;transition:color .2s,background .2s; }
+  .nav-links a:hover { color:var(--texto);background:var(--ghost-fondo); }
+
+  .nav-derecha { display:flex;align-items:center;gap:8px; }
+  .boton-tema { width:36px;height:36px;border-radius:50%;background:var(--ghost-fondo);border:1px solid var(--borde);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;transition:background .2s,border-color .3s; }
+  .boton-tema:hover { background:var(--borde); }
+  .boton-tema:active { transform:scale(.92); }
+  .icono-tema { width:16px;height:16px;color:var(--texto);position:absolute;transition:opacity .4s,transform .4s cubic-bezier(.4,0,.2,1); opacity:0;transform:scale(.4) rotate(90deg); }
+  .icono-tema.visible { opacity:1;transform:scale(1) rotate(0deg); }
+
+  .hamburguesa { display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px; }
+  .hamburguesa span { display:block;width:20px;height:1.5px;background:var(--texto);border-radius:2px;transition:transform .4s,opacity .4s,background .5s; }
+  .hamburguesa.on span:nth-child(1) { transform:translateY(6.5px) rotate(45deg); }
+  .hamburguesa.on span:nth-child(2) { opacity:0; }
+  .hamburguesa.on span:nth-child(3) { transform:translateY(-6.5px) rotate(-45deg); }
+
+  /* ---- Menú mobile mejorado ---- */
+  .menu-mobile {
+    position:fixed;inset:0;z-index:199;
+    background:var(--fondo);
+    display:flex;align-items:center;justify-content:center;
+    opacity:0;pointer-events:none;
+    transition:opacity .35s ease,background .5s;
+  }
+  .menu-mobile.on { opacity:1;pointer-events:all; }
+
+  .menu-mobile-contenido {
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    width:100%;max-width:400px;padding:0 24px;
+    gap:0;height:100%;
+  }
+
+  .menu-mobile-nav {
+    display:flex;flex-direction:column;align-items:center;gap:6px;
+    flex:1;justify-content:center;
+  }
+
+  .menu-mobile .link-menu {
+    font-size:clamp(22px,5.5vw,32px);font-weight:500;letter-spacing:-0.3px;
+    color:var(--texto);text-decoration:none;
+    padding:6px 16px;border-radius:12px;
+    transition:color .25s,background .25s,transform .25s;
+    transform:translateY(20px);opacity:0;
+  }
+  .menu-mobile.on .link-menu {
+    animation:menuLinkIn .4s cubic-bezier(.16,1,.3,1) forwards;
+    animation-delay:calc(var(--i) * 0.06s + 0.1s);
+  }
+  .menu-mobile .link-menu:hover,
+  .menu-mobile .link-menu:active {
+    color:var(--acento);background:var(--ghost-fondo);transform:scale(1.03);
+  }
+
+  @keyframes menuLinkIn {
+    from { opacity:0;transform:translateY(20px); }
+    to   { opacity:1;transform:translateY(0); }
+  }
+
+  /* ---- Mini footer dentro del menú ---- */
+  .menu-mobile-footer {
+    display:flex;flex-direction:column;align-items:center;gap:16px;
+    padding-bottom:calc(env(safe-area-inset-bottom, 0px) + 40px);
+    opacity:0;transform:translateY(10px);
+    transition:opacity .3s,transform .3s;
+  }
+  .menu-mobile.on .menu-mobile-footer {
+    animation:menuFooterIn .5s .45s cubic-bezier(.16,1,.3,1) forwards;
+  }
+  @keyframes menuFooterIn {
+    from { opacity:0;transform:translateY(10px); }
+    to   { opacity:1;transform:translateY(0); }
+  }
+
+  .menu-mobile-separador {
+    width:48px;height:2px;border-radius:2px;
+    background:var(--gradiente);
+    opacity:.6;
+  }
+
+  .menu-mobile-redes {
+    display:flex;gap:12px;
+  }
+  .menu-red {
+    width:42px;height:42px;border-radius:12px;
+    background:var(--ghost-fondo);border:1px solid var(--borde);
+    display:flex;align-items:center;justify-content:center;
+    text-decoration:none;color:var(--gris-sub);
+    transition:color .2s,background .2s,transform .2s,border-color .3s;
+  }
+  .menu-red:hover { color:var(--acento);background:var(--fondo);transform:scale(1.12); }
+
+  .menu-mobile-tema {
+    display:flex;flex-direction:column;align-items:center;gap:6px;
+  }
+  .menu-mobile-tema-label {
+    font-size:11px;color:var(--gris-titulo);font-weight:500;letter-spacing:.05em;text-transform:uppercase;
+  }
+  .boton-tema-menu {
+    width:40px;height:40px;
+  }
+
+  .menu-mobile-marca {
+    font-size:12px;color:var(--gris-titulo);letter-spacing:.03em;
+  }
+
+  @media (max-width:1024px) {
+    .nav-links { display:none; }
+    .hamburguesa { display:flex; }
+    .nav { padding:16px 20px; }
+    .nav-derecha > .boton-tema { display:none; }
+  }
+</style>

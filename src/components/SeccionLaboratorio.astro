@@ -1,0 +1,157 @@
+---
+import IconoSVG from './ui/IconoSVG.astro';
+import Boton from './Boton.astro';
+
+const HERRAMIENTAS = [
+  { titulo: 'Contraseñas',  desc: 'Segura, Pro y Ultra',   icono: 'candado' },
+  { titulo: 'Códigos QR',   desc: 'Con logo y colores',    icono: 'qr' },
+  { titulo: 'QR Wi-Fi',     desc: 'Compartí tu red',       icono: 'wifi' },
+  { titulo: 'Imágenes',     desc: 'Convertí y comprimí',   icono: 'imagen' },
+  { titulo: 'Audio',        desc: 'MP3, WAV, AAC, OGG',    icono: 'audio' },
+  { titulo: 'Paletas',      desc: 'Colores armónicos',     icono: 'paleta' },
+  { titulo: 'Redes',        desc: 'Redimensioná fotos',    icono: 'recortar' },
+];
+
+const TEXTO = {
+  etiqueta:  'Laboratorio',
+  tituloN:   'Laboratorio Digital.',
+  tituloG:   'Herramientas y experimentos.',
+  subtitulo: 'Herramientas prácticas y gratuitas para resolver problemas cotidianos con tecnología.',
+};
+---
+
+<div class="fondo-puntos">
+  <div class="panel-interior">
+    <section class="seccion" id="laboratorio">
+
+      <span class="etiqueta">{TEXTO.etiqueta}</span>
+      <h2 class="titulo-dos-tonos">
+        <span class="negro">{TEXTO.tituloN}</span><br>
+        <span class="gris">{TEXTO.tituloG}</span>
+      </h2>
+      <p class="typewriter" data-texto={TEXTO.subtitulo} aria-label={TEXTO.subtitulo}></p>
+
+      <div class="lab-preview-grilla">
+        {HERRAMIENTAS.map((h) => (
+          <a class="lab-preview-card" href="/laboratorio">
+            <div class="icono-contenedor lab-preview-icono">
+              <IconoSVG nombre={h.icono} tamaño={20} grosor={1.5} />
+            </div>
+            <div class="lab-preview-texto">
+              <span class="lab-preview-titulo">{h.titulo}</span>
+              <span class="lab-preview-desc">{h.desc}</span>
+            </div>
+          </a>
+        ))}
+      </div>
+
+      <div class="lab-ver-todas">
+        <Boton variante="fantasma" href="/laboratorio">
+          Explorar Laboratorio →
+        </Boton>
+      </div>
+
+    </section>
+  </div>
+</div>
+
+<style>
+  .lab-preview-grilla {
+    margin-top: 40px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .lab-preview-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+    background: var(--card);
+    border: 1px solid var(--borde);
+    border-radius: 14px;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.2s, border-color 0.25s, transform 0.25s;
+  }
+
+  .lab-preview-card:hover {
+    background: var(--ghost-fondo);
+    border-color: var(--acento);
+    transform: translateY(-2px);
+  }
+
+  .lab-preview-card:hover .lab-preview-icono {
+    transform: scale(1.1) rotate(-5deg);
+  }
+
+  .lab-preview-icono {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    flex-shrink: 0;
+    transition: background 0.5s, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .lab-preview-texto {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .lab-preview-titulo {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--texto);
+    transition: color 0.5s;
+  }
+
+  .lab-preview-desc {
+    font-size: 12px;
+    color: var(--gris-sub);
+    transition: color 0.5s;
+  }
+
+  .lab-ver-todas { margin-top: 28px; }
+
+  /* Animación lenta para los íconos */
+  .lab-preview-card.dibujado .icono-svg path,
+  .lab-preview-card.dibujado .icono-svg circle,
+  .lab-preview-card.dibujado .icono-svg rect,
+  .lab-preview-card.dibujado .icono-svg line,
+  .lab-preview-card.dibujado .icono-svg polyline {
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 1.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @media (max-width: 768px) {
+    .lab-preview-grilla { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 480px) {
+    .lab-preview-grilla { grid-template-columns: 1fr; }
+    .lab-preview-card { padding: 14px 16px; gap: 12px; }
+  }
+</style>
+
+<script>
+  const labCards = document.querySelectorAll('.lab-preview-card');
+
+  const labObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const allCards = Array.from(labCards);
+        const idx = allCards.indexOf(entry.target as HTMLElement);
+        const delay = idx >= 0 ? idx * 120 : 0;
+        setTimeout(() => {
+          entry.target.classList.add('dibujado');
+        }, delay);
+        labObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  labCards.forEach(card => labObserver.observe(card));
+</script>
