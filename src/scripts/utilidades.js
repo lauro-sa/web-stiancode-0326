@@ -199,6 +199,8 @@ export function iniciarTypewriter(velocidad = 20) {
     const texto = elemento.getAttribute('data-texto');
     if (!texto) return;
 
+    // Fijar la altura antes de borrar para evitar salto de layout (CLS)
+    elemento.style.minHeight = elemento.offsetHeight + 'px';
     elemento.textContent = '';
     elemento.classList.add('escribiendo');
 
