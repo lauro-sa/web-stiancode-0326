@@ -1,6 +1,6 @@
 ---
 // ============================================================
-// SeccionProyectos.astro — Proyectos destacados con modal
+// SeccionProyectos.astro — Proyectos destacados con modal showcase
 // ============================================================
 import IconoSVG from './ui/IconoSVG.astro';
 import { t } from '../i18n/utils.js';
@@ -15,12 +15,12 @@ interface Proyecto {
   tecnologias: string;
   imagenes:    string[];
   url:         string;
+  modo?:       'web' | 'diseño';
 }
 
 interface Props { lang?: 'es' | 'en'; }
 const { lang = 'es' } = Astro.props;
 
-// ---- Proyectos destacados ----
 const PROYECTOS: Proyecto[] = [
   {
     numero:      '01',
@@ -30,7 +30,7 @@ const PROYECTOS: Proyecto[] = [
     icono:       'edificio',
     tag:         'Web',
     tecnologias: 'React JS, SCSS, Firebase',
-    imagenes:    ['/proyectos/he-01.png', '/proyectos/he-02.png', '/proyectos/he-04.png'],
+    imagenes:    ['/proyectos/he-dark.png', '/proyectos/he-full.png', '/proyectos/he-herreria.png', '/proyectos/he-mobile.png'],
     url:         'https://www.herreelec.com/',
   },
   {
@@ -41,11 +41,22 @@ const PROYECTOS: Proyecto[] = [
     icono:       'ventana',
     tag:         'Web',
     tecnologias: 'Vite, React JS, Tailwind, Firebase',
-    imagenes:    ['/proyectos/ESAR-01.png', '/proyectos/ESAR-02.png', '/proyectos/ESAR-03.png'],
+    imagenes:    ['/proyectos/ESAR-full.png', '/proyectos/ESAR-mobile.png'],
     url:         'https://esar-c221b.web.app/',
   },
   {
     numero:      '03',
+    nombre:      'Lactancia 24/7 v2',
+    descripcion: t(lang, 'proyecto_09_desc'),
+    detalle:     t(lang, 'proyecto_09_detalle'),
+    icono:       'estrella',
+    tag:         'Web',
+    tecnologias: 'Astro, Vue, CSS',
+    imagenes:    ['/proyectos/L247v2-full.png', '/proyectos/L247v2-mobile.png'],
+    url:         'https://lactancia247.com',
+  },
+  {
+    numero:      '04',
     nombre:      'PWA Gestión HE',
     descripcion: t(lang, 'proyecto_03_desc'),
     detalle:     t(lang, 'proyecto_03_detalle'),
@@ -56,18 +67,40 @@ const PROYECTOS: Proyecto[] = [
     url:         '',
   },
   {
-    numero:      '04',
+    numero:      '05',
+    nombre:      'TPH Service',
+    descripcion: t(lang, 'proyecto_07_desc'),
+    detalle:     t(lang, 'proyecto_07_detalle'),
+    icono:       'rayo',
+    tag:         'Web',
+    tecnologias: 'Next.js, React, CSS',
+    imagenes:    ['/proyectos/tph-dark.png', '/proyectos/tph-full.png', '/proyectos/tph-mobile.png'],
+    url:         'https://tphservice.com/',
+  },
+  {
+    numero:      '06',
     nombre:      'Lactancia 24/7',
     descripcion: t(lang, 'proyecto_04_desc'),
     detalle:     t(lang, 'proyecto_04_detalle'),
     icono:       'estrella',
     tag:         'Web',
     tecnologias: 'HTML5, CSS, Photoshop',
-    imagenes:    ['/proyectos/L247-01.png', '/proyectos/L247-02.png', '/proyectos/L247-03.png'],
-    url:         'https://lactancia247.com',
+    imagenes:    ['/proyectos/L247-01.png', '/proyectos/L247-03.png', '/proyectos/L247-02.png'],
+    url:         '',
   },
   {
-    numero:      '05',
+    numero:      '07',
+    nombre:      'Maravillas de Argentina',
+    descripcion: t(lang, 'proyecto_08_desc'),
+    detalle:     t(lang, 'proyecto_08_detalle'),
+    icono:       'ubicacion',
+    tag:         'Web',
+    tecnologias: 'HTML5, CSS, Bootstrap, JavaScript',
+    imagenes:    ['/proyectos/maravillas-full.png', '/proyectos/maravillas-mobile.png'],
+    url:         'https://lauro-sa.github.io/web-maravillas-arg/',
+  },
+  {
+    numero:      '08',
     nombre:      'Ventas Online',
     descripcion: t(lang, 'proyecto_05_desc'),
     detalle:     t(lang, 'proyecto_05_detalle'),
@@ -77,6 +110,18 @@ const PROYECTOS: Proyecto[] = [
     imagenes:    ['/proyectos/WVENTA-01.png'],
     url:         '',
   },
+  {
+    numero:      '09',
+    nombre:      'Equipo Volar',
+    descripcion: t(lang, 'proyecto_06_desc'),
+    detalle:     t(lang, 'proyecto_06_detalle'),
+    icono:       'paleta',
+    tag:         'Branding',
+    tecnologias: 'Photoshop, Canva',
+    imagenes:    ['/proyectos/EV-03.png', '/proyectos/EV-02.png', '/proyectos/EV-01.png'],
+    url:         '',
+    modo:        'diseño',
+  },
 ];
 
 const TEXTO = {
@@ -85,6 +130,10 @@ const TEXTO = {
   tituloG:   t(lang, 'proyectos_titulo_gris'),
   subtitulo: t(lang, 'proyectos_subtitulo'),
 };
+
+const txtVisitar = t(lang, 'proyectos_modal_visitar');
+const txtPrivado = t(lang, 'proyectos_modal_privado');
+const txtTech    = t(lang, 'proyectos_modal_tech');
 ---
 
 <div class="fondo-puntos fondo-puntos-visible">
@@ -109,6 +158,7 @@ const TEXTO = {
             data-imagenes={JSON.stringify(proy.imagenes)}
             data-url={proy.url}
             data-tag={proy.tag}
+            data-modo={proy.modo || 'web'}
           >
             <div class="proy-izquierda">
               <span class="proy-numero">{proy.numero}</span>
@@ -131,324 +181,370 @@ const TEXTO = {
     </section>
 </div>
 
-<!-- Modal de proyecto -->
-<div class="proy-modal-overlay" id="proy-modal" aria-hidden="true">
-  <div class="proy-modal">
-    <!-- Galería -->
-    <div class="proy-modal-galeria" id="proy-modal-galeria"></div>
+<!-- Modal showcase -->
+<div class="pm-overlay" id="proy-modal" aria-hidden="true"
+     data-txt-visitar={txtVisitar} data-txt-privado={txtPrivado}>
+  <div class="pm-modal">
+
+    <!-- Cerrar -->
+    <button class="pm-cerrar" id="proy-modal-cerrar" aria-label="Cerrar">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+
+    <!-- Imagen principal con browser frame -->
+    <div class="pm-preview">
+      <div class="pm-browser">
+        <div class="pm-bar">
+          <div class="pm-dots"><span></span><span></span><span></span></div>
+          <div class="pm-url" id="pm-url"></div>
+        </div>
+        <div class="pm-screen">
+          <img class="pm-img" id="pm-img" src="" alt="" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Thumbnails -->
+    <div class="pm-thumbs" id="pm-thumbs"></div>
 
     <!-- Info -->
-    <div class="proy-modal-info">
-      <button class="proy-modal-cerrar" id="proy-modal-cerrar" aria-label="Cerrar">×</button>
-      <div class="proy-modal-cabecera">
-        <h3 class="proy-modal-titulo" id="proy-modal-titulo"></h3>
-        <span class="proy-modal-tag" id="proy-modal-tag"></span>
+    <div class="pm-info">
+      <div class="pm-head">
+        <h3 class="pm-titulo" id="pm-titulo"></h3>
+        <span class="pm-tag" id="pm-tag"></span>
       </div>
-      <p class="proy-modal-detalle" id="proy-modal-detalle"></p>
-      <div class="proy-modal-techs">
-        <span class="proy-modal-tech-label">{t(lang, 'proyectos_modal_tech')}</span>
-        <span class="proy-modal-tech-list" id="proy-modal-techs"></span>
+      <p class="pm-detalle" id="pm-detalle"></p>
+      <div class="pm-bottom">
+        <div class="pm-techs-wrap">
+          <span class="pm-tech-label">{txtTech}</span>
+          <div class="pm-pills" id="pm-pills"></div>
+        </div>
+        <div class="pm-acciones" id="pm-acciones"></div>
       </div>
-      <div class="proy-modal-acciones" id="proy-modal-acciones"></div>
     </div>
+
   </div>
 </div>
 
 <style>
+  /* ---- Lista de proyectos ---- */
   .lista-proyectos { margin-top:52px;border-radius:18px;overflow:hidden;border:1px solid var(--borde);display:flex;flex-direction:column;transition:border-color .5s; }
-
   .fila-proyecto { display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 28px;background:transparent;border:none;border-bottom:1px solid var(--borde);text-decoration:none;color:inherit;cursor:pointer;text-align:left;width:100%;transition:background .2s,border-color .5s,opacity .6s cubic-bezier(.22,1,.36,1),transform .6s cubic-bezier(.22,1,.36,1);opacity:0;transform:translateY(24px); }
   .fila-proyecto.visible { opacity:1;transform:translateY(0); }
   .fila-proyecto:last-child { border-bottom:none; }
   .fila-proyecto:hover { background:var(--card); }
   .fila-proyecto:hover .icono-contenedor { transform:scale(1.08) rotate(-4deg); }
   .icono-contenedor { transition:background .5s,transform .35s cubic-bezier(.34,1.56,.64,1); }
-
   .proy-izquierda { display:flex;align-items:center;gap:18px; }
-  .proy-numero    { font-size:12px;color:var(--gris-titulo);font-weight:600;min-width:20px;transition:color .5s; }
-  .proy-info      { display:flex;flex-direction:column;gap:2px; }
-  .proy-nombre    { font-size:17px;font-weight:700;color:var(--texto);letter-spacing:-.2px;transition:color .5s; }
-  .proy-desc      { font-size:13.5px;color:var(--gris-sub);line-height:1.5;transition:color .5s; }
-
+  .proy-numero { font-size:12px;color:var(--gris-titulo);font-weight:600;min-width:20px;transition:color .5s; }
+  .proy-info { display:flex;flex-direction:column;gap:2px; }
+  .proy-nombre { font-size:17px;font-weight:700;color:var(--texto);letter-spacing:-.2px;transition:color .5s; }
+  .proy-desc { font-size:13.5px;color:var(--gris-sub);line-height:1.5;transition:color .5s; }
   .proy-derecha { display:flex;align-items:center;gap:12px;flex-shrink:0; }
-  .proy-tag     { font-size:12px;font-weight:500;color:var(--gris-sub);background:var(--ghost-fondo);padding:4px 12px;border-radius:100px;white-space:nowrap;border:1px solid var(--borde);transition:background .5s,color .5s; }
-  .proy-flecha  { color:var(--gris-titulo);transition:color .2s,transform .2s; }
+  .proy-tag { font-size:12px;font-weight:500;color:var(--gris-sub);background:var(--ghost-fondo);padding:4px 12px;border-radius:100px;white-space:nowrap;border:1px solid var(--borde);transition:background .5s,color .5s; }
+  .proy-flecha { color:var(--gris-titulo);transition:color .2s,transform .2s; }
   .fila-proyecto:hover .proy-flecha { color:var(--texto);transform:translateX(3px); }
 
-  /* ---- Modal ---- */
-  .proy-modal-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 500;
-    background: rgba(0, 0, 0, 0.65);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s;
-    padding: 24px;
+  /* ============ MODAL ============ */
+  .pm-overlay {
+    position:fixed;inset:0;z-index:500;
+    background:rgba(0,0,0,.72);
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    display:flex;align-items:center;justify-content:center;
+    opacity:0;pointer-events:none;
+    transition:opacity .3s;
+    padding:24px;
+  }
+  .pm-overlay.activo { opacity:1;pointer-events:all; }
+
+  .pm-modal {
+    background:var(--fondo);
+    border:1px solid var(--borde);
+    border-radius:22px;
+    width:840px;max-width:100%;
+    max-height:90vh;
+    overflow-y:auto;
+    position:relative;
+    display:flex;flex-direction:column;
+    transform:scale(.93) translateY(16px);
+    transition:transform .4s cubic-bezier(.34,1.56,.64,1),background var(--transicion),border-color var(--transicion);
+  }
+  .pm-overlay.activo .pm-modal { transform:scale(1) translateY(0); }
+  .pm-modal::-webkit-scrollbar { width:5px; }
+  .pm-modal::-webkit-scrollbar-track { background:transparent; }
+  .pm-modal::-webkit-scrollbar-thumb { background:var(--borde);border-radius:3px; }
+
+  /* Cerrar */
+  .pm-cerrar {
+    position:absolute;top:14px;right:14px;z-index:10;
+    width:38px;height:38px;border-radius:50%;
+    background:var(--fondo);border:1px solid var(--borde);
+    color:var(--texto);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 2px 12px rgba(0,0,0,.15);
+    transition:transform .3s cubic-bezier(.34,1.56,.64,1),background .2s,border-color var(--transicion);
+  }
+  .pm-cerrar:hover { transform:rotate(90deg) scale(1.1);background:var(--card); }
+
+  /* Preview / Browser frame */
+  .pm-preview { padding:20px 20px 0; }
+  .pm-browser {
+    border-radius:12px;overflow:hidden;
+    border:1px solid var(--borde);
+    background:var(--card);
+    transition:border-color var(--transicion),background var(--transicion);
+  }
+  .pm-bar {
+    display:flex;align-items:center;gap:12px;
+    padding:8px 14px;
+    background:var(--ghost-fondo);
+    border-bottom:1px solid var(--borde);
+    transition:background var(--transicion),border-color var(--transicion);
+  }
+  .pm-dots { display:flex;gap:5px;flex-shrink:0; }
+  .pm-dots span { width:9px;height:9px;border-radius:50%; }
+  .pm-dots span:nth-child(1) { background:#ff5f57; }
+  .pm-dots span:nth-child(2) { background:#ffbd2e; }
+  .pm-dots span:nth-child(3) { background:#28c840; }
+  .pm-url {
+    flex:1;background:var(--fondo);border:1px solid var(--borde);
+    border-radius:7px;padding:4px 12px;
+    font-size:11.5px;color:var(--gris-sub);font-family:var(--fuente-principal);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    transition:background var(--transicion),border-color var(--transicion),color var(--transicion);
+  }
+  .pm-screen { position:relative;overflow:hidden;background:var(--card); }
+  .pm-img {
+    width:100%;
+    max-height:380px;
+    object-fit:contain;
+    object-position:top center;
+    display:block;
+    background:var(--card);
+    transition:opacity .25s;
+  }
+  .pm-img.is-mobile {
+    background:var(--fondo-alt);
+    max-height:420px;
   }
 
-  .proy-modal-overlay.activo {
-    opacity: 1;
-    pointer-events: all;
+  /* Modo diseño: sin browser frame, imágenes centradas */
+  .pm-modal.modo-diseno .pm-bar { display:none; }
+  .pm-modal.modo-diseno .pm-browser { border:none;background:transparent; }
+  .pm-modal.modo-diseno .pm-screen { background:var(--ghost-fondo);border-radius:12px; }
+  .pm-modal.modo-diseno .pm-img {
+    object-fit:contain;
+    height:280px;
+    padding:20px;
+  }
+  .pm-modal.modo-diseno .pm-thumbs :global(.pm-th) {
+    object-fit:contain;
+    background:var(--ghost-fondo);
+    padding:4px;
   }
 
-  .proy-modal {
-    background: var(--fondo);
-    border: 1px solid var(--borde);
-    border-radius: 20px;
-    width: 720px;
-    max-width: 100%;
-    height: 580px;
-    max-height: 90vh;
-    overflow-y: auto;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    transform: scale(0.94) translateY(16px);
-    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), background var(--transicion), border-color var(--transicion);
+  /* Thumbnails */
+  .pm-thumbs {
+    display:flex;gap:10px;
+    padding:14px 20px 6px;
+    flex-wrap:wrap;
   }
-
-  .proy-modal-overlay.activo .proy-modal {
-    transform: scale(1) translateY(0);
+  .pm-thumbs :global(.pm-th) {
+    width:100px;height:62px;
+    border-radius:10px;
+    object-fit:cover;object-position:top center;
+    cursor:pointer;
+    border:2px solid var(--borde);
+    opacity:.55;
+    transition:opacity .2s,border-color .2s,transform .25s cubic-bezier(.34,1.56,.64,1);
   }
-
-  .proy-modal-cerrar {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    background: var(--ghost-fondo);
-    border: 1px solid var(--borde);
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    font-size: 18px;
-    color: var(--gris-sub);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-    transition: color 0.3s, background 0.3s, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.3s;
-  }
-
-  .proy-modal-cerrar:hover {
-    color: var(--texto);
-    background: var(--borde);
-    transform: rotate(90deg) scale(1.1);
-  }
-
-  /* Galería */
-  .proy-modal-galeria {
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    border-radius: 20px 20px 0 0;
-    background: var(--card);
-    height: 280px;
-    min-height: 280px;
-    flex-shrink: 0;
-  }
-
-  .proy-modal-galeria :global(img) {
-    width: 100%;
-    min-width: 100%;
-    height: 280px;
-    object-fit: cover;
-    object-position: top center;
-    scroll-snap-align: start;
-    flex-shrink: 0;
+  .pm-thumbs :global(.pm-th:hover) { opacity:.85;transform:scale(1.05); }
+  .pm-thumbs :global(.pm-th.activo) { opacity:1;border-color:var(--acento); }
+  .pm-thumbs :global(.pm-th.is-mobile) {
+    object-fit:contain;background:var(--ghost-fondo);
   }
 
   /* Info */
-  .proy-modal-info {
-    padding: 24px 32px 28px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    flex: 1;
-    overflow-y: auto;
-    position: relative;
+  .pm-info { padding:10px 24px 24px;display:flex;flex-direction:column;gap:12px; }
+  .pm-head { display:flex;align-items:center;gap:12px;flex-wrap:wrap; }
+  .pm-titulo {
+    font-size:22px;font-weight:800;color:var(--texto);
+    letter-spacing:-.3px;transition:color var(--transicion);
   }
-
-  .proy-modal-cabecera {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+  .pm-tag {
+    font-size:11px;font-weight:600;color:var(--acento);
+    background:color-mix(in srgb, var(--acento) 12%, transparent);
+    padding:4px 14px;border-radius:100px;
+    text-transform:uppercase;letter-spacing:.7px;
   }
-
-  .proy-modal-titulo {
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--texto);
-    transition: color var(--transicion);
+  .pm-detalle {
+    font-size:14.5px;color:var(--gris-sub);line-height:1.7;
+    transition:color var(--transicion);
   }
-
-  .proy-modal-tag {
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--acento);
-    background: color-mix(in srgb, var(--acento) 12%, transparent);
-    padding: 4px 12px;
-    border-radius: 100px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+  .pm-bottom {
+    display:flex;align-items:flex-end;justify-content:space-between;
+    gap:16px;margin-top:2px;flex-wrap:wrap;
   }
-
-  .proy-modal-detalle {
-    font-size: 15px;
-    color: var(--gris-sub);
-    line-height: 1.75;
-    transition: color var(--transicion);
+  .pm-techs-wrap { display:flex;flex-direction:column;gap:6px; }
+  .pm-tech-label {
+    font-size:11px;font-weight:600;color:var(--gris-titulo);
+    text-transform:uppercase;letter-spacing:.7px;transition:color var(--transicion);
   }
-
-  .proy-modal-techs {
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
-    flex-wrap: wrap;
+  .pm-pills { display:flex;gap:6px;flex-wrap:wrap; }
+  .pm-pills :global(.tp) {
+    font-size:12px;font-weight:500;color:var(--gris-sub);
+    background:var(--ghost-fondo);padding:4px 13px;
+    border-radius:100px;border:1px solid var(--borde);
+    transition:background var(--transicion),color var(--transicion),border-color var(--transicion);
   }
-
-  .proy-modal-tech-label {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--texto);
-    transition: color var(--transicion);
+  .pm-acciones { display:flex;gap:10px;flex-shrink:0; }
+  .pm-acciones :global(.btn-v) {
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:var(--fuente-principal);font-weight:600;font-size:14px;
+    text-decoration:none;border:none;cursor:pointer;
+    padding:11px 26px;border-radius:var(--radio-pill);
+    background:var(--btn-fondo);color:var(--btn-texto);
+    transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .3s;
   }
-
-  .proy-modal-tech-list {
-    font-size: 13px;
-    color: var(--gris-sub);
-    transition: color var(--transicion);
+  .pm-acciones :global(.btn-v:hover) {
+    transform:translateY(-2px);box-shadow:0 6px 20px rgba(109,78,214,.25);
   }
-
-  .proy-modal-acciones {
-    display: flex;
-    gap: 10px;
-    margin-top: 8px;
-  }
-
-  .proy-modal-acciones :global(a) {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 14px;
-    font-weight: 600;
-    padding: 12px 24px;
-    border-radius: var(--radio-pill);
-    text-decoration: none;
-    transition: opacity 0.2s, transform 0.2s;
-  }
-
-  .proy-modal-acciones :global(a:hover) {
-    opacity: 0.85;
-    transform: translateY(-1px);
-  }
-
-  .proy-modal-acciones :global(.btn-visitar) {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-family: var(--fuente-principal);
-    font-weight: 600;
-    font-size: 14px;
-    text-decoration: none;
-    border: none;
-    cursor: pointer;
-    padding: 12px 24px;
-    border-radius: var(--radio-pill);
-    background: var(--btn-fondo);
-    color: var(--btn-texto);
-    transition:
-      transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
-      box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
-  .proy-modal-acciones :global(.btn-visitar:hover) {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(137, 100, 232, 0.2);
+  .pm-acciones :global(.pm-priv) {
+    font-size:13px;color:var(--gris-sub);font-style:italic;
+    display:flex;align-items:center;gap:6px;
   }
 
   /* Responsive */
-  @media (max-width: 600px) {
+  @media(max-width:700px) {
     .fila-proyecto { flex-direction:column;align-items:flex-start;gap:14px; }
-    .proy-modal { height: auto; max-height: 85vh; }
-    .proy-modal-info { padding: 20px 20px 24px; }
-    .proy-modal-galeria, .proy-modal-galeria :global(img) { height: 200px; min-height: 200px; }
+    .pm-overlay { padding:12px; }
+    .pm-modal { border-radius:16px; }
+    .pm-preview { padding:14px 14px 0; }
+    .pm-browser { border-radius:10px; }
+    .pm-img { max-height:240px; }
+    .pm-img.is-mobile { max-height:300px; }
+    .pm-thumbs { padding:10px 14px 4px;gap:8px; }
+    .pm-thumbs :global(.pm-th) { width:72px;height:46px;border-radius:8px; }
+    .pm-info { padding:8px 16px 20px; }
+    .pm-titulo { font-size:19px; }
+    .pm-bottom { flex-direction:column;align-items:flex-start; }
   }
 </style>
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const overlay = document.getElementById('proy-modal')!;
-    const galeria = document.getElementById('proy-modal-galeria')!;
-    const titulo = document.getElementById('proy-modal-titulo')!;
-    const tag = document.getElementById('proy-modal-tag')!;
-    const detalle = document.getElementById('proy-modal-detalle')!;
-    const techs = document.getElementById('proy-modal-techs')!;
-    const acciones = document.getElementById('proy-modal-acciones')!;
-    const btnCerrar = document.getElementById('proy-modal-cerrar')!;
+    const ov = document.getElementById('proy-modal')!;
+    const modal = ov.querySelector('.pm-modal') as HTMLElement;
+    const img = document.getElementById('pm-img') as HTMLImageElement;
+    const url = document.getElementById('pm-url')!;
+    const thumbs = document.getElementById('pm-thumbs')!;
+    const titulo = document.getElementById('pm-titulo')!;
+    const tag = document.getElementById('pm-tag')!;
+    const detalle = document.getElementById('pm-detalle')!;
+    const pills = document.getElementById('pm-pills')!;
+    const acciones = document.getElementById('pm-acciones')!;
+    const btnX = document.getElementById('proy-modal-cerrar')!;
 
-    // Abrir modal
-    document.querySelectorAll('.fila-proyecto').forEach((btn) => {
+    const txtVisitar = ov.dataset.txtVisitar || 'Visitar sitio';
+    const txtPrivado = ov.dataset.txtPrivado || 'Proyecto privado — acceso restringido.';
+
+    let imgs: string[] = [];
+    let cur = 0;
+
+    const isMob = (s: string) => s.includes('mobile');
+
+    function setImg(i: number) {
+      cur = i;
+      const src = imgs[i];
+      img.src = src;
+      img.classList.toggle('is-mobile', isMob(src));
+      thumbs.querySelectorAll('.pm-th').forEach((t, idx) =>
+        t.classList.toggle('activo', idx === i)
+      );
+    }
+
+    // Abrir
+    document.querySelectorAll('.fila-proyecto').forEach(btn => {
       btn.addEventListener('click', () => {
         const el = btn as HTMLElement;
-        const imagenes: string[] = JSON.parse(el.dataset.imagenes || '[]');
-        const url = el.dataset.url || '';
+        imgs = JSON.parse(el.dataset.imagenes || '[]');
+        const link = el.dataset.url || '';
+        const nom = el.dataset.nombre || '';
 
-        // Galería
-        galeria.innerHTML = imagenes.map((src) =>
-          `<img src="${src}" alt="${el.dataset.nombre}" loading="lazy" />`
-        ).join('');
+        // Modo diseño vs web
+        const modo = el.dataset.modo || 'web';
+        modal.classList.toggle('modo-diseno', modo === 'diseño');
 
-        // Info
-        titulo.textContent = el.dataset.nombre || '';
-        tag.textContent = el.dataset.tag || '';
-        detalle.textContent = el.dataset.detalle || '';
-        techs.textContent = el.dataset.tecnologias || '';
-
-        // Botón visitar
-        if (url) {
-          acciones.innerHTML = `<a href="${url}" class="btn-visitar" target="_blank" rel="noopener noreferrer">
-            Visitar sitio
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </a>`;
+        // URL bar
+        if (link) {
+          try { url.textContent = new URL(link).hostname; }
+          catch { url.textContent = link; }
         } else {
-          acciones.innerHTML = `<span style="font-size:13px;color:var(--gris-sub);font-style:italic;">Proyecto privado — acceso restringido.</span>`;
+          url.textContent = nom.toLowerCase().replace(/\s+/g, '-') + '.app';
         }
 
-        overlay.classList.add('activo');
-        galeria.scrollTo({ left: 0 });
+        // Thumbnails
+        thumbs.innerHTML = imgs.map((s, i) =>
+          `<img class="pm-th${isMob(s) ? ' is-mobile' : ''}${i === 0 ? ' activo' : ''}" src="${s}" alt="${nom} ${i+1}" data-i="${i}" loading="lazy" />`
+        ).join('');
+
+        thumbs.querySelectorAll('.pm-th').forEach(th =>
+          th.addEventListener('click', () =>
+            setImg(parseInt((th as HTMLElement).dataset.i || '0'))
+          )
+        );
+
+        setImg(0);
+        img.alt = nom;
+
+        // Info
+        titulo.textContent = nom;
+        tag.textContent = el.dataset.tag || '';
+        detalle.textContent = el.dataset.detalle || '';
+
+        // Tech pills
+        pills.innerHTML = (el.dataset.tecnologias || '').split(',')
+          .map(t => `<span class="tp">${t.trim()}</span>`).join('');
+
+        // Acciones
+        if (link) {
+          acciones.innerHTML = `<a href="${link}" class="btn-v" target="_blank" rel="noopener noreferrer">
+            ${txtVisitar}
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M17 7H8M17 7v9"/></svg>
+          </a>`;
+        } else {
+          acciones.innerHTML = `<span class="pm-priv">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            ${txtPrivado}
+          </span>`;
+        }
+
+        ov.classList.add('activo');
+        ov.setAttribute('aria-hidden', 'false');
       });
     });
 
     // Cerrar
-    const cerrar = () => overlay.classList.remove('activo');
-    btnCerrar.addEventListener('click', cerrar);
-    overlay.addEventListener('click', (e) => {
-      if (e.target === overlay) cerrar();
-    });
-    document.addEventListener('keydown', (e) => {
+    const cerrar = () => { ov.classList.remove('activo'); ov.setAttribute('aria-hidden', 'true'); };
+    btnX.addEventListener('click', cerrar);
+    ov.addEventListener('click', e => { if (e.target === ov) cerrar(); });
+    document.addEventListener('keydown', e => {
+      if (!ov.classList.contains('activo')) return;
       if (e.key === 'Escape') cerrar();
+      if (e.key === 'ArrowRight' && imgs.length > 1) setImg((cur + 1) % imgs.length);
+      if (e.key === 'ArrowLeft' && imgs.length > 1) setImg((cur - 1 + imgs.length) % imgs.length);
     });
 
-    // Animación escalonada al hacer scroll
+    // Animación escalonada
     const filas = document.querySelectorAll('.fila-proyecto');
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
         if (!entry.isIntersecting) return;
         const el = entry.target as HTMLElement;
-        const delay = Number(el.dataset.index) * 120;
-        setTimeout(() => el.classList.add('visible'), delay);
-        observer.unobserve(el);
+        setTimeout(() => el.classList.add('visible'), Number(el.dataset.index) * 120);
+        obs.unobserve(el);
       });
     }, { threshold: 0.15 });
-
-    filas.forEach((fila) => observer.observe(fila));
+    filas.forEach(f => obs.observe(f));
   });
 </script>
