@@ -125,7 +125,7 @@ const AÑO = new Date().getFullYear();
   /* Wrapper para que el footer quede al final del flujo normal */
   .footer-wrapper {
     display:flex;justify-content:center;
-    padding:40px 0 32px;position:relative;z-index:100;
+    padding:40px 0 calc(env(safe-area-inset-bottom) + 32px);position:relative;z-index:100;
   }
 
   .footer-flotante {
@@ -160,6 +160,7 @@ const AÑO = new Date().getFullYear();
   }
 
   .footer-flotante:hover { animation:saltito .6s ease; }
+  @media (max-width:1024px) { .footer-flotante:hover { animation:none; } }
   .footer-flotante.jello { animation:jello-vertical 1.9s both; }
   .footer-flotante.abierto { cursor:default; }
   .footer-flotante.abierto .footer-chevron { transform:rotate(180deg); }
@@ -171,7 +172,7 @@ const AÑO = new Date().getFullYear();
     padding:16px 28px;position:relative;z-index:1;
     background:var(--card);transition:background .4s;
     /* 1px de margen = 1px de borde gradiente visible */
-    margin:1px;border-radius:17px 17px 0 0;
+    margin:0.5px;border-radius:17.5px 17.5px 0 0;
   }
   .footer-flotante:not(.abierto) .footer-barra { border-radius:17px; }
 
@@ -231,7 +232,7 @@ const AÑO = new Date().getFullYear();
     max-height:0;overflow:hidden;
     transition:max-height .4s cubic-bezier(.4,0,.2,1);
     background:var(--card);
-    margin:0 1px 1px;border-radius:0 0 17px 17px;
+    margin:0 0.5px 0.5px;border-radius:0 0 17.5px 17.5px;
     position:relative;z-index:1;
   }
   .footer-flotante.abierto .footer-panel { max-height:320px; }
@@ -297,6 +298,9 @@ const AÑO = new Date().getFullYear();
   }
   @media (max-width:600px) {
     .footer-flotante { width:96%;border-radius:14px; }
+    .footer-barra { margin:0.5px;border-radius:13.5px 13.5px 0 0; }
+    .footer-flotante:not(.abierto) .footer-barra { border-radius:13.5px; }
+    .footer-panel-inner { margin:0 0.5px 0.5px;border-radius:0 0 13.5px 13.5px; }
     .footer-grid { grid-template-columns:1fr;gap:22px; }
     .footer-flotante.abierto .footer-panel { max-height:560px; }
     .footer-hint { display:none; }
@@ -377,19 +381,6 @@ const AÑO = new Date().getFullYear();
       }
     }, { passive: true });
 
-    // Touch support
-    let touchStartY = 0;
-    window.addEventListener('touchstart', (e) => { touchStartY = e.touches[0].clientY; }, { passive: true });
-    window.addEventListener('touchmove', (e) => {
-      const deltaY = touchStartY - e.touches[0].clientY;
-      if (estaAlFinal() && deltaY > 10 && !animando) {
-        animando = true;
-        footer.classList.add('jello');
-        setTimeout(() => {
-          footer.classList.remove('jello');
-          animando = false;
-        }, 1900);
-      }
-    }, { passive: true });
+    // Touch support — sin jello en mobile para evitar saltos de scroll
   });
 </script>

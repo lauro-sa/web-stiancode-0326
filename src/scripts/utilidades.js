@@ -42,13 +42,13 @@ export function iniciarToggleTema(idBoton, claveStorage = 'sc-tema', idsBotonesE
     });
   }
 
-  const guardado = localStorage.getItem(claveStorage) || 'sistema';
+  const guardado = localStorage.getItem(claveStorage) || 'oscuro';
   aplicar(guardado);
 
   // Click en cualquier botón cicla el tema
   botones.forEach((btn) => {
     btn.addEventListener('click', () => {
-      const actual = localStorage.getItem(claveStorage) || 'sistema';
+      const actual = localStorage.getItem(claveStorage) || 'oscuro';
       const idx    = CICLO.indexOf(actual);
       const nuevo  = CICLO[(idx + 1) % CICLO.length];
       localStorage.setItem(claveStorage, nuevo);
@@ -57,7 +57,7 @@ export function iniciarToggleTema(idBoton, claveStorage = 'sc-tema', idsBotonesE
   });
 
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-    if ((localStorage.getItem(claveStorage) || 'sistema') === 'sistema') aplicar('sistema');
+    if ((localStorage.getItem(claveStorage) || 'oscuro') === 'sistema') aplicar('sistema');
   });
 }
 
@@ -90,11 +90,26 @@ export function iniciarMenuMobile(idBoton, idMenu, claseLinks = '.link-menu') {
 
   function alternarMenu() {
     estaAbierto = !estaAbierto;
-    if (estaAbierto) resetearAnimaciones();
+    if (estaAbierto) {
+      resetearAnimaciones();
+      // iOS Safari ignora overflow:hidden en body — position:fixed es la única forma real de bloquear scroll
+      document.body.dataset.scrollY = window.scrollY.toString();
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${window.scrollY}px`;
+      document.body.style.left = '0';
+      document.body.style.right = '0';
+    } else {
+      // Restaurar posición de scroll al cerrar
+      const scrollY = parseInt(document.body.dataset.scrollY || '0', 10);
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      window.scrollTo(0, scrollY);
+    }
     boton.classList.toggle('on', estaAbierto);
     menu.classList.toggle('on',  estaAbierto);
     boton.setAttribute('aria-expanded', estaAbierto);
-    document.body.style.overflow = estaAbierto ? 'hidden' : '';
   }
 
   boton.addEventListener('click', alternarMenu);

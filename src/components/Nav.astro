@@ -36,6 +36,7 @@ const AÑO = new Date().getFullYear();
 ---
 
 <nav id="nav-principal" class="nav">
+  <div id="barra-progreso" class="barra-progreso"></div>
 
   <a href={lang === 'en' ? '/en/' : '/'} class="logo" aria-label="S7ian Code inicio">
     <img class="logo-img" src="/logo-claro.png" alt="S7ian Code" width="32" height="32" />
@@ -108,7 +109,13 @@ const AÑO = new Date().getFullYear();
 </div>
 
 <style>
-  .nav { position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:16px 36px;transition:background .4s,border-bottom .4s; }
+  .barra-progreso { position:absolute;bottom:0;left:0;height:1px;width:0;background:var(--gradiente);border-radius:0 1px 1px 0;transition:background .5s;opacity:0; }
+  .nav.fijo .barra-progreso { opacity:1; }
+  @media (max-width:1024px) {
+    .barra-progreso { height:1px;opacity:0.6; }
+    .nav.fijo .barra-progreso { opacity:0.6; }
+  }
+  .nav { position:fixed;top:0;left:0;right:0;z-index:250;display:flex;align-items:center;justify-content:space-between;padding:16px 36px;padding-top:calc(env(safe-area-inset-top) + 16px);transition:background .4s,border-bottom .4s; }
   .nav.fijo { background:color-mix(in srgb,var(--fondo) 88%,transparent);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--borde); }
 
   .logo { display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--texto); }
@@ -152,7 +159,7 @@ const AÑO = new Date().getFullYear();
   .icono-tema { width:16px;height:16px;color:var(--texto);position:absolute;transition:opacity .4s,transform .4s cubic-bezier(.4,0,.2,1); opacity:0;transform:scale(.4) rotate(90deg); }
   .icono-tema.visible { opacity:1;transform:scale(1) rotate(0deg); }
 
-  .hamburguesa { display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px; }
+  .hamburguesa { display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px;position:relative;z-index:202; }
   .hamburguesa span { display:block;width:20px;height:1.5px;background:var(--texto);border-radius:2px;transition:transform .4s,opacity .4s,background .5s; }
   .hamburguesa.on span:nth-child(1) { transform:translateY(6.5px) rotate(45deg); }
   .hamburguesa.on span:nth-child(2) { opacity:0; }
@@ -160,11 +167,16 @@ const AÑO = new Date().getFullYear();
 
   /* ---- Menú mobile mejorado ---- */
   .menu-mobile {
-    position:fixed;inset:0;z-index:199;
+    position:fixed;top:0;left:0;right:0;bottom:0;z-index:240;
     background:var(--fondo);
     display:flex;align-items:center;justify-content:center;
     opacity:0;pointer-events:none;
     transition:opacity .35s ease,background .5s;
+    padding-top:calc(env(safe-area-inset-top) + 70px);
+    padding-bottom:calc(env(safe-area-inset-bottom) + 20px);
+    padding-left:env(safe-area-inset-left);
+    padding-right:env(safe-area-inset-right);
+    overflow-y:auto;-webkit-overflow-scrolling:touch;
   }
   .menu-mobile.on { opacity:1;pointer-events:all; }
 
@@ -203,7 +215,7 @@ const AÑO = new Date().getFullYear();
   /* ---- Mini footer dentro del menú ---- */
   .menu-mobile-footer {
     display:flex;flex-direction:column;align-items:center;gap:16px;
-    padding-bottom:calc(env(safe-area-inset-bottom, 0px) + 40px);
+    padding-bottom:40px;
     opacity:0;transform:translateY(10px);
     transition:opacity .3s,transform .3s;
   }
@@ -251,7 +263,24 @@ const AÑO = new Date().getFullYear();
   @media (max-width:1024px) {
     .nav-links { display:none; }
     .hamburguesa { display:flex; }
-    .nav { padding:16px 20px; }
+    .nav {
+      top:calc(env(safe-area-inset-top) + 12px);left:12px;right:12px;
+      padding:12px 18px;
+      border-radius:16px;
+      overflow:hidden;
+      background:transparent;
+      backdrop-filter:none;
+      -webkit-backdrop-filter:none;
+      border:none;
+      box-shadow:none;
+      transition:background .35s ease, box-shadow .35s ease, backdrop-filter .35s ease;
+    }
+    .nav.fijo {
+      background:color-mix(in srgb, var(--fondo) 85%, transparent);
+      backdrop-filter:blur(24px) saturate(180%);
+      -webkit-backdrop-filter:blur(24px) saturate(180%);
+      box-shadow:0 0 0 1px var(--borde), 0 4px 20px rgba(0,0,0,0.15);
+    }
     .nav-redes { display:none; }
   }
 </style>

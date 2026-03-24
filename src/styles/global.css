@@ -18,6 +18,7 @@ html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: var(--fondo);
 }
 
 body {
@@ -27,7 +28,10 @@ body {
   overflow-x: hidden;
   max-width: 100vw;
   transition: background var(--transicion), color var(--transicion);
+  /* Safe area: evita que el contenido quede detrás del home indicator en iOS */
+  padding-bottom: env(safe-area-inset-bottom);
 }
+
 
 /* Textura de grano sutil sobre toda la página */
 body::after {

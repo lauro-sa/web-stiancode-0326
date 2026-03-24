@@ -23,7 +23,7 @@
 
   --acento:         #6d4ed6;
   --acento-alt:     #4890c4;
-  --gradiente:      linear-gradient(135deg, #6d4ed6 0%, #7b5ce0 50%, #4890c4 100%);
+  --gradiente:      linear-gradient(135deg, #7c5ce8 0%, #8964e8 50%, #4c9cd0 100%);
 }
 
 /* Tema Oscuro */
@@ -45,7 +45,7 @@
 
   --acento:         #a68efa;
   --acento-alt:     #5cb0e4;
-  --gradiente:      linear-gradient(135deg, #9b7afa 0%, #a68efa 50%, #5cb0e4 100%);
+  --gradiente:      linear-gradient(135deg, #7c5ce8 0%, #8964e8 50%, #4c9cd0 100%);
 }
 
 :root {
