@@ -40,13 +40,21 @@ const AÑO = new Date().getFullYear();
 
   <a href={lang === 'en' ? '/en/' : '/'} class="logo" aria-label="S7ian Code inicio">
     <img class="logo-img" src="/logo-claro.png" alt="S7ian Code" width="32" height="32" />
-    <span class="logo-nombre">S7ian Code</span>
+    <div class="logo-texto">
+      <span class="logo-nombre">S7ian Code</span>
+      <span class="logo-tagline">{lang === 'en' ? 'Web development & digital solutions' : 'Desarrollo web & soluciones digitales'}</span>
+    </div>
   </a>
 
   <ul class="nav-links" role="list">
-    {LINKS_NAV.map((link) => (
-      <li><a href={link.href}>{link.texto}</a></li>
-    ))}
+    {LINKS_NAV.map((link) => {
+      const hrefLimpio = link.href.replace(/\/#.*/, '').replace(/\/$/, '');
+      const rutaLimpia = rutaActual.replace(/\/$/, '');
+      const activo = !link.href.includes('#') && hrefLimpio === rutaLimpia;
+      return (
+        <li><a href={link.href} class:list={[{ activo }]} data-href={link.href}>{link.texto}</a></li>
+      );
+    })}
   </ul>
 
   <div class="nav-derecha">
@@ -120,12 +128,17 @@ const AÑO = new Date().getFullYear();
 
   .logo { display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--texto); }
   .logo-img { width:32px;height:32px;object-fit:contain; }
-  .logo-nombre { font-size:16px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;background:linear-gradient(90deg,#7c5ce8 0%,#7c5ce8 30%,#8964e8 55%,#4c9cd0 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:tracking-in 2s cubic-bezier(0.215,0.61,0.355,1) both; }
+  .logo-texto { display:flex;flex-direction:column;gap:0; }
+  .logo-nombre { font-size:16px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;line-height:1.1;background:linear-gradient(90deg,#7c5ce8 0%,#7c5ce8 30%,#8964e8 55%,#4c9cd0 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:tracking-in 2s cubic-bezier(0.215,0.61,0.355,1) both; }
+  .logo-tagline { font-size:9px;color:var(--gris-sub);letter-spacing:0.03em;line-height:1;transition:color .5s;white-space:nowrap;animation:tracking-in 2s cubic-bezier(0.215,0.61,0.355,1) both; }
   @keyframes tracking-in { 0% { letter-spacing:-0.5em;opacity:0; } 40% { opacity:0.6; } 100% { letter-spacing:0.05em;opacity:1; } }
 
   .nav-links { display:flex;align-items:center;gap:2px;list-style:none; }
-  .nav-links a { text-decoration:none;font-size:14px;font-weight:500;color:var(--gris-sub);padding:8px 14px;border-radius:8px;transition:color .2s,background .2s; }
-  .nav-links a:hover { color:var(--texto);background:var(--ghost-fondo); }
+  .nav-links a { text-decoration:none;font-size:14px;font-weight:500;color:var(--gris-sub);padding:8px 14px;border-radius:8px;transition:color .2s;position:relative; }
+  .nav-links a::after { content:'';position:absolute;bottom:4px;left:50%;width:0;height:1.5px;background:var(--gradiente);border-radius:1px;transition:width .3s cubic-bezier(.4,0,.2,1),left .3s cubic-bezier(.4,0,.2,1); }
+  .nav-links a:hover { color:var(--texto); }
+  .nav-links a:hover::after { width:50%;left:25%; }
+  .nav-links a.activo { color:var(--texto); }
 
   .nav-derecha { display:flex;align-items:center;gap:8px; }
 
@@ -263,6 +276,7 @@ const AÑO = new Date().getFullYear();
   @media (max-width:1024px) {
     .nav-links { display:none; }
     .hamburguesa { display:flex; }
+    .logo-tagline { font-size:8px; }
     .nav {
       top:calc(env(safe-area-inset-top) + 12px);left:12px;right:12px;
       padding:12px 18px;
@@ -293,4 +307,33 @@ const AÑO = new Date().getFullYear();
       localStorage.setItem('sc-idioma', lang);
     });
   });
+
+  // Detectar sección activa al scrollear (para links con #anchor)
+  (function() {
+    /** @type {HTMLAnchorElement[]} */
+    const links = /** @type {any} */ (Array.from(document.querySelectorAll('.nav-links a[data-href*="#"]')));
+    if (!links.length) return;
+
+    /** @type {{ el: HTMLElement, link: HTMLAnchorElement }[]} */
+    const secciones = [];
+    links.forEach((link) => {
+      const id = (link.getAttribute('data-href') || '').split('#')[1];
+      const el = document.getElementById(id);
+      if (el) secciones.push({ el, link });
+    });
+    if (!secciones.length) return;
+
+    function actualizar() {
+      let activa = /** @type {{ el: HTMLElement, link: HTMLAnchorElement } | null} */ (null);
+      for (const s of secciones) {
+        const rect = s.el.getBoundingClientRect();
+        if (rect.top <= 150) activa = s;
+      }
+      links.forEach((l) => l.classList.remove('activo'));
+      if (activa) activa.link.classList.add('activo');
+    }
+
+    window.addEventListener('scroll', actualizar, { passive: true });
+    actualizar();
+  })();
 </script>

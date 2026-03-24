@@ -146,6 +146,9 @@ export function iniciarNavScroll(idNav, umbral = 40) {
   const nav = document.getElementById(idNav);
   if (!nav) return;
 
+  // Chequeo inicial por si la página carga ya scrolleada
+  nav.classList.toggle('fijo', window.scrollY > umbral);
+
   window.addEventListener('scroll', () => {
     nav.classList.toggle('fijo', window.scrollY > umbral);
   }, { passive: true });
